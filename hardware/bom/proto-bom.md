@@ -2,7 +2,7 @@
 
 Bring-up kit for firmware and peripheral integration **before** the custom PCB. Status reflects on-hand parts (2026-07).
 
-Production / PCB BOM will live alongside this file when drafted (`bom/pcb-bom.md` or similar).
+Production / PCB BOM: [`pcb-bom.md`](pcb-bom.md).
 
 | # | Item | Role | Status |
 | --- | --- | --- | --- |

@@ -133,7 +133,7 @@ Note: the `nrf-bm` west workspace may contain sibling trees named `zephyr/` for 
 
 ### Prototyping path (before / beside custom PCB)
 
-Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). Custom PCB BOM goes under `hardware/bom/` when drafted. A Zephyr blink on the DK was exploratory only; project firmware stays bare-metal (see Firmware stack).
+Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **Production PCB BOM:** [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; project firmware stays bare-metal (see Firmware stack).
 
 ### Thesis scope (expected chapters / work)
 
