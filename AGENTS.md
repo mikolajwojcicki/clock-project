@@ -72,8 +72,10 @@ Root holds shared docs (`AGENTS.md`, README), Nix flakes/shells, and CI. Keep co
 - **Bare-metal only** (C/C++ on the Nordic nRF52832 / SoftDevice or SoftDevice-free as decided later).
 - **Do not** introduce Zephyr RTOS application builds, FreeRTOS, or another RTOS unless the user explicitly changes this decision.
 - Rationale: the thesis prioritizes measurable ultra-low-power behavior (sleep currents, peripheral power-gating, interrupt-driven wakes). A thin bare-metal control loop gives direct ownership of clock trees, POWER/CLOCK peripherals, and sleep entry/exit without RTOS scheduling or subsystem abstractions obscuring the energy story.
-- Prefer Nordic NRFx / CMSIS / nRF5 SDK examples, or Nordic’s **nRF Connect SDK Bare Metal** (`nrf-bm`) flows — not Zephyr `west build` app samples.
-- BLE: use Nordic SoftDevice (nRF5 SDK) or the bare-metal BLE path from `nrf-bm` only as needed for schedule sync; keep application power policy in project-owned code.
+- **For nRF52832 / nRF52 DK / MDBT42Q:** use **nRF5 SDK 17.1.0** (`NRF5_SDK_DIR`) + `arm-none-eabi-gcc` + **OpenOCD** flash. First in-tree app: [`firmware/apps/blinky/`](firmware/apps/blinky/) (SoftDevice-free / blank).
+- **Do not** use VS Code nRF Connect → Create application → Copy sample from **`nrf-bm`** for this hardware. Nordic’s **nRF Connect SDK Bare Metal** (`~/ncs/nrf-bm`) targets **nRF54L only** — incompatible with PCA10040 / nRF52832.
+- Prefer Nordic NRFx / CMSIS / nRF5 SDK examples — not Zephyr `west build` app samples.
+- BLE (later): Nordic SoftDevice via nRF5 SDK; keep application power policy in project-owned code.
 - When suggesting tooling, prefer what is **already installed** on this machine (see below) before proposing new Nix packages or downloads.
 
 ### Installed nRF / embedded tooling (this NixOS host)
@@ -117,11 +119,11 @@ Associated SDK / toolchain installs managed via nRF Connect (under `~/ncs/`):
 
 | Path | What it is |
 | --- | --- |
-| `~/ncs/nrf-bm/v2.0.0` | **nRF Connect SDK Bare Metal** workspace (**nrf-bm 2.0.0**) — preferred Nordic bare-metal track for this thesis |
+| `~/ncs/nrf-bm/v2.0.0` | **nRF Connect SDK Bare Metal** (**nrf-bm 2.0.0**) — **nRF54L only**; installed but **not** used for this nRF52832 thesis |
 | `~/ncs/toolchains/911f4c5c26` | nRF Connect toolchain bundle (nrfutil-managed; linked for NCS **v3.3.0** in `toolchains.json`) |
 | `~/.nrfconnect-apps/` | nRF Connect for Desktop app manifests (Programmer, Toolchain Manager, BLE, PPK, etc.) |
 
-Note: the `nrf-bm` west workspace may contain sibling trees named `zephyr/` for Nordic’s packaging; that does **not** mean this project should build Zephyr RTOS applications. Stay on the bare-metal / `nrf-bm` application path (or classic nRF5 SDK), consistent with the firmware stack lock above.
+Note: `nrf-bm` may ship sibling `zephyr/` trees for Nordic packaging; ignore those for application builds. For this monorepo, stay on **nRF5 SDK** under `firmware/apps/` (see blinky). The nRF Connect extension remains useful for **Connected Devices** / Programmer UI; build and flash the in-tree apps with Make + OpenOCD (`.vscode/tasks.json`).
 
 ### nRF52 / module layout constraints (do not ignore)
 
@@ -133,7 +135,7 @@ Note: the `nrf-bm` west workspace may contain sibling trees named `zephyr/` for 
 
 ### Prototyping path (before / beside custom PCB)
 
-Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **Production PCB BOM:** [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; project firmware stays bare-metal (see Firmware stack).
+Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **Production PCB BOM:** [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; the in-tree bare-metal blinky is [`firmware/apps/blinky/`](firmware/apps/blinky/) (nRF5 SDK).
 
 ### Thesis scope (expected chapters / work)
 
@@ -147,18 +149,23 @@ Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Ad
 
 Commit **often** and with **descriptive** messages. Prefer many small, reviewable commits over one large dump at the end of a session.
 
+**Thesis rationale (promotor guidance):** a dense, well-described commit history makes the *praca inżynierska* easier to write later — you can reconstruct what was tried, when architecture changed, and what to put in the firmware/hardware chronology chapters. Sparse or squash-style history is a liability for the paper. Bias hard toward **more commits**, not fewer.
+
 ### When to commit
 
 - After a coherent unit of work is complete and working (or intentionally checkpointed)
 - After finishing one concern: e.g. a LaTeX section, a PCB net fix, a firmware driver stub — not all three in one commit if they are unrelated
+- After a successful build/flash milestone (e.g. blinky on DK) — commit the app *before* unrelated docs if both are dirty
 - Before switching tasks or ending a substantial agent turn that changed tracked files
 - When the user asks to commit (always honor that immediately)
+- Prefer splitting a session’s work into **several** commits (app → build/flash → editor tasks → AGENTS/docs) rather than one catch-all
 
-Do **not** wait until the entire feature/thesis chapter is "done" before the first commit.
+Do **not** wait until the entire feature/thesis chapter is "done" before the first commit. Do **not** batch a whole evening of unrelated progress into a single commit to “keep the log clean.”
 
 ### How to commit
 
-- In this repo, agents **should create commits** as work lands — that is intentional for the thesis history. Still ask before the first commit of a session if the user has not yet confirmed; after that, commit often without waiting to be asked for each small unit.
+- In this repo, agents **should create commits** as work lands — that is intentional for the thesis history and for later chapter drafting from `git log`. Do not wait to be asked for each small unit once work is underway in a session; still honor an explicit “don’t commit yet” from the user.
+- Never update git config. Never force-push to shared branches. Never amend unless the user explicitly requests it and amend safety conditions hold (commit is yours, not pushed, etc.).
 - Never update git config. Never force-push to shared branches. Never amend unless the user explicitly requests it and amend safety conditions hold (commit is yours, not pushed, etc.).
 - Do not commit secrets, private keys, `.env`, KiCad autosave/backup junk, LaTeX build outputs, or large generated binaries unless the user explicitly wants those artifacts tracked.
 - Stage only relevant files for the commit (avoid `git add .` when unrelated changes exist).
@@ -189,7 +196,10 @@ Bad:
 | --- | --- |
 | LaTeX | A section/subsection, figure set, or bib change is complete |
 | KiCad | A schematic/PCB decision is saved and consistent (e.g. net rename + matching PCB update) |
-| Firmware | A module builds (or a failing test is an intentional checkpoint) and behavior is describable |
+| Firmware | A module builds (or a failing test is an intentional checkpoint) and behavior is describable — then a separate commit for flash/docs/tasks if those follow |
+| Docs / AGENTS.md | Decision locks and workflow rules change — own commit, not folded into unrelated code |
+
+If unsure whether to commit: **commit**. A slightly granular history beats a missing one when writing the thesis.
 
 ## Host facts (NixOS)
 
@@ -222,7 +232,7 @@ NixOS is not “Linux with a different package manager.” The running system is
 
 ## Working in this monorepo
 
-- Keep the project **Nix-friendly**: prefer the already-installed system `gcc-arm-embedded` + `nrf5-sdk` env vars, and/or the user’s `~/ncs/nrf-bm` + VS Code nRF Connect toolchain — not Zephyr app workflows and not fresh distro-wide reinstalls.
+- Keep the project **Nix-friendly**: prefer the already-installed system `gcc-arm-embedded` + `nrf5-sdk` (`NRF5_SDK_DIR` / `GNU_INSTALL_ROOT`) and OpenOCD — not Zephyr app workflows, not `nrf-bm` for nRF52832, and not fresh distro-wide reinstalls.
 - If a dependency must be system-wide (udev for J-Link/nRF DK, etc.), propose the change in `~/thinkpad-nixos`.
 - Prefer NixOS-native commands (`nix`, `nix-shell`, `nix develop`, `nixos-rebuild`) over distro install guides.
 - Do not mix unrelated thesis/hardware/firmware edits in one commit when they can be split cleanly.
