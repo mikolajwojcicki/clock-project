@@ -29,6 +29,8 @@ Root holds shared docs (`AGENTS.md`, README), Nix flakes/shells, and CI. Keep co
 ### Thesis LaTeX (finalized)
 
 - **Working template:** official WIT `szablonwitpd` seeded into `clock-project-latex/` (`pdflatex` + `biber` / `biblatex`, UTF-8). Set `\stCzyMgr` to `0` for *inżynierska*.
+- **CI PDF:** every push/PR in `clock-project-latex` runs `.github/workflows/build-thesis.yml` and uploads artifact `thesis-pdf` (`main.pdf`). Prefer this over local TeX when agents need the built PDF. Retrieve with:
+  `gh run download -R mikolajwojcicki/clock-project-latex -n thesis-pdf` (optionally `-R` / `--dir` / run id from `gh run list`).
 - **Documentation only:** Kubik memoir v0.9 kept under `temp-resources/docs/memoir-v09/` (+ original `temp-resources/dyplomszablonmemoir-v09.zip`). CP1250 / Overleaf-hostile; do not compile as the thesis tree. Steal typography ideas into WIT `settings.tex` if needed.
 - **Removed:** English-first `szablon_pracy_dyplomowej_w_latex` (deleted from `temp-resources/`).
 - Also in `temp-resources/`: approved APD topic PDF `my-thesis.pdf`, `wymogi_edytorskie.docx.md`, `pd_inz_pl.doc.pdf`, `skroty_kier_pd.xls`, upstream `szablonwitpd.zip`.
