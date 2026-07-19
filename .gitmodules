@@ -1,0 +1,3 @@
+[submodule "clock-project-latex"]
+	path = clock-project-latex
+	url = git@github.com:mikolajwojcicki/clock-project-latex.git
