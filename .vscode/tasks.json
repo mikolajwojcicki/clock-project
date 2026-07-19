@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "firmware: blinky build",
+      "type": "shell",
+      "command": "make",
+      "options": {
+        "cwd": "${workspaceFolder}/firmware/apps/blinky"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "firmware: blinky flash",
+      "type": "shell",
+      "command": "make flash",
+      "options": {
+        "cwd": "${workspaceFolder}/firmware/apps/blinky"
+      },
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "firmware: blinky clean",
+      "type": "shell",
+      "command": "make clean",
+      "options": {
+        "cwd": "${workspaceFolder}/firmware/apps/blinky"
+      },
+      "group": "none",
+      "problemMatcher": []
+    }
+  ]
+}
