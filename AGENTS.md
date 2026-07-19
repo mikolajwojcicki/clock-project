@@ -21,7 +21,7 @@ Goal: battery-powered bedside alarm clock that avoids keeping a phone in the bed
 | Thesis paper | LaTeX sources (separate git repo / submodule) | `clock-project-latex/` |
 | Hardware | KiCad schematic/PCB, libs, fab exports, BOMs | `hardware/` |
 | Firmware | Embedded C/C++, build/flash, drivers | `firmware/` |
-| Companion UI | Web Bluetooth alarm-schedule app (later) | `web/` (when added) |
+| Companion UI | Web Bluetooth alarm-schedule app | `web/` (scaffold only for now) |
 | University reference materials | Editorial rules, title form, codes, memoir docs | `temp-resources/` |
 
 Root holds shared docs (`AGENTS.md`, README), Nix flakes/shells, and CI. Keep concerns separated; split unrelated edits across commits. Commit prefixes: `thesis:` changes belong in the `clock-project-latex` repo (bump the submodule pointer in the parent when needed).
@@ -133,7 +133,7 @@ Note: the `nrf-bm` west workspace may contain sibling trees named `zephyr/` for 
 
 ### Prototyping path (before / beside custom PCB)
 
-Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. Custom PCB BOM and proto BOM were drafted in the prior session — keep durable copies under `hardware/` when added.
+Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). Custom PCB BOM goes under `hardware/bom/` when drafted. A Zephyr blink on the DK was exploratory only; project firmware stays bare-metal (see Firmware stack).
 
 ### Thesis scope (expected chapters / work)
 
