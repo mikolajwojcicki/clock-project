@@ -29,6 +29,8 @@ Root holds shared docs (`AGENTS.md`, README), Nix flakes/shells, and CI. Keep co
 ### Thesis LaTeX (finalized)
 
 - **Working template:** official WIT `szablonwitpd` seeded into `clock-project-latex/` (`pdflatex` + `biber` / `biblatex`, UTF-8). Set `\stCzyMgr` to `0` for *inżynierska*.
+- **Writing rules (mandatory for agents):** before drafting or editing thesis prose, read and follow [`clock-project-latex/thesis-writing-rules.yaml`](clock-project-latex/thesis-writing-rules.yaml) (machine-readable extract of Greber *Zasady pisania prac dyplomowych*, wyd. VI). Use it for structure, wstęp/zakończenie, figures/tables, citations, and typography pitfalls. Chapter-2 “organizacja” framing is adapted for this hardware/firmware thesis (see the YAML). Promotor overrides win on conflict. Source PDF remains in `temp-resources/Zasady-pisania-prac-dyplomowych.pdf`.
+- **Typography:** WIT deanery rules (`temp-resources/wymogi_edytorskie.docx.md`) are already in `clock-project-latex/settings.tex` (Times/`newtx`, sizes 14/13/12, single spacing). Prefer those over Greber’s 1.5 spacing / 35 mm left margin when they disagree — the YAML documents both.
 - **CI PDF:** every push/PR in `clock-project-latex` runs `.github/workflows/build-thesis.yml` and uploads artifact `thesis-pdf` (`main.pdf`). Prefer this over local TeX when agents need the built PDF. Retrieve with:
   `gh run download -R mikolajwojcicki/clock-project-latex -n thesis-pdf` (optionally `-R` / `--dir` / run id from `gh run list`).
 - **Documentation only:** Kubik memoir v0.9 kept under `temp-resources/docs/memoir-v09/` (+ original `temp-resources/dyplomszablonmemoir-v09.zip`). CP1250 / Overleaf-hostile; do not compile as the thesis tree. Steal typography ideas into WIT `settings.tex` if needed.
