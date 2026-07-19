@@ -6,11 +6,13 @@ Canonical product/architecture decisions live **here**. `previous-compressed-con
 
 ## Project purpose
 
-Working thesis topic (promotor accepted):
+Official APD thesis topic (approved):
 
-> Projekt i realizacja energooszczędnego budzika z bezprzewodową konfiguracją, radiową synchronizacją czasu DCF-77 oraz sensorem aktywności ruchowej
+> Projekt i realizacja energooszczędnego budzika z bezprzewodową konfiguracją oraz radiową synchronizacją czasu DCF-77
 
-Goal: battery-powered bedside alarm clock that avoids keeping a phone in the bedroom, with per-weekday alarm schedules, while optimizing for **ultra-low power**. Dismissing the alarm requires physical activity (shake / jump-jack style motion), detected by accelerometer interrupts.
+English title: *Design and implementation of a low-power alarm clock with wireless configuration and DCF-77 radio time synchronization*
+
+Goal: battery-powered bedside alarm clock that avoids keeping a phone in the bedroom, with per-weekday alarm schedules, while optimizing for **ultra-low power**. Dismissing the alarm requires physical activity (shake / jump-jack style motion), detected by accelerometer interrupts — in the APD description/scope, not in the registered title.
 
 ### Monorepo layout
 
@@ -29,7 +31,7 @@ Root holds shared docs (`AGENTS.md`, README), Nix flakes/shells, and CI. Keep co
 - **Working template:** official WIT `szablonwitpd` seeded into `clock-project-latex/` (`pdflatex` + `biber` / `biblatex`, UTF-8). Set `\stCzyMgr` to `0` for *inżynierska*.
 - **Documentation only:** Kubik memoir v0.9 kept under `temp-resources/docs/memoir-v09/` (+ original `temp-resources/dyplomszablonmemoir-v09.zip`). CP1250 / Overleaf-hostile; do not compile as the thesis tree. Steal typography ideas into WIT `settings.tex` if needed.
 - **Removed:** English-first `szablon_pracy_dyplomowej_w_latex` (deleted from `temp-resources/`).
-- Also in `temp-resources/`: `wymogi_edytorskie.docx.md`, `pd_inz_pl.doc.pdf`, `skroty_kier_pd.xls`, upstream `szablonwitpd.zip`.
+- Also in `temp-resources/`: approved APD topic PDF `my-thesis.pdf`, `wymogi_edytorskie.docx.md`, `pd_inz_pl.doc.pdf`, `skroty_kier_pd.xls`, upstream `szablonwitpd.zip`.
 
 ## Product requirements (current)
 
