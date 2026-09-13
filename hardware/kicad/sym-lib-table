@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+
+  (lib (name "BreadboardPrototype") (type "KiCad") (uri "${KIPRJMOD}/breadboard-prototype-symbols.kicad_sym") (options "") (descr "")))
