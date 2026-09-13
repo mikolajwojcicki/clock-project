@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+        "KiCAD": {
+            "command": "/home/wenigz/.local/share/kicad/10.0/3rdparty/plugins/com_github_mixelpixx_konnect/bin/konnect",
+            "args": [
+                "--config",
+                "/home/wenigz/clock-project/konnect.toml"
+            ]
+        }
+    }
+}

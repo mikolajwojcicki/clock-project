@@ -1,0 +1,4 @@
+eager_toolsets = true
+auto_load_toolsets = true
+kicad_cli = "/run/current-system/sw/bin/kicad-cli"
+ipc_address = "ipc:///tmp/kicad/api.sock"
