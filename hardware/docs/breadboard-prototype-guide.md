@@ -72,10 +72,13 @@ Do not connect both `VIN` and `3Vo` to different power sources.
 The DCF-1060N-800 manual states a 1.1 V to 3.3 V supply range.
 Use 3.3 V only after you identify `VDD` and `GND` on your board.
 
-The AP-1205V-P1 is a 5 V buzzer in the project BOM.
-Do not assume that 3.3 V produces its rated sound.
-Use 3.3 V for the first circuit check only if the buzzer documentation permits it.
-Do not add 5 V power during first bring-up.
+The project BOM labels the AP-1205V-P1 as a 5 V buzzer, but its exact operating
+current and drive requirements are not confirmed in the available documents.
+Do not assume that 3.3 V produces its rated sound. Do not add 5 V power during
+first bring-up.
+
+For the integrated prototype, use only the DK `3V3` rail. Never connect the
+KORAD supply and DK `3V3` to the same breadboard rail.
 
 ### ESD and mechanical rules
 
@@ -157,8 +160,13 @@ The following tools reduce wiring and fault-finding errors:
 | --- | --- | --- |
 | Computer running NixOS | Required | Build and flash firmware |
 | USB data cable | Required | Power and program the DK |
-| Multimeter | Recommended | Check voltage, continuity, and shorts |
-| Logic analyzer | Optional | Observe SPI or DCF-77 signals |
+| Digital multimeter | Required | Check voltage, continuity, shorts, and current |
+| KORAD KKG305D bench supply | User-reported purchased | Isolated, current-limited DCF measurements |
+| Logic analyzer | Owned | Observe SPI and DCF-77 signals |
+
+The KORAD supply is for isolated module measurements only in this guide.
+The first integrated prototype remains powered from the nRF52 DK USB
+connection.
 
 ### Required software
 
@@ -181,6 +189,32 @@ test -n "$GNU_INSTALL_ROOT" && printf '%s\n' "$GNU_INSTALL_ROOT"
 
 Do not install Zephyr or nRF Connect SDK Bare Metal for this prototype.
 This project uses bare-metal nRF5 SDK firmware.
+
+### 4.1 Safe bench-supply measurement
+
+Use this procedure only for the isolated DCF current test. Keep the DK,
+display, sensor, buzzer, battery, and charger disconnected.
+
+1. Set the KORAD output voltage to `3.30 V`.
+2. Set its current limit to `100 mA` or less.
+3. Turn the KORAD output off.
+4. Set the multimeter to DC current.
+5. Put the red lead in the correct `mA`, `µA`, or `A` socket and the black lead
+   in `COM`.
+6. Connect the meter in series:
+
+   ```text
+   KORAD PS+ -> meter current input -> meter COM -> DCF VDD
+   KORAD PS- -> DCF GND
+   ```
+
+7. Check that `VDD` is not connected to the ground rail.
+8. Enable the output only after the wiring check passes.
+
+Never place a current-mode multimeter across `PS+` and `PS-`. That creates a
+short circuit through the meter. If the meter is in the wrong socket or mode,
+the supply shows unexpected current, or a fuse opens, turn the supply output
+off, remove power, and correct the setup before reconnecting anything.
 
 ## 5. Breadboard preparation
 
@@ -256,6 +290,22 @@ P0.22 through P0.30 remain unused except for low-frequency control signals.
 | `P0.12` | `BUZZER_EN` | Transistor base resistor | Buzzer control |
 
 `P0.11`, `P0.16`, and P0.26 through P0.30 are unused in this guide.
+
+### 6.1 Safe control states
+
+Keep peripheral signal wires disconnected while firmware is being prepared.
+Before connecting them, the firmware test must set these inactive states:
+
+| Signal | Inactive state | Reason |
+| --- | --- | --- |
+| `DCF_PON` | High | Active-low receiver enable |
+| `EPD_CS` | High | Do not select display during reset |
+| `SENSOR_CS` | High | Do not select sensor during reset |
+| `BUZZER_EN` | Low | Do not sound buzzer during reset |
+
+If firmware cannot guarantee these states, leave the affected control wire
+disconnected and test that peripheral separately. Do not rely on an unconfigured
+MCU pin's floating input state as a safety control.
 
 The DK header can label pins as `P0.13`, `13`, or with a board-specific name.
 Use the DK pin label and the nRF52 port name together.
@@ -333,7 +383,12 @@ Remove power if the rail is 0 V, above 3.3 V, or unstable.
 
 ## 9. Connect the e-paper display
 
-The Waveshare Rev 2.1 HAT uses these labels:
+The photographed board is the Waveshare 2.13inch e-Paper HAT Rev 2.1.
+It uses these labels:
+
+Before wiring, inspect the `BS1` solder bridge. Set it to `0` for four-wire
+SPI. Do not continue if the bridge is set to `1`, because that selects
+three-wire SPI and does not match this guide.
 
 | Display pin | DK or rail | Signal |
 | --- | --- | --- |
@@ -359,7 +414,8 @@ With USB power removed:
 7. Connect display `DC` to DK `P0.18`.
 8. Connect display `RST` to DK `P0.19`.
 9. Connect display `BUSY` to DK `P0.20`.
-10. Check every wire against the table.
+10. Confirm the `BS1 = 0` four-wire SPI setting again.
+11. Check every wire against the table.
 
 Do not connect display `DIN` to `MISO`.
 Do not connect display `BUSY` to `3V3`.
@@ -389,16 +445,18 @@ If the display stays blank:
 2. Confirm `VCC` is 3.3 V relative to `GND`.
 3. Confirm `CS`, `DC`, `RST`, and `BUSY` use the table above.
 4. Confirm `DIN` and `CLK` are not swapped.
-5. Confirm no display wire crosses the breadboard center gap incorrectly.
-6. Run a full refresh instead of a partial refresh.
-7. Test the display by itself, without the LIS3DH or buzzer.
+5. Confirm `BS1 = 0`.
+6. Confirm no display wire crosses the breadboard center gap incorrectly.
+7. Run a full refresh instead of a partial refresh.
+8. Test the display by itself, without the LIS3DH or buzzer.
 
 ## 10. Connect the LIS3DH
 
 The Adafruit LIS3DH board supports I2C and SPI.
 This prototype uses SPI so the display and sensor can share the bus.
 
-Use the standard header labels on the board.
+The photographed breakout has `VIN`, `3Vo`, `GND`, `SCL`, `SDA`, `SDO`,
+`CS`, `INT1`, and `INT2` labels. Use those labels and not connector position.
 The board can also have STEMMA QT connectors.
 Do not use a STEMMA QT cable in this wiring plan.
 
@@ -417,6 +475,12 @@ Do not use a STEMMA QT cable in this wiring plan.
 The exact silk labels can differ.
 Use the function names in the table, not connector position.
 If you cannot identify a pin, stop and use the Adafruit product documentation.
+
+The LIS3DH datasheet requires `100 nF` and `10 µF` supply decoupling close to
+the sensor's `VDD` pin. Do not remove the breakout's local capacitors. If a
+different breakout lacks them, stop and add the specified capacitors before
+testing. Keep `VDD` and `VDD_IO` powered together through the breakout's
+documented power path.
 
 ### 10.1 Wire the LIS3DH
 
@@ -472,30 +536,33 @@ The manual lists these pins:
 - `VDD`
 
 The manual states a 1.1 V to 3.3 V supply range.
-The board output and `PON` polarity must still be checked on the physical board.
+The photographed board has the same four labeled pads as the manual.
+The measured `PON` behavior is active-low:
+
+- `PON = GND`: receiver enabled, measured current `68.3 µA`
+- `PON = VDD`: receiver disabled, measured current `0.0 µA`
 
 | DCF pin | DK or rail | Signal |
 | --- | --- | --- |
 | `VDD` | `3V3` | Receiver power |
 | `GND` | `GND` | Shared ground |
-| `OUT` | `P0.25` | DCF-77 digital output |
-| `PON` | `P0.24` only after confirmation | Conditional power control |
+| `OUT` | Not connected until logic level is measured | DCF-77 digital output |
+| `PON` | `P0.24` after safe-state firmware is ready | Active-low power control |
 
 ### 11.1 Confirm the DCF board
 
 Do not connect the DCF board by connector position.
 
 1. Compare the board labels with `PON`, `OUT`, `GND`, and `VDD`.
-2. Confirm which pin is `VDD`.
-3. Confirm which pin is `GND`.
-4. Check the board supply voltage from the manual.
-5. Find the manual statement for `PON` active level.
-6. If the physical board does not match the manual, stop.
-7. Do not connect `PON` to a GPIO until its active level is confirmed.
+2. Confirm that the physical board matches the photographed board.
+3. Confirm that the antenna wires are attached.
+4. Use only `3.3 V` for `VDD`.
+5. Use `PON = GND` to enable the receiver.
+6. Use `PON = VDD` to disable the receiver.
+7. Stop if any label, antenna connection, or board layout differs.
 
-If `PON` polarity is not confirmed, leave `PON` unconnected.
-Connect only `VDD`, `GND`, and `OUT`.
-This first test leaves the receiver in its board default power state.
+The current measurements above are prototype evidence for this physical
+module. They do not replace a manufacturer datasheet for another module.
 
 ### 11.2 Wire the receiver
 
@@ -503,15 +570,19 @@ With USB power removed:
 
 1. Connect `VDD` to `3V3`.
 2. Connect `GND` to `GND`.
-3. Confirm that `OUT` is a 3.3 V-compatible digital signal.
-4. Connect `OUT` to DK `P0.25`.
-5. Leave `PON` unconnected until its polarity is confirmed.
-6. Record the receiver serial or output state if your measurement tool shows it.
+3. Connect `PON` to `GND` for the isolated enabled-state test.
+4. Keep `OUT` disconnected from the DK.
+5. Measure `OUT` with a multimeter and record that a changing reading indicates
+   pulses, not a verified logic-high voltage.
+6. Use the logic analyzer to measure the minimum and maximum `OUT` levels.
+7. Connect `OUT` to DK `P0.25` only after the measured maximum is within the
+   nRF52832 input range.
 
-Only connect `PON` to DK `P0.24` after its polarity is confirmed.
-Configure `P0.24` as a safe input first.
-Do not drive `PON` high or low until the firmware driver defines the correct
-level.
+For later power control, configure `P0.24` as an output high before connecting
+it to `PON`, so the receiver starts disabled. Drive `P0.24` low only when a
+DCF reception window is intentionally enabled. If firmware cannot guarantee
+that startup state, leave `PON` disconnected and operate the receiver only
+with a manual jumper.
 
 ### 11.3 DCF-77 test
 
@@ -551,6 +622,9 @@ Before wiring:
 3. Identify `B` for base, `C` for collector, and `E` for emitter.
 4. Write the pin order in the test record.
 5. Stop if the marking is unreadable.
+
+Also verify the exact buzzer marking and its voltage and current requirements.
+Stop the buzzer test if those requirements are unavailable.
 
 ### 12.2 Buzzer circuit
 
@@ -641,6 +715,8 @@ Return to the last stage that passed.
 | LIS3DH gives no data | Remove USB before rewiring | SPI clock, MOSI, MISO, sensor CS, sensor power |
 | LIS3DH gives data but no interrupt | Keep power off while checking | `INT1` wire, interrupt setup, motion threshold |
 | DCF-77 gives no frame | Record conditions first | `VDD`, `GND`, `OUT`, antenna direction, interference |
+| DCF `OUT` level is unknown | Keep `OUT` disconnected from the DK | Logic analyzer level range, receiver supply, ground |
+| Meter shows unexpected current | Turn the supply output off immediately | Meter socket, current mode, series path, shorts, meter fuse |
 | Buzzer is silent | Remove USB before rewiring | Transistor pinout, resistor, diode, approved supply |
 | DK resets with buzzer | Remove USB immediately | Buzzer current, ground wiring, supply noise, diode |
 
@@ -673,15 +749,20 @@ Mark a box only after the test result is recorded.
 - [ ] Existing blinky firmware flashes.
 - [ ] DK LED changes state about every 500 ms.
 - [ ] Display wiring matches the project pin map.
+- [ ] Display `BS1` is set to `0` for four-wire SPI.
 - [ ] Display test firmware refreshes a known pattern.
 - [ ] Display retains its image after power removal.
 - [ ] LIS3DH wiring matches the project pin map.
 - [ ] LIS3DH identification test passes.
 - [ ] LIS3DH `INT1` event is observed during movement.
-- [ ] DCF receiver supply and output voltage are confirmed.
+- [ ] DCF receiver supply and `PON` states are confirmed.
+- [ ] DCF enabled current is recorded.
+- [ ] DCF disabled current is recorded.
+- [ ] DCF `OUT` logic levels are measured before MCU connection.
 - [ ] DCF antenna orientation and test conditions are recorded.
 - [ ] DCF output observation is recorded.
 - [ ] Buzzer transistor pinout is recorded.
+- [ ] Exact buzzer marking and electrical rating are recorded.
 - [ ] Buzzer resistor and diode polarity are confirmed.
 - [ ] Buzzer test runs without a DK reset.
 - [ ] Full integration test completes.
@@ -715,7 +796,12 @@ DCF-77:
   Model:
   Manual:
   PON polarity confirmed:
-  OUT voltage confirmed:
+  Supply voltage:
+  Enabled state and current:
+  Disabled state and current:
+  OUT minimum voltage:
+  OUT maximum voltage:
+  OUT logic-level instrument:
   Location:
   Antenna orientation:
   Test time:
@@ -723,6 +809,7 @@ DCF-77:
 
 Buzzer:
   Model:
+  Exact marking and rating:
   Transistor:
   Transistor pin order:
   Resistor:
@@ -737,6 +824,12 @@ Test results:
   DCF-77 output:
   Buzzer:
   Full integration:
+
+Safety checks:
+  KORAD voltage and current limit:
+  Multimeter current range and sockets:
+  Pre-power short check:
+  BS1 four-wire SPI setting:
 
 Unresolved faults:
 
