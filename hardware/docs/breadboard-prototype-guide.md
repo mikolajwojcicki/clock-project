@@ -121,6 +121,10 @@ current stops in a coil. The buzzer is a coil load.
 
 ## 4. Tools and materials
 
+Availability states for tools and hardware are maintained in
+[`hardware/inventory/prototype-tools.md`](../inventory/prototype-tools.md).
+The `Required now` and `Status` columns below describe this guide only.
+
 ### Required hardware
 
 Mark each item before you begin:
@@ -746,6 +750,7 @@ Wiring differences:
 ## 18. References
 
 - [Prototype BOM](../bom/proto-bom.md)
+- [Hardware and tool inventory](../inventory/prototype-tools.md)
 - [Existing nRF52 DK blinky README](../../firmware/apps/blinky/README.md)
 - [Adafruit LIS3DH product 2809](https://adafru.it/2809)
 - [Waveshare 2.13inch e-Paper HAT](https://www.waveshare.com/2.13inch-e-paper-hat.htm)
