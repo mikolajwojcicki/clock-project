@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<!-- saved from url=(0036)https://manuals.plus/asin/B0DY8CG594 -->
+<html dir="ltr" lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script src="./dcf77-manual-dump_files/cmp.js"></script><script src="./dcf77-manual-dump_files/tcf2_stub.js"></script>
+     
+     
+     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+     <title>Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual</title>
+<meta name="description" content="Instruction manual for the Drhomeam DCF77 Receiver Module (Model F6ZB2KML6LXHOZKZ98VI) with antenna, providing details on setup, operation, specifications, and troubleshooting for accurate time synchronization.">
+<link rel="icon" href="https://manuals.plus/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="96x96" href="https://manuals.plus/favicon-96x96.png">
+<link rel="apple-touch-icon" href="https://manuals.plus/apple-touch-icon.png"><link rel="canonical" href="https://manuals.plus/asin/B0DY8CG594">
+<link rel="alternate" hreflang="en" href="https://manuals.plus/asin/B0DY8CG594">
+<link rel="alternate" hreflang="x-default" href="https://manuals.plus/asin/B0DY8CG594">
+<script data-cfasync="false" data-manuals-auth-bridge="inline-v1">(function (w, d) {
+  'use strict';
+  if (w.manualsAuthBridgeLoaded) return;
+  w.manualsAuthBridgeLoaded = true;
+  var inFlight = '';
+  function wrap() {
+    var id = w.google && w.google.accounts && w.google.accounts.id;
+    if (!id || typeof id.initialize !== 'function' || id.initialize.__manualsWrapped) return;
+    var initialize = id.initialize;
+    function wrapped(config) {
+      config = Object.assign({}, config || {});
+      var callback = config.callback;
+      var defaults = {state_cookie_domain: 'manuals.plus', itp_support: true, use_fedcm_for_prompt: true, use_fedcm_for_button: true};
+      Object.keys(defaults).forEach(function (key) { if (typeof config[key] === 'undefined') config[key] = defaults[key]; });
+      config.callback = function (response) {
+        if (typeof callback === 'function') { try { callback(response); } catch (_) {} }
+        // Login/account pages own their provider callback and must never double-submit.
+        if (/^\/(?:login|account)(?:\/|$)/.test(w.location.pathname)) return;
+        if (!response || !response.credential || response.credential === inFlight
+            || !/^(fedcm|itp|user|user_1tap|user_2tap|btn|btn_confirm|btn_add_session|btn_confirm_add_session|itp_confirm)$/.test(response.select_by || '')) return;
+        inFlight = response.credential;
+        if (w.ManualsFooter) w.ManualsFooter.credential(response);
+        else w.manualsFooterCredential = response;
+      };
+      return initialize.call(this, config);
+    }
+    wrapped.__manualsWrapped = true; id.initialize = wrapped;
+  }
+  // Installed before Ezoic. Capture script load before target onload callbacks.
+  d.addEventListener('load', function (event) { if (event.target && event.target.tagName === 'SCRIPT') wrap(); }, true);
+  w.addEventListener('manualsAccount:loginError', function () { inFlight = ''; });
+  wrap();
+})(window, document);
+</script>
+<link rel="preconnect" href="https://cmp.gatekeeperconsent.com/">
+<link rel="preconnect" href="https://the.gatekeeperconsent.com/">
+<link rel="preconnect" href="https://www.ezojs.com/">
+<style id="manuals-ad-layout">
+/* Size our wrapper; Ezoic retains control of the placeholder and creative. */
+.mp-ad-slot{display:flow-root;clear:both;box-sizing:border-box;width:100%;min-width:0;max-width:100%;margin:16px 0;overflow:auto;overscroll-behavior-x:contain;scrollbar-width:thin;grid-column:1/-1;flex:0 0 100%;text-align:center}
+.mp-ad-slot-primary{min-height:320px}
+@media print{.mp-ad-slot{display:none!important}}
+</style>
+<link rel="preconnect" href="https://g.ezoic.net/">
+<link rel="preconnect" href="https://ezoicanalytics.com/">
+
+<script data-cfasync="false" src="./dcf77-manual-dump_files/min.js"></script>
+<script data-cfasync="false" src="./dcf77-manual-dump_files/cmp.min.js"></script>
+
+<script>
+window.ezstandalone = window.ezstandalone || {};
+ezstandalone.cmd = ezstandalone.cmd || [];
+(function (w, d) {
+    if (w.mpEzoicQueueSlot) return;
+    var pending = [];
+    var queued = Object.create(null);
+    var requested = Object.create(null);
+    var ready = d.readyState !== "loading";
+    var scheduled = false;
+
+    function flush() {
+        scheduled = false;
+        var ids = pending.filter(function (id) {
+            return !requested[id] && d.getElementById("ezoic-pub-ad-placeholder-" + id);
+        });
+        if (!ids.length) return;
+        ids.forEach(function (id) {
+            delete queued[id];
+            requested[id] = true;
+        });
+        pending = pending.filter(function (id) { return !requested[id]; });
+        w.ezstandalone.cmd.push(function () {
+            var present = ids.filter(function (id) {
+                if (d.getElementById("ezoic-pub-ad-placeholder-" + id)) return true;
+                delete requested[id];
+                return false;
+            });
+            if (present.length) w.ezstandalone.showAds.apply(w.ezstandalone, present);
+        });
+    }
+
+    w.mpEzoicQueueSlot = function (id) {
+        id = Number(id);
+        if (!Number.isInteger(id) || id <= 0 || requested[id]) return;
+        if (!queued[id]) {
+            queued[id] = true;
+            pending.push(id);
+        }
+        if (ready && !scheduled) {
+            scheduled = true;
+            w.setTimeout(flush, 0);
+        }
+    };
+
+    if (!ready) {
+        d.addEventListener("DOMContentLoaded", function () {
+            ready = true;
+            flush();
+        }, { once: true });
+    }
+})(window, document);
+</script>
+
+
+<script async="" src="./dcf77-manual-dump_files/sa.min.js"></script>
+
+<script src="./dcf77-manual-dump_files/analytics.js"></script>
+
+
+
+<link rel="alternate" href="https://manuals.plus/asin/B0DY8CG594.pdf" type="application/pdf" media="print" title="Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual">
+<meta name="twitter:description" content="Instruction manual for the Drhomeam DCF77 Receiver Module (Model F6ZB2KML6LXHOZKZ98VI) with antenna, providing details on setup, operation, specifications, and troubleshooting for accurate time synchronization.">
+<meta name="keywords" content="Drhomeam, F6ZB2KML6LXHOZKZ98VI, DCF77 Receiver Module, DCF-1060N-800, 77.5KHz, time synchronization, antenna">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual">
+<meta property="og:site_name" content="Manuals.plus">
+<meta property="og:description" content="Instruction manual for the Drhomeam DCF77 Receiver Module (Model F6ZB2KML6LXHOZKZ98VI) with antenna, providing details on setup, operation, specifications, and troubleshooting for accurate time synchronization.">
+<meta property="og:url" content="https://manuals.plus/asin/B0DY8CG594">
+<meta property="article:author" content="Manuals.plus">
+<meta property="og:locale" content="en_US">
+<meta property="article:section" content="Drhomeam">
+<meta property="article:modified_time" content="2026-03-31T15:00:02+00:00">
+<meta property="og:updated_time" content="2026-03-31T15:00:02+00:00">
+
+<style>
+/* ASIN layout reservations, 20260910. Product content only. */
+.manual-infographic{width:100%;min-width:0}
+.manual-infographic>img{display:block;width:100%;object-fit:contain}
+[data-mp-product-image]{object-fit:contain}
+.asin-qa-shell{height:64rem;overflow:auto;scrollbar-gutter:stable;contain:layout; margin:1.5rem 0}
+.asin-qa-shell .manuals-source-qa{margin:0}
+.asin-qa-shell .manuals-source-qa-identity{min-height:12rem}
+.manuals-save-anchor-inline{height:4.5rem;overflow:auto;contain:layout}
+@media(max-width:600px){.asin-qa-shell{height:76rem}.manuals-save-anchor-inline{height:6rem}}
+@media print{.asin-qa-shell,.manuals-save-anchor-inline{height:auto;overflow:visible;contain:none}}
+
+
+        .site-header{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.75rem 1rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:10}
+        .brand{font-size:1.25rem;font-weight:700;color:var(--brand);text-decoration:none;white-space:nowrap}
+        .search{display:flex;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+        .search input{border:0;padding:.4rem .6rem;font-size:.875rem;min-width:140px}
+        .search button{border:0;background:#f4f5f7;padding:.4rem .7rem;cursor:pointer}
+        @media(max-width:600px){
+            .site-header{flex-direction:column;align-items:flex-start}
+        }
+
+:root{
+  --brand:#0073aa;--brand-light:#1da1f2;--bg:#fff;--text:#2c3e50;
+  --muted:#757575;--border:#e0e0e0;--radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.08);
+  font-size:16px;
+}
+/*  Breadcrumb  */
+.breadcrumb{list-style:none;display:flex;flex-wrap:wrap;margin:1rem 0;padding:0;font-size:.875rem}
+.breadcrumb li{display:flex;align-items:center;color:var(--muted)}
+.breadcrumb li a{color:var(--text);font-weight:600;text-decoration:none}
+.breadcrumb li a:hover{color:var(--brand)}
+.breadcrumb li+li:before{content:"›";margin:0 .45rem;color:var(--muted)}
+/*  Viewer chips  */
+.viewer-options{display:flex;flex-wrap:wrap;gap:.6rem;margin:1.5rem 0;padding:0;list-style:none}
+.viewer-options li{background:#f4f5f7;border:1px solid var(--border);border-radius:var(--radius);
+                   box-shadow:var(--shadow);transition:background .15s,box-shadow .15s}
+.viewer-options li:hover{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.viewer-options a{display:block;padding:.5rem .9rem;font-weight:600;font-size:.875rem;text-decoration:none;color:var(--text)}
+.viewer-options a:hover{color:var(--brand)}
+/*  File‑info pill  */
+.file-info{background:#e8f4fa;border-left:4px solid var(--brand);padding:.6rem 1rem;
+           margin:1.5rem 0;border-radius:var(--radius);font-size:.85rem}
+
+/* ===== Core layout ============================================== */
+:root{
+    --brand:#0073aa;           /* WordPress blue */
+    --brand-light:#1da1f2;     /* link hover */
+    --bg:#ffffff;
+    --text:#2c3e50;
+    --muted:#757575;
+    --border:#e0e0e0;
+    --radius:6px;
+    --shadow:0 1px 3px rgba(0,0,0,.08);
+    font-size:16px;
+}
+
+*,
+*::before,
+*::after{box-sizing:border-box;margin:0;padding:0}
+
+body{
+    margin:0 auto;
+    max-width:960px;
+    padding:2rem 1rem 4rem;
+    font:400 1rem/1.6 "Open Sans",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+    color:var(--text);
+    background:var(--bg);
+}
+
+h1,h2,h3,h4,h5{
+    margin:2rem 0 1rem;
+    line-height:1.25;
+    font-weight:600;
+}
+h1{font-size:2rem}
+h2{font-size:1.5rem;font-variant:small-caps}
+h3{font-size:1.25rem}
+h4{font-size:1.1rem}
+ul,ol{padding-left:1.25rem;margin:1rem 0}
+li + li{margin-top:.35rem}
+
+a{
+    color:var(--brand);
+    text-decoration:underline;
+    transition:color .15s linear;
+}
+a:hover,a:focus{color:var(--brand-light)}
+
+table{width:100%;border-collapse:collapse;margin:1.5rem 0}
+th,td{padding:.6rem;border-bottom:1px solid var(--border);text-align:left}
+tr:hover{background:#fafafa}
+
+/* ===== Chips list for viewer options ============================ */
+.viewer-options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.6rem;
+    margin:1.5rem 0;
+    list-style:none;
+}
+.viewer-options li{
+    background:#f4f5f7;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+}
+.viewer-options a{
+    display:block;
+    padding:.4rem .8rem;
+    font-weight:600;
+    text-decoration:none;
+}
+
+/* ===== Breadcrumb ============================================== */
+.breadcrumb{
+    list-style:none;
+    display:flex;
+    flex-wrap:wrap;
+    gap:.3rem;
+    font-size:.875rem;
+    margin-bottom:1rem;
+}
+.breadcrumb li::after{content:"/";margin-left:.3rem;color:var(--muted)}
+.breadcrumb li:last-child::after{display:none}
+
+/* ===== Search box ============================================== */
+.gsc-control-cse{max-width:100%}
+.gcse-search{margin:1.5rem 0}
+
+/* ===== File‑info pill ========================================== */
+.file-info{
+    margin:1.5rem 0;
+    padding:.5rem 1rem;
+    background:#f4f5f7;
+    border-left:4px solid var(--brand);
+    border-radius:var(--radius);
+    font-size:.875rem;
+}
+
+/* ===== Responsive iframe ======================================= */
+.responsive-frame{
+    position:relative;
+    width:100%;
+    padding-top:129%;   /*  A4 ratio 1:1.29  */
+    margin:2rem 0;
+}
+.responsive-frame iframe{
+    position:absolute;
+    top:0;left:0;width:100%;height:100%;
+    border:0;
+}
+
+/* ===== Preformatted text block ================================= */
+pre{
+    overflow:auto;
+    padding:1rem;
+    border-radius:var(--radius);
+    font-size:.875rem;
+}
+@media print {
+  .noprint {
+    display: none !important;
+  }
+}
+</style><style id="manuals-shell">
+:root{
+  --brand:#0073aa;
+  --brand-dark:#005885;
+  --brand-ink:#17374d;
+  --bg:#ffffff;
+  --border:#e0e0e0;
+  --text:#111111;
+  --muted:#666666;
+  --radius:10px;
+  --shadow:0 2px 10px rgba(0,0,0,.06);
+  --max-width:1200px;
+  --content-width:1120px;
+}
+html{font-size:18px;-webkit-text-size-adjust:100%;line-height:1.5}
+body{
+  margin:0 !important;
+  max-width:none !important;
+  padding:0 !important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;height:auto;border-style:none}
+a{color:var(--brand);text-decoration:none}
+a:hover{color:var(--brand-dark);text-decoration:underline}
+button,input{font:inherit}
+.mp-site{min-height:100vh;display:flex;flex-direction:column;width:100%}
+.mp-site *,.mp-site *::before,.mp-site *::after{box-sizing:border-box}
+.mp-site .mp-wrap{max-width:var(--max-width);margin:0 auto;padding:0 1.25rem;width:100%}
+.mp-site .mp-content-wrap{max-width:var(--content-width);margin:0 auto;padding:1.75rem 1.25rem 3.25rem;width:100%}
+.mp-site .site-header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.04);width:100%}
+.mp-site .header-inner{display:flex;align-items:center;justify-content:space-between;padding:.82rem 0;gap:1.5rem;flex-wrap:wrap}
+.mp-site .site-branding{display:flex;align-items:center;gap:.72rem;min-width:0}
+.mp-site .site-logo{display:inline-flex;width:38px;height:38px;border-radius:10px;flex:0 0 auto}
+.mp-site .site-logo img{display:block;width:38px;height:38px}
+.mp-site .site-title{font-weight:800;font-size:1.2rem;letter-spacing:-.03em;line-height:1.02;white-space:nowrap;color:var(--brand-ink)}
+.mp-site .site-title a{color:inherit;text-decoration:none}
+.mp-site .site-description{font-size:.92rem;color:var(--muted);line-height:1.15;margin-top:.12rem}
+.mp-site .main-navigation{display:flex;align-items:center;gap:1.15rem;margin-left:auto}
+.mp-site .menu-toggle{display:none;border:0;background:0;font-size:1.4rem;padding:.25rem .5rem}
+.mp-site .menu-wrapper{list-style:none;display:flex;align-items:center;gap:1.15rem;margin:0;padding:0}
+.mp-site .menu-item a{font-weight:700;font-size:.96rem;color:#1f2f3a}
+.mp-site .menu-item a:hover{text-decoration:none;color:var(--brand)}
+.mp-site .header-search-form{display:flex;align-items:center;gap:0}
+.mp-site .header-search-field{padding:.55rem .9rem;border:1px solid #cfd9df;border-right:none;border-radius:999px 0 0 999px;font-size:.92rem;width:13rem;min-width:0;background:#fbfdff}
+.mp-site .header-search-field:focus{outline:none;border-color:#90c2d8;background:#fff}
+.mp-site .header-search-submit{border:1px solid #cfd9df;border-radius:0 999px 999px 0;padding:.55rem .9rem;background:#f5f7f8;font-size:.95rem;line-height:1}
+.mp-site .header-search-submit:hover{background:#e8eef2}
+.mp-site .mp-page{flex:1 0 auto;width:100%}
+.mp-site .site-name{font-weight:700;color:#17374d;text-decoration:none}
+.screen-reader-text{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (max-width:900px){
+}
+@media (max-width:780px){
+  .mp-site .mp-wrap,.mp-site .mp-content-wrap{padding-left:1rem;padding-right:1rem}
+  .mp-site .header-inner{gap:.85rem}
+  .mp-site .main-navigation{margin-left:auto}
+  .mp-site .menu-toggle{display:block}
+  .mp-site .menu-wrapper{position:absolute;top:100%;right:1rem;background:#fff;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:.5rem .75rem;flex-direction:column;align-items:flex-start;min-width:190px;display:none}
+  .mp-site .main-navigation.toggled .menu-wrapper{display:flex}
+  .mp-site .site-description{display:none}
+  .mp-site .header-search-field{width:9.75rem}
+}
+@media (max-width:560px){
+  .mp-site .site-branding{width:100%}
+  .mp-site .site-title{font-size:1.08rem}
+  .mp-site .main-navigation{width:100%;justify-content:space-between}
+  .mp-site .header-search-form{flex:1 1 auto;min-width:0}
+  .mp-site .header-search-field{width:100%}
+}
+</style>
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+  var t=document.getElementById("nav-toggle");
+  var n=document.getElementById("primary-nav");
+  if(t&&n){
+    t.addEventListener("click",function(){
+      var e="true"===t.getAttribute("aria-expanded");
+      t.setAttribute("aria-expanded",String(!e));
+      n.classList.toggle("toggled");
+    });
+  }
+});
+</script><style id="mp-header-layout">
+/* The same compact row serves every Manuals+ header renderer. */
+@media (max-width:1120px){
+  #masthead.site-header{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;
+    gap:12px;min-height:56px;padding:6px 16px;box-sizing:border-box
+  }
+  #masthead.site-header::before,#masthead.site-header::after{display:none}
+  #masthead .header-inner{
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:nowrap;
+    gap:12px;width:100%;min-width:0;min-height:44px;margin:0 auto;padding:0;box-sizing:border-box
+  }
+  #masthead .site-branding-container,#masthead .site-branding{
+    flex:0 1 auto;width:auto;min-width:0;margin:0;padding:0
+  }
+  #masthead .site-branding{display:flex;align-items:center;gap:8px}
+  #masthead .site-branding>div{min-width:0}
+  #masthead .site-branding>.site-logo,#masthead .site-branding>img{flex:none}
+  #masthead .site-title{margin:0;white-space:nowrap;line-height:1.2;hyphens:none}
+  #masthead .site-description{display:none}
+  #masthead .main-navigation{
+    display:flex;align-items:center;justify-content:flex-end;flex:0 0 auto;
+    width:auto;min-width:44px;margin:0 0 0 auto;padding:0;position:static
+  }
+  #masthead .main-navigation .menu-toggle{
+    display:flex;align-items:center;justify-content:center;flex:none;
+    width:44px;min-width:44px;height:44px;min-height:44px;padding:0;margin:0;
+    border:0;background:transparent;color:#222;font-size:26px;line-height:1;cursor:pointer
+  }
+  #masthead .menu-toggle:focus-visible{outline:2px solid #0073aa;outline-offset:2px}
+  #masthead .main-navigation>.menu-wrapper{
+    position:absolute;top:100%;right:16px;left:auto;z-index:1000;
+    flex-direction:column;align-items:stretch;gap:8px;
+    width:calc(100vw - 32px);max-width:22rem;min-width:0;
+    max-height:calc(100vh - 80px);max-height:calc(100dvh - 80px);
+    margin:0;padding:12px 16px;box-sizing:border-box;overflow-y:auto;overscroll-behavior:contain;
+    list-style:none;background:#fff;border:1px solid #e0e0e0;border-radius:8px;
+    box-shadow:0 4px 16px rgba(0,0,0,.1)
+  }
+  #masthead .main-navigation:not(.toggled)>.menu-wrapper{display:none}
+  #masthead .main-navigation.toggled>.menu-wrapper{display:flex}
+  #masthead .menu-wrapper>li{min-width:0;max-width:100%;margin:0}
+  #masthead .menu-wrapper>li>a{display:flex;align-items:center;min-height:44px;white-space:normal;overflow-wrap:anywhere}
+  #masthead .header-search-form,#masthead .search-form{display:flex;width:100%;min-width:0;margin:0}
+  #masthead .header-search-field,#masthead .search-field{flex:1 1 auto;width:100%;min-width:0;max-width:100%;min-height:44px;box-sizing:border-box}
+  #masthead .header-search-submit,#masthead .search-submit{flex:0 0 auto;min-width:44px;min-height:44px;box-sizing:border-box}
+}
+</style>
+<noscript><style>
+@media (max-width:1120px){
+  #masthead.site-header,#masthead .header-inner{flex-wrap:wrap}
+  #masthead .main-navigation{flex:1 0 100%;width:100%;min-width:0;margin:0}
+  #masthead .main-navigation .menu-toggle{display:none}
+  #masthead .main-navigation>.menu-wrapper,#masthead .main-navigation:not(.toggled)>.menu-wrapper{
+    display:flex;position:static;width:100%;max-width:100%;max-height:none;box-shadow:none
+  }
+}
+</style></noscript>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  var header=document.getElementById('masthead');
+  if(!header)return;
+  var nav=header.querySelector('.main-navigation');
+  var toggle=header.querySelector('.menu-toggle');
+  if(!nav||!toggle)return;
+  function closeMenu(){nav.classList.remove('toggled');toggle.setAttribute('aria-expanded','false')}
+  document.addEventListener('keydown',function(event){
+    if(event.key==='Escape'&&nav.classList.contains('toggled')){closeMenu();toggle.focus()}
+  });
+  document.addEventListener('click',function(event){if(!nav.contains(event.target))closeMenu()});
+  var mobile=window.matchMedia('(max-width:1120px)');
+  if(mobile.addEventListener)mobile.addEventListener('change',closeMenu);
+});
+</script><style id="manuals-product-content-layout">
+/* Compact content gutters only; preserve the shared navigation and media reservations. */
+.mp-product-page .mp-site .mp-content-wrap{padding-left:16px;padding-right:16px;min-width:0}
+.mp-product-content{min-width:0;max-width:100%;overflow-wrap:anywhere;display:flow-root}
+.mp-product-content>div,.mp-product-content main,.mp-product-content article{box-sizing:border-box;min-width:0;max-width:100%!important;padding-left:0!important;padding-right:0!important}
+.mp-product-content section,.mp-product-content header,.mp-product-content footer{box-sizing:border-box;min-width:0;max-width:100%;padding-left:8px!important;padding-right:8px!important;border-left-width:1px!important;border-right-width:1px!important}
+@media(max-width:780px){.mp-product-page .mp-site .mp-content-wrap{padding-left:8px;padding-right:8px}}
+</style>
+<meta name="restricted_category" content="false"><meta property="og:image" content="https://m.media-amazon.com/images/I/61i9M4RwbZL._AC_SL1001_.jpg">
+<meta property="og:image:secure_url" content="https://m.media-amazon.com/images/I/61i9M4RwbZL._AC_SL1001_.jpg">
+<meta property="og:image:alt" content="Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual">
+<meta name="twitter:image" content="https://m.media-amazon.com/images/I/61i9M4RwbZL._AC_SL1001_.jpg">
+<meta name="twitter:image:alt" content="Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual">
+<meta name="image" content="https://m.media-amazon.com/images/I/61i9M4RwbZL._AC_SL1001_.jpg">
+<link rel="image_src" href="./dcf77-manual-dump_files/61i9M4RwbZL._AC_SL1001_.jpg">
+<meta name="category" content="Drhomeam"><script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": "https://manuals.plus/asin/B0DY8CG594#article",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://manuals.plus/asin/B0DY8CG594"
+    },
+    "headline": "Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual",
+    "name": "Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual",
+    "description": "Instruction manual for the Drhomeam DCF77 Receiver Module (Model F6ZB2KML6LXHOZKZ98VI) with antenna, providing details on setup, operation, specifications, and troubleshooting for accurate time synchronization.",
+    "inLanguage": "en",
+    "genre": "Documentation",
+    "articleSection": {
+        "@type": "Thing",
+        "name": "Drhomeam",
+        "url": "https://manuals.plus/category/drhomeam"
+    },
+    "category": {
+        "@type": "Thing",
+        "name": "Drhomeam",
+        "url": "https://manuals.plus/category/drhomeam"
+    },
+    "keywords": [
+        "Drhomeam",
+        "F6ZB2KML6LXHOZKZ98VI",
+        "DCF77 Receiver Module",
+        "DCF-1060N-800",
+        "77.5KHz",
+        "time synchronization",
+        "antenna"
+    ],
+    "url": "https://manuals.plus/asin/B0DY8CG594",
+    "image": [
+        "https://m.media-amazon.com/images/I/61i9M4RwbZL._AC_SL1001_.jpg"
+    ],
+    "author": {
+        "@type": "Organization",
+        "name": "Manuals.plus",
+        "url": "https://manuals.plus"
+    },
+    "editor": {
+        "@type": "Person",
+        "name": "Manuals.plus Editorial Team"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "Manuals.plus",
+        "url": "https://manuals.plus",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://manuals.plus/logo.png"
+        }
+    },
+    "isPartOf": {
+        "@type": "WebSite",
+        "name": "Manuals.plus",
+        "url": "https://manuals.plus"
+    },
+    "sameAs": [
+        "https://amazon.com/dp/B0DY8CG594"
+    ],
+    "dateModified": "2026-03-31T15:00:02+00:00",
+    "about": {
+        "@type": "Thing",
+        "additionalType": "https://schema.org/Product",
+        "name": "Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual",
+        "url": "https://amazon.com/dp/B0DY8CG594",
+        "brand": {
+            "@type": "Thing",
+            "name": "Drhomeam",
+            "url": "https://manuals.plus/category/drhomeam"
+        }
+    }
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Manuals.plus",
+            "item": "https://manuals.plus/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Drhomeam",
+            "item": "https://manuals.plus/category/drhomeam"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual",
+            "item": "https://manuals.plus/asin/B0DY8CG594"
+        }
+    ]
+}
+</script>
+
+<script src="./dcf77-manual-dump_files/main.js"></script><script src="./dcf77-manual-dump_files/pwa-register.js" defer=""></script></head>
+<body class="mp-product-page" tabindex="1">
+
+<div class="mp-site">
+  <header class="site-header" id="masthead">
+    <div class="mp-wrap header-inner">
+      <div class="site-branding">
+        <a href="https://manuals.plus/" class="site-logo" aria-label="Manuals+ home">
+          <img src="./dcf77-manual-dump_files/logo.png" alt="Manuals+ logo" width="32" height="32" loading="eager" fetchpriority="high">
+        </a>
+        <div>
+          <div class="site-title"><a href="https://manuals.plus/">Manuals+</a></div>
+          <div class="site-description">User Manuals Simplified.</div>
+        </div>
+      </div>
+      <nav class="main-navigation" aria-label="Primary navigation" id="primary-nav">
+        <button id="nav-toggle" class="menu-toggle" aria-expanded="false" aria-controls="primary-menu">
+          ☰ <span class="screen-reader-text">Toggle navigation</span>
+        </button>
+        <ul id="primary-menu" class="menu-wrapper">
+          <li class="menu-item"><a href="https://manuals.plus/qa/">Q&amp;A</a></li>
+          <li class="menu-item"><a href="https://manuals.plus/deep-search">Deep&nbsp;Search</a></li>
+          <li class="menu-item"><a href="https://manuals.plus/upload">Upload</a></li>
+          <li class="menu-item">
+            <form class="header-search-form" role="search" method="get" action="https://manuals.plus/deep-search">
+              <label for="header-search" class="screen-reader-text">Search manuals</label>
+              <input id="header-search" class="header-search-field" type="search" name="query" placeholder="Model or product name" value="Drhomeam F6ZB2KML6LXHOZKZ98VI">
+              <button class="header-search-submit" type="submit" aria-label="Search">🔍</button>
+            </form>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main class="mp-page" id="content">
+    <div class="mp-content-wrap">
+<nav aria-label="Breadcrumb">
+<ol class="breadcrumb">
+<li><a href="https://manuals.plus/">Manuals.plus</a></li>
+<li><a href="https://manuals.plus/category/drhomeam">Drhomeam</a></li>
+<li aria-current="page">Drhomeam DCF-1060N-800 DCF77 Receiver Module Instruction Manual</li>
+</ol>
+</nav><h3>Drhomeam F6ZB2KML6LXHOZKZ98VI</h3><div class="manuals-save-anchor-inline" data-manuals-save-anchor=""><button type="button" class="manuals-save-intent" data-manuals-save-intent="">Sign in to save this manual</button></div><script>window.MANUALS_ACCOUNT_PAGE={"resource_type":"asin","resource_key":"B0DY8CG594","canonical_url":"https:\/\/manuals.plus\/asin\/B0DY8CG594","title":"Drhomeam F6ZB2KML6LXHOZKZ98VI","mountSelector":"[data-manuals-save-anchor]"};</script><div class="mp-ad-slot mp-ad-slot-primary"><div id="ezoic-pub-ad-placeholder-901"></div></div>
+<script>
+    window.mpEzoicQueueSlot(901);
+</script><div class="mp-product-content"><div style="font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; padding: 0; color: #333;"><header style="text-align: center; margin-bottom: 30px; background-color: #f4f4f4; padding: 20px; border-bottom: 1px solid #ddd;"><h1 style="color: #0056b3; margin-bottom: 10px;">Drhomeam DCF77 Receiver Module Instruction Manual</h1><p style="font-size: 1.1em; color: #555;">Model: F6ZB2KML6LXHOZKZ98VI</p></header><main style="max-width: 800px; margin: 0 auto; padding: 20px; background-color: #fff; border: 1px solid #ddd; box-shadow: 0 0 10px rgba(0,0,0,0.1);"><article><section style="margin-bottom: 30px;"><h2 style="color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 5px;">1. Introduction</h2><p>The Drhomeam DCF77 Receiver Module with antenna is designed for seamless date and time synchronization. It is tuned to the DCF77 time signal transmitter operating at 77.5 kHz. The module receives the antenna induction signal, amplifies and demodulates it, and then an internal Microcontroller Unit (MCU) identifies the signal to ensure accurate time synchronization with the timing center.</p><p>This module is compact, featuring a PCBA size of 21.5x13.5x1.0mm and an AR10x60mm high-Q antenna for optimal signal reception.</p><div style="text-align: center; margin: 20px 0;"><img src="./dcf77-manual-dump_files/61i9M4RwbZL._AC_SL1001_.jpg" alt="Drhomeam DCF77 Receiver Module with antenna" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px;aspect-ratio:800/800;object-fit:contain;max-width:100%;height:auto" loading="eager" decoding="async" fetchpriority="high" data-mp-product-image="1" data-mp-reserved-frame="1" width="800" height="800"><p style="font-size: 0.9em; color: #666; margin-top: 10px;">Figure 1: Drhomeam DCF77 Receiver Module with its antenna.</p></div></section><div class="mp-ad-slot"><div id="ezoic-pub-ad-placeholder-162"></div></div>
+<script>
+    window.mpEzoicQueueSlot(162);
+</script><section style="margin-bottom: 30px;"><h2 style="color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 5px;">2. Setup and Connection</h2><p>Follow these instructions for proper connection of the DCF77 receiver module. Refer to the provided image for pin identification.</p><div style="text-align: center; margin: 20px 0;"><img src="./dcf77-manual-dump_files/51YVu5ksBvL._AC_SL1001_.jpg" alt="Pinout diagram of the DCF77 Receiver Module showing PON, OUT, GND, VDD pins" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 5px;aspect-ratio:800/800;object-fit:contain;max-width:100%;height:auto" loading="lazy" decoding="async" data-mp-product-image="1" data-mp-reserved-frame="1" width="800" height="800"><p style="font-size: 0.9em; color: #666; margin-top: 10px;">Figure 2: Pinout of the DCF77 Receiver Module PCB.</p></div><h3 style="color: #0056b3; font-size: 1.1em; margin-top: 20px;">Pin Connections:</h3><ul style="list-style-type: disc; margin-left: 20px;"><li style="margin-bottom: 5px;"><b>GND (Ground):</b> Connect to the ground of your circuit.</li><li style="margin-bottom: 5px;"><b>VDD (Operating Voltage):</b> Connect to the power supply. The module operates within a wide voltage range of 1.1V to 3.3V.</li><li style="margin-bottom: 5px;"><b>OUT (Output):</b> This pin provides the demodulated DCF77 signal.</li><li style="margin-bottom: 5px;"><b>PON (Power On/Off):</b> This pin controls the power state of the module. Set to logic low for operation.</li></ul><p>Ensure all connections are secure and correctly oriented to prevent damage to the module or connected devices.</p></section><div class="mp-ad-slot"><div id="ezoic-pub-ad-placeholder-910"></div></div>
+<script>
+    window.mpEzoicQueueSlot(910);
+</script><section style="margin-bottom: 30px;"><h2 style="color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 5px;">3. Operating Principles</h2><p>The DCF77 receiver module continuously listens for the 77.5 kHz time signal broadcast from the DCF77 transmitter in Mainflingen, Germany. The integrated antenna captures this radio signal, which is then processed by the module's internal circuitry.</p><p>The signal undergoes amplification and demodulation to extract the time code. An internal MCU then interprets this code to provide accurate date and time information. The module's high sensitivity of 26±2dB ensures reliable reception.</p><p>The output signal from the OUT pin can be fed into a microcontroller or other digital logic for further processing and display of the synchronized time.</p></section><div class="mp-ad-slot"><div id="ezoic-pub-ad-placeholder-911"></div></div>
+<script>
+    window.mpEzoicQueueSlot(911);
+</script><section style="margin-bottom: 30px;"><h2 style="color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 5px;">4. Maintenance</h2><p>The DCF77 Receiver Module is designed for long-term, maintenance-free operation. No user-serviceable parts are inside. Keep the module and antenna clean and free from dust or moisture. Avoid exposing the module to extreme temperatures or mechanical stress.</p></section><div class="mp-ad-slot"><div id="ezoic-pub-ad-placeholder-912"></div></div>
+<script>
+    window.mpEzoicQueueSlot(912);
+</script><section style="margin-bottom: 30px;"><h2 style="color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 5px;">5. Troubleshooting</h2><ul style="list-style-type: disc; margin-left: 20px;"><li style="margin-bottom: 5px;"><b>No Signal Reception:</b><ul style="list-style-type: circle; margin-left: 20px;"><li>Verify all pin connections (GND, VDD, OUT, PON) are correct and secure.</li><li>Ensure the power supply voltage is within the specified range (1.1V to 3.3V).</li><li>Check the orientation and placement of the antenna. It should ideally be positioned to receive signals from the DCF77 transmitter.</li><li>Minimize electromagnetic interference from other electronic devices.</li></ul></li><li style="margin-bottom: 5px;"><b>Incorrect Time:</b><ul style="list-style-type: circle; margin-left: 20px;"><li>Ensure the module is receiving a stable signal. Intermittent reception can lead to errors.</li><li>Verify the processing logic in your connected MCU or system is correctly interpreting the DCF77 time code.</li></ul></li><li style="margin-bottom: 5px;"><b>Module Not Powering On:</b><ul style="list-style-type: circle; margin-left: 20px;"><li>Confirm VDD and GND connections are correct.</li><li>Ensure the PON pin is set to a logic low state to enable the module.</li></ul></li></ul></section><div class="mp-ad-slot"><div id="ezoic-pub-ad-placeholder-913"></div></div>
+<script>
+    window.mpEzoicQueueSlot(913);
+</script><section style="margin-bottom: 30px;"><h2 style="color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 5px;">6. Technical Specifications</h2><table style="width: 100%; border-collapse: collapse; margin-top: 15px;"><thead style="background-color: #f2f2f2;"><tr><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Feature</th><th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Specification</th></tr></thead><tbody><tr><td style="border: 1px solid #ddd; padding: 8px;">Product Number</td><td style="border: 1px solid #ddd; padding: 8px;">DCF-1060N-800</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">RCCM Category</td><td style="border: 1px solid #ddd; padding: 8px;">DCF/77.5KHz single frequency module</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">PCBA Size (LxWxH)</td><td style="border: 1px solid #ddd; padding: 8px;">21.5 x 13.5 x 1.0 mm (FR4)</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">Antenna Size (LxØ)</td><td style="border: 1px solid #ddd; padding: 8px;">60 x 10 mm (AR10x60mm/High Q)</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">Nominal Frequency</td><td style="border: 1px solid #ddd; padding: 8px;">77.5 KHz ± 300 Hz</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">Sensitivity</td><td style="border: 1px solid #ddd; padding: 8px;">26 ± 2 dB</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">Receiving IC</td><td style="border: 1px solid #ddd; padding: 8px;">SP6007</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">Operating Voltage</td><td style="border: 1px solid #ddd; padding: 8px;">1.1 - 3.3 V</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">Current Consumption</td><td style="border: 1px solid #ddd; padding: 8px;">85 µA max</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">Item Weight</td><td style="border: 1px solid #ddd; padding: 8px;">0.811 ounces (packaging/overall)</td></tr><tr><td style="border: 1px solid #ddd; padding: 8px;">Product Dimensions</td><td style="border: 1px solid #ddd; padding: 8px;">3.94 x 3.54 x 2.36 inches (packaging/overall)</td></tr></tbody></table></section><div class="mp-ad-slot"><div id="ezoic-pub-ad-placeholder-914"></div></div>
+<script>
+    window.mpEzoicQueueSlot(914);
+</script><section style="margin-bottom: 30px;"><h2 style="color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 5px;">7. Warranty Information</h2><p>For warranty details, please refer to the specific warranty policy provided by Drhomeam or the retailer from whom the product was purchased. Typically, warranty covers manufacturing defects under normal use conditions.</p></section><div class="mp-ad-slot"><div id="ezoic-pub-ad-placeholder-915"></div></div>
+<script>
+    window.mpEzoicQueueSlot(915);
+</script><section><h2 style="color: #0056b3; border-bottom: 2px solid #eee; padding-bottom: 5px;">8. Support</h2><p>If you encounter issues not covered in this manual or require further assistance, please contact Drhomeam customer support or the seller. You may find contact information on the product packaging or the official Drhomeam website.</p><p>Manufacturer: Drhomeam</p><p>ASIN: B0DY8CG594</p></section></article></main><footer style="text-align: center; margin-top: 40px; padding: 20px; background-color: #f4f4f4; border-top: 1px solid #ddd; font-size: 0.9em; color: #777;"><p>© 2025 Drhomeam. All rights reserved.</p></footer></div></div><div class="mp-ad-slot"><div id="ezoic-pub-ad-placeholder-902"></div></div>
+<script>
+    window.mpEzoicQueueSlot(902);
+</script><div class="asin-qa-shell" role="region" aria-label="Questions about this manual" tabindex="0">    <style>
+      .manuals-source-qa{margin:1.5rem 0;padding:1.25rem;border:1px solid #d7e8f0;border-radius:18px;background:linear-gradient(135deg,#f2fbff 0%,#fff 100%);box-shadow:0 10px 28px rgba(15,55,80,.08)}
+      .manuals-source-qa h2{margin:.15rem 0 .4rem;font-size:1.35rem;line-height:1.2;color:#102b3c}
+      .manuals-source-qa p{margin:.35rem 0;color:#445e6e}
+      .manuals-source-qa form{display:grid;gap:.65rem;margin-top:1rem}
+      .manuals-source-qa label{font-weight:700;color:#17364a}
+      .manuals-source-qa input[type="text"],.manuals-source-qa input[type="email"]{width:100%;box-sizing:border-box;border:1px solid #c7d9e3;border-radius:12px;padding:.72rem;font:inherit;background:#fff}
+      .manuals-source-qa textarea{width:100%;box-sizing:border-box;border:1px solid #c7d9e3;border-radius:12px;padding:.75rem;font:inherit;min-height:84px;background:#fff}
+      .manuals-source-qa textarea[name="details"]{min-height:68px}
+      .manuals-source-qa-identity{display:grid;gap:.65rem}
+      .manuals-source-qa [data-manuals-qa-guest-fields]{display:grid;gap:.65rem}
+      .manuals-source-qa .manuals-source-qa-privacy{font-size:.85rem;color:#526b7a}
+      .manuals-source-qa-account{border:1px solid #d4e7ef;background:#f8fcfe;border-radius:12px;padding:.72rem;color:#17364a}
+      .manuals-source-qa button,.manuals-source-qa .manuals-source-qa-link{display:inline-flex;align-items:center;justify-content:center;width:max-content;border:0;border-radius:999px;background:#087aa5;color:#fff!important;font-weight:800;text-decoration:none;padding:.72rem 1.05rem;cursor:pointer}
+      .manuals-source-qa button:hover,.manuals-source-qa .manuals-source-qa-link:hover{background:#075f82}
+      .manuals-source-qa button[aria-busy="true"]{opacity:.78;cursor:wait}
+      .manuals-qa-submit-spinner{display:inline-block;width:1em;height:1em;margin-right:.45em;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;vertical-align:-.14em;animation:manuals-qa-submit-spin .75s linear infinite}
+      @keyframes manuals-qa-submit-spin{to{transform:rotate(360deg)}}
+      .manuals-source-qa-related{margin-top:1.15rem;padding-top:1rem;border-top:1px solid #dcebf1}
+      .manuals-source-qa-related h3{margin:0 0 .6rem;font-size:1.05rem}
+      .manuals-source-qa-cards{display:grid;gap:.75rem;margin-top:.75rem}
+      .manuals-source-qa-card{display:block;border:1px solid #dcebf1;border-radius:14px;background:#fff;padding:.85rem;text-decoration:none;color:#17364a}
+      .manuals-source-qa-card:hover{border-color:#afd4e5;box-shadow:0 8px 20px rgba(15,55,80,.08);text-decoration:none}
+      .manuals-source-qa-card strong{display:block;color:#102b3c;line-height:1.25}
+      .manuals-source-qa-card p{margin:.45rem 0 0;color:#405969;line-height:1.42}
+      .manuals-source-qa-card span{display:inline-flex;margin-top:.55rem;color:#087aa5;font-weight:800}
+      @media (max-width:640px){.manuals-source-qa{border-radius:14px;padding:1rem}.manuals-source-qa button{width:100%}}
+    </style>
+        <section class="manuals-source-qa" id="ask-a-question">
+      <h2>Ask a question about this manual</h2>
+      <p>Ask about setup, troubleshooting, compatibility, parts, safety, or missing instructions. Manuals+ will review the question and use this page’s manual context to help answer it.</p>
+      <form method="post" action="https://manuals.plus/account/faq/" data-manuals-qa-source-form="" data-manuals-ezoic-identity-bound="1">
+        <input type="hidden" name="action" value="manuals_qa_ask">
+        <input type="hidden" name="submission_token" value="">
+        <input type="hidden" name="resource_type" value="asin">
+        <input type="hidden" name="resource_key" value="B0DY8CG594">
+        <input type="hidden" name="source_title" value="Drhomeam F6ZB2KML6LXHOZKZ98VI">
+        <input type="hidden" name="source_category_label" value="Drhomeam">
+        <input type="hidden" name="source_category_url" value="https://manuals.plus/category/drhomeam">
+        <input type="hidden" name="manual_url" value="https://manuals.plus/asin/B0DY8CG594">
+        <div class="manuals-source-qa-identity" data-manuals-qa-identity="">
+          <p class="manuals-source-qa-account" data-manuals-qa-account-state="" hidden="">Posting as <strong data-manuals-qa-account-name=""></strong>.</p>
+          <div data-manuals-qa-guest-fields="">
+            <label for="manuals-source-qa-name-asin-B0DY8CG594">Name</label>
+            <input id="manuals-source-qa-name-asin-B0DY8CG594" name="name" type="text" maxlength="255" placeholder="Anonymous">
+            <label for="manuals-source-qa-email-asin-B0DY8CG594">Email</label>
+            <input id="manuals-source-qa-email-asin-B0DY8CG594" name="email" type="email" maxlength="255" placeholder="you@example.com">
+          </div>
+        </div>
+        <p class="manuals-source-qa-privacy">After a successful submission, we securely hash the supplied account or form email before sending it to Microsoft Advertising for conversion attribution. <a href="https://manuals.plus/privacy-policy">Privacy details</a>.</p>
+        <label for="manuals-source-qa-question-asin-B0DY8CG594">Question</label>
+        <textarea id="manuals-source-qa-question-asin-B0DY8CG594" name="question" required="" placeholder="Example: How do I reset this device or fix this error?"></textarea>
+        <label for="manuals-source-qa-details-asin-B0DY8CG594">Details</label>
+        <textarea id="manuals-source-qa-details-asin-B0DY8CG594" name="details" placeholder="Model number, symptoms, what you tried, or the section of the manual you are using."></textarea>
+        <button type="submit">Submit question</button>
+      </form>
+          </section>
+        <script>
+    (function(){
+      function normalizeEmail(email) {
+        var value = String(email || '').trim().toLowerCase();
+        if (!value || value.indexOf('@') === -1) {
+          return '';
+        }
+        var parts = value.split('@');
+        var local = parts.shift() || '';
+        var domain = parts.join('@');
+        if (!local || !domain) {
+          return '';
+        }
+        if (domain === 'gmail.com' || domain === 'googlemail.com') {
+          local = local.replace(/\+.*/, '').replace(/\./g, '');
+          domain = 'gmail.com';
+        }
+        return local + '@' + domain;
+      }
+      function sha256(input) {
+        if (!window.crypto || !window.crypto.subtle || !window.TextEncoder) {
+          return Promise.resolve('');
+        }
+        return crypto.subtle.digest('SHA-256', new TextEncoder().encode(input)).then(function(digest){
+          return Array.from(new Uint8Array(digest)).map(function(value){
+            return value.toString(16).padStart(2, '0');
+          }).join('');
+        });
+      }
+      function setEzoicIdentity(email) {
+        var normalized = normalizeEmail(email);
+        if (!normalized) {
+          return Promise.resolve(null);
+        }
+        return sha256(normalized).then(function(hash){
+          if (!hash) {
+            return null;
+          }
+          window.ezoicIdentity = window.ezoicIdentity || {};
+          window.ezoicIdentity.queue = window.ezoicIdentity.queue || [];
+          window.ezoicIdentity.queue.push(function(){
+            if (window.ezoicIdentity && typeof window.ezoicIdentity.setIdentity === 'function') {
+              window.ezoicIdentity.setIdentity({sha256: hash});
+            }
+          });
+          return hash;
+        })["catch"](function(){ return null; });
+      }
+      if (!window.manualsSetEzoicIdentity) {
+        window.manualsSetEzoicIdentity = setEzoicIdentity;
+      }
+      function applyUser(user) {
+        document.querySelectorAll('[data-manuals-qa-identity]').forEach(function(wrapper){
+          var accountState = wrapper.querySelector('[data-manuals-qa-account-state]');
+          var accountName = wrapper.querySelector('[data-manuals-qa-account-name]');
+          var guestFields = wrapper.querySelector('[data-manuals-qa-guest-fields]');
+          if (!guestFields) {
+            return;
+          }
+          if (user && (user.display_name || user.name || user.email)) {
+            if (accountName) {
+              accountName.textContent = user.display_name || user.name || user.email || 'your Manuals+ account';
+            }
+            if (accountState) {
+              accountState.hidden = false;
+            }
+            guestFields.hidden = true;
+            guestFields.querySelectorAll('input,textarea,select').forEach(function(input){
+              input.disabled = true;
+            });
+          } else {
+            if (accountState) {
+              accountState.hidden = true;
+            }
+            guestFields.hidden = false;
+            guestFields.querySelectorAll('input,textarea,select').forEach(function(input){
+              input.disabled = false;
+            });
+          }
+        });
+        if (user && user.email) {
+          setEzoicIdentity(user.email);
+        }
+      }
+      function bindFormIdentity() {
+        document.querySelectorAll('form').forEach(function(form){
+          if (form.dataset.manualsEzoicIdentityBound === '1') {
+            return;
+          }
+          if (!form.querySelector('input[name="email"], input[type="email"]')) {
+            return;
+          }
+          form.dataset.manualsEzoicIdentityBound = '1';
+          form.addEventListener('submit', function(){
+            var field = form.querySelector('input[type="email"], input[name="email"]');
+            if (field && field.value) {
+              setEzoicIdentity(field.value);
+            }
+          }, true);
+        });
+      }
+      bindFormIdentity();
+    })();
+    </script>
+            <script>
+    (function(){
+      if (window.manualsQaSubmitGuardLoaded) {
+        return;
+      }
+      window.manualsQaSubmitGuardLoaded = true;
+      function token() {
+        try {
+          var bytes = new Uint8Array(16);
+          window.crypto.getRandomValues(bytes);
+          return Array.prototype.map.call(bytes, function(byte){
+            return byte.toString(16).padStart(2, '0');
+          }).join('');
+        } catch (error) {
+          return String(Date.now()) + String(Math.random()).replace(/\D/g, '').slice(0, 16);
+        }
+      }
+      document.addEventListener('submit', function(event){
+        var form = event.target && event.target.closest ? event.target.closest('form.manuals-qa-form,form[data-manuals-qa-source-form]') : null;
+        if (!form) {
+          return;
+        }
+        if (form.dataset.manualsSubmitting === '1') {
+          event.preventDefault();
+          return false;
+        }
+        var field = form.querySelector('input[name="submission_token"]');
+        if (!field) {
+          field = document.createElement('input');
+          field.type = 'hidden';
+          field.name = 'submission_token';
+          form.appendChild(field);
+        }
+        if (!field.value) {
+          field.value = token();
+        }
+        if (form.hasAttribute('data-manuals-qa-source-form')) {
+          var firstSegmentMatch = window.location.pathname.match(/^\/([^/]+)\//);
+          var firstSegment = firstSegmentMatch ? String(firstSegmentMatch[1] || '').toLowerCase() : '';
+          var translatedPrefixes = {
+            'af': true, 'sq': true, 'am': true, 'ar': true, 'hy': true, 'az': true,
+            'eu': true, 'be': true, 'bn': true, 'bs': true, 'bg': true, 'ca': true,
+            'ceb': true, 'ny': true, 'zh-cn': true, 'zh-tw': true, 'co': true, 'hr': true,
+            'cs': true, 'da': true, 'nl': true, 'en': true, 'eo': true, 'et': true,
+            'tl': true, 'fi': true, 'fr': true, 'fy': true, 'gl': true, 'ka': true,
+            'de': true, 'el': true, 'gu': true, 'ht': true, 'ha': true, 'haw': true,
+            'iw': true, 'hi': true, 'hmn': true, 'hu': true, 'is': true, 'ig': true,
+            'id': true, 'ga': true, 'it': true, 'ja': true, 'jw': true, 'kn': true,
+            'kk': true, 'km': true, 'ko': true, 'ku': true, 'ky': true, 'lo': true,
+            'la': true, 'lv': true, 'lt': true, 'lb': true, 'mk': true, 'mg': true,
+            'ms': true, 'ml': true, 'mt': true, 'mi': true, 'mr': true, 'mn': true,
+            'my': true, 'ne': true, 'no': true, 'ps': true, 'fa': true, 'pl': true,
+            'pt': true, 'pa': true, 'ro': true, 'ru': true, 'sm': true, 'gd': true,
+            'sr': true, 'st': true, 'sn': true, 'sd': true, 'si': true, 'sk': true,
+            'sl': true, 'so': true, 'es': true, 'su': true, 'sw': true, 'sv': true,
+            'tg': true, 'ta': true, 'te': true, 'th': true, 'tr': true, 'uk': true,
+            'ur': true, 'uz': true, 'vi': true, 'cy': true, 'xh': true, 'yi': true,
+            'yo': true, 'zu': true
+          };
+          form.action = (translatedPrefixes[firstSegment] ? '/' + firstSegment : '') + '/account/faq/';
+        }
+        form.dataset.manualsSubmitting = '1';
+        form.querySelectorAll('[type="submit"],button:not([type]),button[type="submit"]').forEach(function(button){
+          button.dataset.manualsOriginalHtml = button.innerHTML;
+          button.disabled = true;
+          button.setAttribute('aria-busy', 'true');
+          button.innerHTML = '<span class="manuals-qa-submit-spinner" aria-hidden="true"></span>Submitting...';
+        });
+      }, true);
+    })();
+    </script>
+        </div>
+</div></main><link rel="stylesheet" href="./dcf77-manual-dump_files/footer-ui.css">
+<footer id="colophon" class="manuals-footer" data-manuals-footer="" data-nosnippet="">
+ <div class="manuals-footer-inner">
+  <div class="manuals-footer-search-row">
+   <div><a class="manuals-footer-brand" href="https://manuals.plus/" rel="home">Manuals+</a><h2>Find your next manual.</h2><p>Search manuals, setup guides, and troubleshooting help.</p></div>
+   <form action="https://manuals.plus/deep-search" method="get" role="search" aria-label="Footer manual search">
+    <label for="manuals-footer-query">Search the manuals library</label>
+    <div class="manuals-footer-search-input"><input id="manuals-footer-query" type="search" name="query" placeholder="Brand, product, or model number" required=""><button type="submit">Search</button></div>
+   </form>
+  </div>
+  <nav class="manuals-footer-nav" aria-label="Footer navigation">
+   <div><h3>Explore</h3><ul><li><a href="https://manuals.plus/deep-search">Search manuals</a></li><li><a href="https://manuals.plus/qa/">Questions &amp; answers</a></li><li><a href="https://manuals.plus/upload">Upload a manual</a></li></ul></div>
+   <div><h3>Guides</h3><ul><li><a href="https://manuals.plus/asin/">Amazon manuals</a></li><li><a href="https://manuals.plus/ae/">AliExpress manuals</a></li><li><a href="https://manuals.plus/video/">Video guides</a></li></ul></div>
+   <div><h3>Manuals+</h3><ul><li><a href="https://manuals.plus/about-us">About us</a></li><li><a href="https://manuals.plus/">All manuals</a></li></ul></div>
+   <div><h3>Follow</h3><ul><li><a href="https://x.com/manualsplus">@manualsplus</a></li><li><a href="https://www.youtube.com/@manualsplus">YouTube</a></li><li><a href="https://linkedin.com/company/manualsplus/">LinkedIn</a></li><li><a href="https://www.facebook.com/people/Manualsplus/61584279505669/">Facebook</a></li></ul></div>
+  </nav>
+    <div class="manuals-footer-account" data-manuals-account-slot="">
+   <div><h3>Keep your manuals together.</h3><p>Sign in to save manuals, keep private notes, and manage your uploads and questions.</p></div>
+   <a class="manuals-footer-button" href="https://manuals.plus/login/" data-manuals-login="" data-manuals-account-link="footer" data-no-instant="">Login</a>
+  </div>
+  <div class="manuals-footer-bottom"><p>This website is an independent publication and is neither affiliated with nor endorsed by any of the trademark owners.</p><nav class="manuals-legal-links" data-manuals-legal-footer="" aria-label="Legal"><a href="https://manuals.plus/privacy-policy">Privacy Policy</a> <a class="notranslate" translate="no" data-manuals-dmca-link="" href="https://manuals.plus/dmca">DMCA</a></nav></div>
+ </div>
+</footer>
+</div><iframe name="__tcfapiLocator" style="display: none;" src="./dcf77-manual-dump_files/saved_resource.html"></iframe><script data-manuals-bing-gate="" data-tracking-src="/wp-content/themes/twentynineteen/footer-tracking.js?ver=1789182091">
+(function (window, document) {
+  "use strict";
+  if (window.manualsBingGateLoaded) return;
+  window.manualsBingGateLoaded = true;
+  window.manualsBingPendingLogins = window.manualsBingPendingLogins || [];
+  window.addEventListener('manualsAccount:login', function (event) {
+    if (!window.manualsBingTrackerReady && window.MANUALS_BING_AD_ELIGIBLE === true) {
+      window.manualsBingPendingLogins.push(event.detail || {});
+      if (window.manualsBingPendingLogins.length > 8) window.manualsBingPendingLogins.shift();
+    }
+  });
+
+  var gate = document.currentScript;
+  var trackingSrc = gate && gate.getAttribute("data-tracking-src");
+  var clickId = "";
+  var eligible = window.MANUALS_BING_AD_ELIGIBLE === true;
+  var cookies;
+  var i;
+  var script;
+
+  if (!trackingSrc) {
+    return;
+  }
+
+  try {
+    clickId = new URLSearchParams(window.location.search).get("msclkid") || "";
+  } catch (error) {
+    clickId = "";
+  }
+
+  if (/^[A-Za-z0-9._~-]{16,256}$/.test(clickId)) {
+    eligible = true;
+    try {
+      document.cookie = "manuals_paid_click=bing; max-age=2592000; path=/; domain=.manuals.plus; secure; samesite=lax";
+    } catch (error) {
+      // Cookie blocking must not lose the directly attributed landing-page event.
+    }
+  } else {
+    try {
+      cookies = document.cookie ? document.cookie.split(";") : [];
+    } catch (error) {
+      cookies = [];
+    }
+    for (i = 0; i < cookies.length; i += 1) {
+      if (cookies[i].trim() === "manuals_paid_click=bing") {
+        eligible = true;
+        break;
+      }
+    }
+  }
+
+  if (!eligible) {
+    return;
+  }
+
+  window.MANUALS_BING_AD_ELIGIBLE = true;
+  if (document.querySelector('[data-manuals-bing-tracker]')) return;
+  script = document.createElement("script");
+  script.src = trackingSrc;
+  script.defer = true;
+  script.setAttribute("data-manuals-bing-tracker", "");
+  (document.head || document.body || document.documentElement).appendChild(script);
+})(window, document);
+
+</script><script defer="" src="./dcf77-manual-dump_files/footer-runtime.js" data-account-src="https://manuals.plus/account/client.js?ver=1788890369" data-signed-in="false" data-pwa-src="https://manuals.plus/pwa-register.js?ver=1788965572"></script>
+<script>window.__CF$cv$params={r:'a39f7356bc35e460',t:'MTc4OTIyMTc1Mw==',u:'01a095eccbab7c1191386ad90d2dfc18',ut:'o3FIr4ubyPH4BS4RbIL8wk1aKBoKuWNwUhC1PKc51t8-1789221753-1.2.1.1-Cd9f6qUPubSr2L.wXYfbn53Au3lb2WY1W0IOJObZXtjqk9k8pqiXfWt_Tn0J8jrLAv3y.TKNplhrd3FflxTu4FLDpIHzcctLJGRrPSuZ8G8',i:60};(function(){if(!document.body)return;var s=document.createElement('script');s.src='/cdn-cgi/challenge-platform/scripts/precursor/main.js';document.head.appendChild(s);})();</script><script type="module" src="./dcf77-manual-dump_files/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;c29bf729537046bda507e74bd7d7d71a&quot;,&quot;spa&quot;:2}" crossorigin="anonymous"></script>
+<div>
+      <style>
+        #ezPrivacyCenter {
+          display: none;
+          position: fixed;
+          left: 0;
+          z-index: 2147483647;
+          width: 32px;
+          height: 32px;
+          padding: 7px;
+          box-sizing: border-box;
+          border: none;
+          outline: none;
+          border-radius: 0 4px 4px 0;
+          background-color: #0073AA;
+          color: #ffffff;
+          cursor: pointer;
+        }
+        #ezPrivacyCenter svg { width: 18px; height: 18px; display: block; }
+        #ezPrivacyCenter:hover { opacity: 0.9; }
+      </style>
+      <button type="button" id="ezPrivacyCenter" onclick="ezCMP.generateCMPFromPrivacyCenter()" aria-label="Privacy settings" title="Privacy center" style="bottom: 200px; display: block;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button></div></body><div style="display: block; opacity: 1; color-scheme: light;"><template shadowrootmode="open"><iframe allowtransparency="true" frameborder="0" scrolling="no" class="sk_ui" src="chrome-extension://gfbliohnnapiefjpjlpjnehglfpaknnc/pages/frontend.html" title="Surfingkeys" style="position: fixed; left: 0px; bottom: 0px; width: 100%; height: 0px; z-index: 2147483647;"></iframe></template></div></html>
