@@ -21,8 +21,8 @@
 
 ## 3. LIS3DH test
 
-- [ ] 3.1 Implement LIS3DH `WHO_AM_I` read and report; verify `0x33` and `PASS` on the wired sensor, and `FAIL` with the read value when sensor `CS` is disconnected (USB off while rewiring)
-- [ ] 3.2 Configure the high-pass `INT1` motion interrupt (100 Hz, about 250 mg, latched) and report each event with `INT1_SRC` axes until button 2 or 60 s timeout; verify events appear while moving and stop when still
+- [x] 3.1 Implement LIS3DH `WHO_AM_I` read and report; verify `0x33` and `PASS` on the wired sensor, and `FAIL` with the read value when sensor `CS` is disconnected (USB off while rewiring)
+- [x] 3.2 Configure the high-pass `INT1` motion interrupt (100 Hz, about 250 mg, latched) and report each event with `INT1_SRC` axes until button 2 or 60 s timeout; verify events appear while moving and stop when still
 - [x] 3.3 Document the LIS3DH test in the bring-up README; verify against guide section 10.2
 - [x] 3.4 Commit: `firmware: add LIS3DH identify and INT1 motion test`
 
