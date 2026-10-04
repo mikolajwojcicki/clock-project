@@ -44,6 +44,10 @@ Resistors: **0603**, 1%, 0.1 W unless noted.
 | 3.4 | 470 Ω | `R5` | Charge-status LED limiter | 0603 | Pending verification | Charger indicator design |
 | 3.5 | Not applicable | `D1` | `1N4148W` flyback across buzzer | SOD-123 | Pending verification | Buzzer driver design |
 | 3.6 | Red LED | `LED1` | MCP73831 STAT | 0603 | Pending verification | Charger indicator design |
+| 3.7 | 100 kΩ | `R6` | `SPI_SCK` pull-down: no clock edges while the MCU is in reset | 0603 | Pending verification | DK bring-up, see review notes |
+| 3.8 | 100 kΩ | `R7`, `R8` | `EPD_CS` and `SENSOR_CS` pull-ups: both devices deselected during reset | 0603 | Pending verification | DK bring-up, see review notes |
+| 3.9 | 100 kΩ | `R9` | `Q1` base pull-down: buzzer off while `BUZZER_EN` floats | 0603 | Pending verification | DK bring-up, see review notes |
+| 3.10 | 10 kΩ | `R10` | DCF `PON` pull-up: receiver off during reset | 0603 | Pending verification | Prototype BOM R2; confirm PON polarity of the chosen module |
 
 ## Section 4: Capacitors and inductors
 
@@ -81,6 +85,15 @@ Voltage ratings: input caps ≥ 10 V; VCC/output caps ≥ 6.3 V.
 - The AP-1205V-P1 voltage and drive requirement remain pending verification.
 - `R3` is not final. Check the MCP73831 charge current against the selected
   one-cell battery before choosing `RPROG`.
+- `R6`–`R10` cover the window when firmware cannot drive pins (reset, SWD
+  flashing, before `main()`); all nRF52 GPIOs float then. Evidence from DK
+  bring-up (2026-10-04, Saleae): `BUZZER_EN` read high for 98 µs during
+  reset, and after a reset the LIS3DH disturbed the shared SPI lines until its
+  first SPI access, garbling the first e-paper refresh. The LIS3DH enables its
+  I2C interface whenever `CS` is high (datasheet p. 9, 21, 24) on the pins we
+  share as `SCK`/`MOSI`; `R6` keeps `SCK` low so it cannot see an I2C START.
+  Firmware also reads `WHO_AM_I` once at boot (commit `f13e003`). Each pull
+  sits at its line's idle level, so sleep leakage is near zero.
 
 ## Sources
 

@@ -385,6 +385,18 @@ If firmware cannot guarantee these states, leave the affected control wire
 disconnected and test that peripheral separately. Do not rely on an unconfigured
 MCU pin's floating input state as a safety control.
 
+Firmware cannot set any state while the DK is in reset, while it is being
+flashed, or before `main()` runs. During that window every control pin floats.
+Two effects were measured on the DK:
+
+- `BUZZER_EN` read high for about 0.1 ms during a reset. The optional 100 kOhm
+  base pull-down (R3 in the prototype BOM) keeps the transistor off.
+- The LIS3DH turns on its I2C interface whenever its `CS` is high, using the
+  same pins as the shared `SCK` and `MOSI`. After a reset it can disturb those
+  lines and garble the first display refresh. The bring-up firmware reads the
+  sensor once at boot to reset its interface. The custom PCB adds pull
+  resistors for this window (see `hardware/bom/pcb-bom.md`, `R6` to `R10`).
+
 The DK header can label pins as `P0.03`, `03`, or with a board-specific name.
 Use the DK pin label and the nRF52 port name together.
 Do not treat Arduino-style numbers as nRF52 port numbers without checking the DK
