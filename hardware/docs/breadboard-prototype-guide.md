@@ -50,14 +50,26 @@ Remove the DK USB cable immediately if:
 
 Do not reconnect power until you find the cause.
 
+Before you place any wire, check the DK revision:
+
+1. Find the white label on the DK. It must say `PCA10040`.
+2. Find the version sticker. It must show a version from `3.0.0` upward.
+3. If either one differs, stop. The connector names and pin data in this
+   guide come from the nRF52 DK User Guide v3.x.x. Compare your board with
+   the user guide for its version before you wire it.
+
 ### Power rules
 
-- Use only the DK 3.3 V pin for first tests.
-- Connect every module ground to the DK ground.
-- Never connect the DK 3.3 V pin to a module pin marked `5V`.
-- Never connect the DK 5 V or USB pin to a 3.3 V-only input.
+The DK has no pin labeled `3V3`. Its 3.3 V output is labeled `VDD`.
+This guide calls the breadboard rail that `VDD` feeds `3V3`.
+
+- Use only DK connector `P1`, pin `VDD`, for first tests.
+  Section 2.1 shows which pin that is.
+- Connect every module ground to a DK `GND` pin.
+- Never connect DK `P1 VDD` to a module pin marked `5V`.
+- Never connect DK `5V` or USB to a 3.3 V-only input.
 - Never connect a Li-Po battery to the breadboard during first bring-up.
-- Never connect the TP4056 charger to the DK 3.3 V rail.
+- Never connect the TP4056 charger to the `3V3` rail.
 - Never connect two power sources to the same rail.
 - Do not power the buzzer from a GPIO pin.
 - Do not connect a signal wire before checking its voltage range.
@@ -77,8 +89,49 @@ current and drive requirements are not confirmed in the available documents.
 Do not assume that 3.3 V produces its rated sound. Do not add 5 V power during
 first bring-up.
 
-For the integrated prototype, use only the DK `3V3` rail. Never connect the
-KORAD supply and DK `3V3` to the same breadboard rail.
+For the integrated prototype, use only the `3V3` rail fed from DK `P1 VDD`.
+Never connect the KORAD supply and DK `P1 VDD` to the same breadboard rail.
+
+### 2.1 DK power pins
+
+The DK has several pins named `VDD`, `GND`, `5V`, and supply. Only two of
+them feed the breadboard.
+
+Connector `P1` is the 8-pin header on the left side of the DK, directly above
+the `P2` GPIO header (`P0.03` to `P0.31`). With the USB connector at the top,
+the silkscreen next to its pins reads, from top to bottom:
+
+```text
+P1:  VDD  VDD  RESET  VDD  5V  GND  GND  N.C.
+```
+
+Read the silkscreen next to each pin. Do not count pin positions alone.
+
+Use these pins:
+
+| Breadboard rail | DK pin | Notes |
+| --- | --- | --- |
+| `3V3` | `P1`, pin labeled `VDD` | All three `VDD` pins on `P1` are the same rail. Use the one between `RESET` and `5V`. |
+| `GND` | `P1`, pin labeled `GND` | Every DK `GND` pin is the same ground, including `GND` on header `P4`. |
+
+Never use these for the breadboard rail:
+
+| DK label or connector | What it is | Why not |
+| --- | --- | --- |
+| `5V` on `P1` | USB 5 V output | Too high for every module input in this guide |
+| `External supply` (`P21`, 2-pin header near the power switch) | Power **input**, 1.7 V to 3.6 V | It feeds the DK. It is not an output. Never connect anything to it while USB is connected. |
+| `nRF current measurement` (`P22`) | Series point for nRF52832 current | It is not a supply pin. Loads here distort later current measurements. |
+| Small header beside `P4` (`VDD_nRF`, `VDD`, `VTG`, `SWDIO`, `SWDCLK`, `GND`, `RESET`) | Debug and nRF52832 supply signals | `VDD_nRF` is after the measurement point, so module current would be counted as nRF52832 current. Use `P1` instead. |
+| Coin-cell holder (back side) | Battery input | Leave it empty. The DK disconnects the battery when USB is present. |
+| `Debug out` connector | Programmer output for external boards | Not a supply for this prototype. |
+| `RESET` and `N.C.` on `P1` | nRF52832 reset line and an unconnected pin | Not power. |
+
+How the DK makes `VDD`: USB 5 V goes through an onboard 3.3 V regulator and
+then a reverse-protection diode (`D1`). The diode drops some voltage, so
+`VDD` reads a little below 3.3 V. Section 8 measures it.
+
+Source: nRF52 DK User Guide v3.x.x, sections 4.3 Power supply and
+4.4 Connector interface.
 
 ### ESD and mechanical rules
 
@@ -245,8 +298,8 @@ Use these names in your build notes:
 
 | Rail name | Voltage | Connect to |
 | --- | --- | --- |
-| `3V3` | 3.3 V | DK `3V3` |
-| `GND` | 0 V reference | DK `GND` |
+| `3V3` | A little below 3.3 V (measured in section 8) | DK `P1` pin `VDD` |
+| `GND` | 0 V reference | DK `P1` pin `GND` |
 
 Do not use a rail named `5V` in first bring-up.
 Do not place the Li-Po on any rail.
@@ -271,43 +324,68 @@ Consistent colors reduce mistakes.
 This guide uses one shared SPI bus.
 The display and LIS3DH have separate chip-select signals.
 
-The pin map keeps SPI and PWM away from P0.22 through P0.30.
-P0.22 through P0.30 remain unused except for low-frequency control signals.
+This pin map replaces the earlier map that used `P0.13` to `P0.21`.
+Those pins are wired to DK buttons, LEDs, and the reset line (see 6.1).
+If you wired the earlier map, remove USB power and remove those wires first.
 
-| nRF52 DK pin | Project name | Connected device | Purpose |
-| --- | --- | --- | --- |
-| `P0.13` | `EPD_SCK` | Display `CLK` and LIS3DH `SCK` | SPI clock |
-| `P0.15` | `EPD_MOSI` | Display `DIN` and LIS3DH `SDI` | SPI controller-to-device data |
-| `P0.14` | `SENSOR_MISO` | LIS3DH `SDO` | SPI device-to-controller data |
-| `P0.17` | `EPD_CS` | Display `CS` | Display chip select |
-| `P0.18` | `EPD_DC` | Display `DC` | Display data or command |
-| `P0.19` | `EPD_RST` | Display `RST` | Display reset |
-| `P0.20` | `EPD_BUSY` | Display `BUSY` | Display busy status |
-| `P0.21` | `SENSOR_CS` | LIS3DH `CS` | Sensor chip select |
-| `P0.23` | `SENSOR_INT1` | LIS3DH `INT1` | Motion interrupt |
-| `P0.24` | `DCF_PON` | DCF `PON` | Conditional receiver power control |
-| `P0.25` | `DCF_OUT` | DCF `OUT` | Receiver digital output |
-| `P0.12` | `BUZZER_EN` | Transistor base resistor | Buzzer control |
+Two rules decide where each signal goes:
 
-`P0.11`, `P0.16`, and P0.26 through P0.30 are unused in this guide.
+1. No project signal uses a pin that DK hardware already uses.
+2. `P0.22` to `P0.31` are for low-drive, low-frequency signals only, up to
+   10 kHz (nRF52832 Product Specification v1.9, section 4.3.1). Fast SPI
+   signals use `P0.02` to `P0.04`, `P0.11`, and `P0.12`.
 
-### 6.1 Safe control states
+| nRF52 DK pin | DK header | Project name | Connected device | Purpose |
+| --- | --- | --- | --- | --- |
+| `P0.03` | `P2` | `SPI_SCK` | Display `CLK` and LIS3DH `SCK` | SPI clock |
+| `P0.04` | `P2` | `SPI_MOSI` | Display `DIN` and LIS3DH `SDI` | SPI controller-to-device data |
+| `P0.02` | `P4` | `SPI_MISO` | LIS3DH `SDO` | SPI device-to-controller data |
+| `P0.11` | `P3` | `EPD_CS` | Display `CS` | Display chip select |
+| `P0.12` | `P3` | `EPD_DC` | Display `DC` | Display data or command |
+| `P0.28` | `P2` | `EPD_RST` | Display `RST` | Display reset |
+| `P0.29` | `P2` | `EPD_BUSY` | Display `BUSY` | Display busy status |
+| `P0.30` | `P2` | `SENSOR_CS` | LIS3DH `CS` | Sensor chip select |
+| `P0.23` | `P4` | `SENSOR_INT1` | LIS3DH `INT1` | Motion interrupt |
+| `P0.24` | `P4` | `DCF_PON` | DCF `PON` | Conditional receiver power control |
+| `P0.25` | `P4` | `DCF_OUT` | DCF `OUT` | Receiver digital output |
+| `P0.31` | `P2` | `BUZZER_EN` | Transistor base resistor | Buzzer control |
+
+`P0.22` (header `P4`) is free and kept as a spare.
+
+### 6.1 Reserved DK pins
+
+Do not connect any project wire to these pins. The DK already uses them.
+
+| DK pin | Used by on the DK | Source (nRF52 DK User Guide v3.x.x) |
+| --- | --- | --- |
+| `P0.00`, `P0.01` | 32.768 kHz crystal; not on the headers | 4.6 32.768 kHz crystal |
+| `P0.05` to `P0.08` | UART to the interface MCU (virtual serial port) | 4.4 Connector interface |
+| `P0.09`, `P0.10` | NFC antenna pins `NFC1`, `NFC2` | 4.9 NFC antenna interface |
+| `P0.13` to `P0.16` | Buttons 1 to 4; a press connects the pin to `GND` | 4.5 Buttons and LEDs |
+| `P0.17` to `P0.20` | LEDs 1 to 4, each with 220 Ohm to `VDD`; `P0.17` is also the I/O expander interrupt | 4.5 and 4.5.1 |
+| `P0.21` | nRF52832 reset; the blinky build sets `CONFIG_GPIO_AS_PINRESET` | 4.4 and `firmware/apps/blinky/armgcc/Makefile` |
+| `P0.26`, `P0.27` | I/O expander `SDA` and `SCL` | 4.5.1 I/O expander |
+
+The DK LEDs and buttons stay free, so the blinky test in section 7 still works
+with all modules connected.
+
+### 6.2 Safe control states
 
 Keep peripheral signal wires disconnected while firmware is being prepared.
 Before connecting them, the firmware test must set these inactive states:
 
-| Signal | Inactive state | Reason |
-| --- | --- | --- |
-| `DCF_PON` | High | Active-low receiver enable |
-| `EPD_CS` | High | Do not select display during reset |
-| `SENSOR_CS` | High | Do not select sensor during reset |
-| `BUZZER_EN` | Low | Do not sound buzzer during reset |
+| Signal | DK pin | Inactive state | Reason |
+| --- | --- | --- | --- |
+| `DCF_PON` | `P0.24` | High | Active-low receiver enable |
+| `EPD_CS` | `P0.11` | High | Do not select display during reset |
+| `SENSOR_CS` | `P0.30` | High | Do not select sensor during reset |
+| `BUZZER_EN` | `P0.31` | Low | Do not sound buzzer during reset |
 
 If firmware cannot guarantee these states, leave the affected control wire
 disconnected and test that peripheral separately. Do not rely on an unconfigured
 MCU pin's floating input state as a safety control.
 
-The DK header can label pins as `P0.13`, `13`, or with a board-specific name.
+The DK header can label pins as `P0.03`, `03`, or with a board-specific name.
 Use the DK pin label and the nRF52 port name together.
 Do not treat Arduino-style numbers as nRF52 port numbers without checking the DK
 pinout.
@@ -367,19 +445,32 @@ those drivers.
 ## 8. Common power connections
 
 Perform these steps with USB power removed.
+Section 2.1 shows where connector `P1` is and which of its pins to use.
 
-1. Connect DK `3V3` to the breadboard `3V3` rail.
-2. Connect DK `GND` to the breadboard `GND` rail.
+1. Connect DK `P1` pin `VDD` to the breadboard `3V3` rail.
+2. Connect DK `P1` pin `GND` to the breadboard `GND` rail.
 3. Connect one jumper between each split half of the `3V3` rail if needed.
 4. Connect one jumper between each split half of the `GND` rail if needed.
-5. Check continuity from the DK `3V3` pin to every `3V3` rail section.
-6. Check continuity from the DK `GND` pin to every `GND` rail section.
+5. Check continuity from DK `P1 VDD` to every `3V3` rail section.
+6. Check continuity from DK `P1 GND` to every `GND` rail section.
 7. Check that `3V3` and `GND` are not connected together.
+8. Check that nothing is connected to `5V`, `External supply`,
+   `nRF current measurement`, or `VDD_nRF`.
 
 Do not connect modules yet.
-Power the DK and measure the rail voltage if you have a multimeter.
-The rail must be close to 3.3 V.
-Remove power if the rail is 0 V, above 3.3 V, or unstable.
+
+Measure the rail:
+
+1. Set the multimeter to DC voltage.
+2. Connect USB power.
+3. Put the black probe on the `GND` rail and the red probe on the `3V3` rail.
+4. Record the reading in the test record as `Measured P1 VDD`.
+
+The reading is a little below 3.3 V because the DK feeds `VDD` through a
+reverse-protection diode after its 3.3 V regulator.
+
+Remove USB power and stop if the rail is 0 V, above 3.6 V, or unstable.
+3.6 V is the highest supply voltage the DK accepts on any of its inputs.
 
 ## 9. Connect the e-paper display
 
@@ -394,12 +485,12 @@ three-wire SPI and does not match this guide.
 | --- | --- | --- |
 | `VCC` | `3V3` | 3.3 V power |
 | `GND` | `GND` | Shared ground |
-| `DIN` | `P0.15` | SPI data |
-| `CLK` | `P0.13` | SPI clock |
-| `CS` | `P0.17` | Display chip select |
-| `DC` | `P0.18` | Data or command |
-| `RST` | `P0.19` | Reset |
-| `BUSY` | `P0.20` | Busy status |
+| `DIN` | `P0.04` | SPI data |
+| `CLK` | `P0.03` | SPI clock |
+| `CS` | `P0.11` | Display chip select |
+| `DC` | `P0.12` | Data or command |
+| `RST` | `P0.28` | Reset |
+| `BUSY` | `P0.29` | Busy status |
 
 ### 9.1 Wire the display
 
@@ -408,12 +499,12 @@ With USB power removed:
 1. Place the display so its connector cannot touch the breadboard power rails.
 2. Connect display `VCC` to `3V3`.
 3. Connect display `GND` to `GND`.
-4. Connect display `DIN` to DK `P0.15`.
-5. Connect display `CLK` to DK `P0.13`.
-6. Connect display `CS` to DK `P0.17`.
-7. Connect display `DC` to DK `P0.18`.
-8. Connect display `RST` to DK `P0.19`.
-9. Connect display `BUSY` to DK `P0.20`.
+4. Connect display `DIN` to DK `P0.04`.
+5. Connect display `CLK` to DK `P0.03`.
+6. Connect display `CS` to DK `P0.11`.
+7. Connect display `DC` to DK `P0.12`.
+8. Connect display `RST` to DK `P0.28`.
+9. Connect display `BUSY` to DK `P0.29`.
 10. Confirm the `BS1 = 0` four-wire SPI setting again.
 11. Check every wire against the table.
 
@@ -464,10 +555,10 @@ Do not use a STEMMA QT cable in this wiring plan.
 | --- | --- | --- |
 | `VIN` | `3V3` | 3.3 V input to board regulator |
 | `GND` | `GND` | Shared ground |
-| `SCK` or `SCL` | `P0.13` | Shared SPI clock |
-| `SDA` or `SDI` | `P0.15` | Shared SPI data into sensor |
-| `SDO` | `P0.14` | SPI data out of sensor |
-| `CS` | `P0.21` | Sensor chip select |
+| `SCK` or `SCL` | `P0.03` | Shared SPI clock |
+| `SDA` or `SDI` | `P0.04` | Shared SPI data into sensor |
+| `SDO` | `P0.02` | SPI data out of sensor |
+| `CS` | `P0.30` | Sensor chip select |
 | `INT1` | `P0.23` | Motion interrupt |
 | `INT2` | Not connected | Reserved |
 | `3Vo` | Not connected | Board regulated output |
@@ -488,10 +579,10 @@ With USB power removed:
 
 1. Connect `VIN` to `3V3`.
 2. Connect `GND` to `GND`.
-3. Connect sensor `SCK` or `SCL` to DK `P0.13`.
-4. Connect sensor `SDA` or `SDI` to DK `P0.15`.
-5. Connect sensor `SDO` to DK `P0.14`.
-6. Connect sensor `CS` to DK `P0.21`.
+3. Connect sensor `SCK` or `SCL` to DK `P0.03`.
+4. Connect sensor `SDA` or `SDI` to DK `P0.04`.
+5. Connect sensor `SDO` to DK `P0.02`.
+6. Connect sensor `CS` to DK `P0.30`.
 7. Connect sensor `INT1` to DK `P0.23`.
 8. Leave `INT2` unconnected.
 9. Leave `3Vo` unconnected.
@@ -637,7 +728,7 @@ Use this circuit:
                        |  NPN transistor
                        +---------------- emitter (E) ---- GND
 
-P0.12 ---- 1 kOhm ---- base (B)
+P0.31 ---- 1 kOhm ---- base (B)
 
 Flyback diode across buzzer:
   diode cathode (marked band) ---- buzzer positive
@@ -649,10 +740,10 @@ With USB power removed:
 1. Connect the transistor emitter to `GND`.
 2. Connect the transistor collector to the buzzer negative terminal.
 3. Connect the buzzer positive terminal to the approved supply.
-4. Connect DK `P0.12` through the 1 kOhm resistor to the transistor base.
+4. Connect DK `P0.31` through the 1 kOhm resistor to the transistor base.
 5. Connect the diode banded end to the buzzer positive terminal.
 6. Connect the other diode end to the transistor collector.
-7. Check that no buzzer terminal connects directly to `P0.12`.
+7. Check that no buzzer terminal connects directly to `P0.31`.
 8. Check that the transistor pin order matches its datasheet.
 
 Do not power the buzzer from the nRF52 GPIO.
@@ -662,7 +753,7 @@ Do not add 5 V until the buzzer datasheet and power budget are checked.
 ### 12.3 Buzzer test
 
 The buzzer test needs a later GPIO test firmware.
-The blinky app does not configure `P0.12` as `BUZZER_EN`.
+The blinky app does not configure `P0.31` as `BUZZER_EN`.
 
 When the test is available:
 
@@ -693,12 +784,13 @@ At each stage:
 
 1. Remove USB power.
 2. Add only the next module.
-3. Compare every wire with the pin table.
-4. Check `3V3` and `GND` for shorts.
-5. Connect USB power.
-6. Run the test for that stage.
-7. Record the result.
-8. Stop if the expected result does not occur.
+3. Compare every wire with the pin table in section 6.
+4. Check that no wire goes to a reserved DK pin in section 6.1.
+5. Check `3V3` and `GND` for shorts.
+6. Connect USB power.
+7. Run the test for that stage.
+8. Record the result.
+9. Stop if the expected result does not occur.
 
 Do not add another module to hide a failed test.
 Return to the last stage that passed.
@@ -708,6 +800,7 @@ Return to the last stage that passed.
 | Symptom | First action | Check next |
 | --- | --- | --- |
 | No DK power | Remove USB and inspect cable and DK | USB data cable, DK power LED, shorted rail |
+| DK LED or button acts strangely | Remove USB before rewiring | A wire on a reserved DK pin (section 6.1) |
 | Part becomes hot | Remove USB immediately | Reversed power, shorted rail, wrong module pin |
 | Flash fails | Disconnect peripherals | DK USB, OpenOCD, SDK variables, erase and flash |
 | Display stays blank | Remove USB before rewiring | `VCC`, `GND`, `CS`, `DC`, `RST`, `BUSY`, `DIN`, `CLK` |
@@ -744,7 +837,11 @@ For every later-stage fault:
 
 Mark a box only after the test result is recorded.
 
+- [ ] DK revision is checked: label `PCA10040`, version 3.0.0 or newer.
 - [ ] DK powers from USB without external modules.
+- [ ] Breadboard `3V3` rail is fed from DK `P1 VDD`, and the voltage is recorded.
+- [ ] No wire goes to a reserved DK pin (section 6.1).
+- [ ] Wires from the earlier `P0.13` to `P0.21` pin map are removed.
 - [ ] Existing blinky firmware builds.
 - [ ] Existing blinky firmware flashes.
 - [ ] DK LED changes state about every 500 ms.
@@ -780,7 +877,9 @@ Firmware commit:
 Controller:
   DK board:
   DK revision:
+  DK version sticker:
   USB port:
+  Measured P1 VDD:
 
 Display:
   Model:
@@ -845,6 +944,8 @@ Wiring differences:
 - [Prototype BOM](../bom/proto-bom.md)
 - [Hardware and tool inventory](../inventory/prototype-tools.md)
 - [Existing nRF52 DK blinky README](../../firmware/apps/blinky/README.md)
+- [nRF52 DK User Guide v3.x.x](../../temp-resources/docs/nrf/nRF52_DK_User_Guide_v3.x.x.pdf)
+- [nRF52832 Product Specification v1.9](../../temp-resources/docs/nrf/nRF52832_PS_v1.9.pdf)
 - [Adafruit LIS3DH product 2809](https://adafru.it/2809)
 - [Waveshare 2.13inch e-Paper HAT](https://www.waveshare.com/2.13inch-e-paper-hat.htm)
 - [Local DCF-77 manual dump](../../temp-resources/docs/dcf77/dcf77-manual-dump.html)
