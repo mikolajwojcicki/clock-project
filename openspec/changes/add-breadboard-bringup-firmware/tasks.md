@@ -37,7 +37,7 @@
 ## 5. Buzzer test
 
 - [ ] 5.1 Implement the two-step buzzer test (500 ms steady high, then 500 ms 2.7 kHz tone via PWM0) with a report before each step and PWM stopped in `board_safe_state()`; verify with the logic analyzer that `P0.31` is low before, between, and after the steps
-- [ ] 5.2 Verify on hardware that the buzzer sounds in at least one step and the DK does not reset; record which step sounds
+- [x] 5.2 Verify on hardware that the buzzer sounds in at least one step and the DK does not reset; record which step sounds
 - [x] 5.3 Document the buzzer test and how to record the drive type in the bring-up README; verify against guide section 12.3
 - [x] 5.4 Commit: `firmware: add bounded buzzer drive test`
 
