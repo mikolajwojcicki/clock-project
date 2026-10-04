@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "board.h"
+#include "buzzer.h"
 #include "dcf77_classify.h"
 #include "dk_breadboard_pins.h"
 #include "epd.h"
@@ -36,6 +37,8 @@ static const uint32_t button_pins[] = {DK_BUTTON1, DK_BUTTON2, DK_BUTTON3, DK_BU
 #define LIS3DH_TEST_MS     60000u
 #define DCF77_TEST_MS      (10u * 60u * 1000u)
 #define DCF77_HEARTBEAT_MS 10000u
+#define BUZZER_STEP_MS     500u
+#define BUZZER_GAP_MS      300u
 
 /* GPIOTE channels 0 to 3 are buttons 1 to 4. */
 #define GPIOTE_CH_INT1 4
@@ -195,12 +198,6 @@ static void finish(uint8_t t, const char *verdict, const char *reason)
     con_printf("%s %s: %s\n", verdict, test_names[t], reason);
 }
 
-static void run_stub(uint8_t t)
-{
-    board_wait_ms(3000);
-    finish(t, "STOPPED", "not implemented yet");
-}
-
 static void run_display(void)
 {
     con_printf("reset + full refresh, about 3 s; expect black border + checkerboard\n");
@@ -321,6 +318,22 @@ static void run_dcf77(void)
     finish(TEST_DCF77, "STOPPED", reason);
 }
 
+static void run_buzzer(void)
+{
+    con_printf("step 1/2: BUZZER_EN steady high for %u ms\n", BUZZER_STEP_MS);
+    buzzer_steady_on();
+    board_wait_ms(BUZZER_STEP_MS);
+    buzzer_off();
+    board_wait_ms(BUZZER_GAP_MS);
+
+    con_printf("step 2/2: 2.7 kHz tone for %u ms\n", BUZZER_STEP_MS);
+    buzzer_tone_start();
+    board_wait_ms(BUZZER_STEP_MS);
+    buzzer_off();
+
+    finish(TEST_BUZZER, "PASS", "both steps ran, BUZZER_EN low; record which step sounded");
+}
+
 static void run_test(uint8_t t)
 {
     s_stop = false;
@@ -337,8 +350,8 @@ static void run_test(uint8_t t)
         case TEST_DCF77:
             run_dcf77();
             break;
-        default:
-            run_stub(t);
+        case TEST_BUZZER:
+            run_buzzer();
             break;
     }
     s_running = TEST_NONE;

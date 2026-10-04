@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "buzzer.h"
 #include "dk_breadboard_pins.h"
 #include "nrf.h"
 #include "nrf_gpio.h"
@@ -18,6 +19,7 @@ void board_safe_state(void)
     nrf_gpio_cfg_output(SENSOR_CS);
     nrf_gpio_pin_clear(BUZZER_EN);
     nrf_gpio_cfg_output(BUZZER_EN);
+    buzzer_off();
 }
 
 static volatile uint32_t s_rtc_overflows;

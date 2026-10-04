@@ -18,6 +18,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(FW_DIR)/src/board.c \
+  $(FW_DIR)/src/buzzer.c \
   $(FW_DIR)/src/spi_bus.c \
   $(FW_DIR)/src/epd.c \
   $(FW_DIR)/src/lis3dh.c \

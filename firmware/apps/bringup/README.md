@@ -152,3 +152,21 @@ gcc -I firmware/src firmware/tests/dcf77_classify_test.c \
 ```
 
 If `gcc` is not on `PATH`, prefix the command with `nix-shell -p gcc --run '...'`.
+
+## Test 4: buzzer (guide section 12.3)
+
+The AP-1205V-P1 drive type is not confirmed. It can have its own oscillator
+(needs a steady level) or need an external tone. This test tries both:
+
+1. Press button 4.
+2. `step 1/2: BUZZER_EN steady high for 500 ms`, then 300 ms off.
+3. `step 2/2: 2.7 kHz tone for 500 ms`.
+4. Expect `PASS buzzer: both steps ran, BUZZER_EN low; ...`. `PASS` means the
+   firmware finished both steps. Listen for the sound yourself.
+
+Write in the test record which step sounded. That is the buzzer's drive type.
+If neither step sounds, follow guide section 12.3 with USB removed.
+
+If the DK resets during a step, the next banner shows the reset reason.
+`0x00000000` (power-on or brown-out) means the buzzer current pulled the
+supply down. Record it and stop the buzzer test.
