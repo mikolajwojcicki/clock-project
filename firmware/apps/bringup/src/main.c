@@ -279,9 +279,11 @@ static void run_dcf77(void)
         app_poll();
         if (s_dcf_pulse)
         {
+            __disable_irq();
             uint32_t width = s_dcf_width_ms;
             uint32_t period = s_dcf_period_ms;
             s_dcf_pulse = false;
+            __enable_irq();
 
             if (dcf77_is_minute_gap(period))
             {
