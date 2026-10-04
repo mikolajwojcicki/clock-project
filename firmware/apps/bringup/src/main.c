@@ -379,6 +379,11 @@ int main(void)
     print_banner(resetreas);
 
     spi_bus_init();
+    /* LIS3DH runs its I2C interface while CS is high, on the shared SCK/MOSI lines. A DK reset
+     * floats those lines and can leave it mid-transfer, corrupting display traffic; one SPI
+     * access (CS low) resets that state. */
+    (void)lis3dh_who_am_i();
+    lis3dh_power_down();
     buttons_init();
 
     for (;;)
