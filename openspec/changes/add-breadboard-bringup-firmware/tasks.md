@@ -4,8 +4,8 @@
 
 - [x] 1.1 Create `firmware/boards/dk_breadboard_pins.h` with every signal from guide section 6, DK buttons 1 to 4, and the DCF active-level and pull constants; verify by diffing each pin against the guide table
 - [x] 1.2 Create `firmware/apps/bringup/` from blinky (wrapper `Makefile`, `armgcc/Makefile`, linker script, `config/sdk_config.h`) with project name `bringup_pca10040` and `firmware/src/` on the source and include paths; verify `make` produces `armgcc/_build/nrf52832_xxaa.hex`
-- [ ] 1.3 Add `board_safe_state()` in `firmware/src/` and call it as the first statement of `main()`; verify with a multimeter or logic analyzer after `make flash`: `P0.24`, `P0.11`, `P0.30` high and `P0.31` low
-- [ ] 1.4 Add a polled UART0 console at 115200 baud and print the banner with app name, build identifier, button map, and `RESETREAS`; verify the banner appears in `picocom -b 115200 /dev/ttyACM0` after a reset
+- [x] 1.3 Add `board_safe_state()` in `firmware/src/` and call it as the first statement of `main()`; verify with a multimeter or logic analyzer after `make flash`: `P0.24`, `P0.11`, `P0.30` high and `P0.31` low
+- [x] 1.4 Add a polled UART0 console at 115200 baud and print the banner with app name, build identifier, button map, and `RESETREAS`; verify the banner appears in `picocom -b 115200 /dev/ttyACM0` after a reset
 - [ ] 1.5 Start LFCLK from the crystal and RTC1 as a free-running timebase; add button handling through GPIOTE with 50 ms debounce and the one-test-at-a-time rule; verify each button prints its test name and a second button during a stub test prints "test already running"
 - [x] 1.6 Add `firmware/apps/bringup/README.md` (build, flash, erase, serial console, button map, erased-chip floating-pin warning) and update `firmware/README.md` layout; verify the documented commands run as written
 - [ ] 1.7 Add VS Code tasks `firmware: bringup build`, `firmware: bringup flash`, `firmware: serial console`; verify each task runs from Terminal > Run Task
