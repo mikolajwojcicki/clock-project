@@ -73,3 +73,23 @@ that starts with `PASS`, `FAIL`, or `STOPPED` and names the test.
 
 Pressing another button while a test runs prints
 `button N ignored: ... test already running`.
+
+## Test 1: display (guide section 9.2)
+
+Before the first run, read the label on the display's flat cable. This driver
+uses the Waveshare **V4** (SSD1680) command set. If the label shows another
+version, record it; a busy timeout or a garbled image is then expected.
+
+1. Press button 1.
+2. Wait about 3 s for the full refresh (the panel flashes several times).
+3. Expect `PASS display: ...` and this image on the panel: a 4 px black border
+   and a black-and-white checkerboard of 16 px squares.
+4. Remove USB. The image must stay.
+
+`FAIL display: EPD_BUSY did not clear within 10 s` means the controller never
+reported ready. `BUSY` has an internal pull-up, so a missing `BUSY` wire
+gives this failure. Check the guide section 9.2 list. A `PASS` line with a blank
+panel means the firmware ran but the panel did not take the data: check
+`DIN`, `CLK`, `CS`, `DC`, and `BS1 = 0`.
+
+The panel is left in deep sleep. The next run wakes it with a hardware reset.

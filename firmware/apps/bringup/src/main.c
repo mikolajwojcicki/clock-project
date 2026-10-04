@@ -11,8 +11,10 @@
 
 #include "board.h"
 #include "dk_breadboard_pins.h"
+#include "epd.h"
 #include "nrf.h"
 #include "nrf_gpio.h"
+#include "spi_bus.h"
 
 /* Test number == DK button number. */
 enum test
@@ -141,12 +143,33 @@ static void run_stub(uint8_t t)
     finish(t, "STOPPED", "not implemented yet");
 }
 
+static void run_display(void)
+{
+    con_printf("reset + full refresh, about 3 s; expect black border + checkerboard\n");
+    if (epd_show_test_pattern())
+    {
+        finish(TEST_DISPLAY, "PASS", "refresh done, panel in deep sleep; check the pattern");
+    }
+    else
+    {
+        finish(TEST_DISPLAY, "FAIL", "EPD_BUSY did not clear within 10 s");
+    }
+}
+
 static void run_test(uint8_t t)
 {
     s_stop = false;
     s_running = t;
     con_printf("\n== %s test ==\n", test_names[t]);
-    run_stub(t);
+    switch (t)
+    {
+        case TEST_DISPLAY:
+            run_display();
+            break;
+        default:
+            run_stub(t);
+            break;
+    }
     s_running = TEST_NONE;
 }
 
@@ -168,6 +191,7 @@ int main(void)
     NRF_POWER->RESETREAS = resetreas;
     print_banner(resetreas);
 
+    spi_bus_init();
     buttons_init();
 
     for (;;)
