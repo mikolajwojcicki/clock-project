@@ -235,8 +235,9 @@ static void run_lis3dh(void)
     while (!s_stop && board_ms() - start < LIS3DH_TEST_MS)
     {
         app_poll();
-        /* The line is level-latched: also catch a rise that happened before the channel was armed. */
-        if (s_int1 || nrf_gpio_pin_read(SENSOR_INT1))
+        /* Edge only: INT1 stays high ~1 ODR period after the INT1_SRC read, so a level check
+         * re-counts one event. The enable sequence clears the latch after the channel is armed. */
+        if (s_int1)
         {
             s_int1 = false;
             uint8_t src = lis3dh_int1_source();
