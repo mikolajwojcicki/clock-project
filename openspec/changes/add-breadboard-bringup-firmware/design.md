@@ -33,9 +33,19 @@
 ### App layout: clone blinky, add `firmware/src/` to the build
 
 `firmware/apps/bringup/` copies blinky's wrapper `Makefile`, `armgcc/Makefile`,
-linker script, and `config/sdk_config.h`, then adds `../../../src/*.c` and the
-needed SDK nrfx sources. Alternative: a shared top-level Makefile fragment. Not
-worth it for two apps; revisit when the clock app arrives.
+and linker script, then adds `../../../src/*.c`. Alternative: a shared
+top-level Makefile fragment. Not worth it for two apps; revisit when the clock
+app arrives.
+
+### Register-level drivers, empty `sdk_config.h`
+
+Changed during implementation. The SDK has no PCA10040 nrfx SPIM example
+config, and enabling `NRF_LOG` plus nrfx GPIOTE/SPIM/UARTE/PWM drivers means
+merging a large legacy `sdk_config.h`. The peripherals used here (UART0, GPIOTE,
+SPIM0, PWM0, RTC1, CLOCK) need only a few register writes each, so the drivers
+use the MDK register definitions and the `nrf_gpio.h` HAL. Only the startup
+file and `system_nrf52.c` come from the SDK. This also keeps the power-relevant
+peripheral setup visible in project code for the thesis.
 
 ### Pin map in one header
 
@@ -53,21 +63,24 @@ microseconds; the guide already covers that by requiring the wires to stay
 disconnected until this firmware is flashed. An erased chip leaves them
 floating indefinitely; the README says so.
 
-### UART console: `NRF_LOG` with the UART backend, in-place mode
+### UART console: polled UART0, `vsnprintf`
 
-Blinky already compiles the `nrf_log` frontend. Add
-`nrf_log_backend_uart` + `nrfx_uarte` at 115200 baud on the DK default pins,
-with `NRF_LOG_DEFERRED 0` so lines appear before a crash or reset.
+`con_printf()` formats with newlib-nano `vsnprintf` and writes each byte to
+UART0 at 115200 baud on the DK pins (`P0.06` TX, `P0.08` RX), waiting for
+`TXDRDY`. Blocking output means a line is complete before a crash or reset.
 Alternative: RTT through the J-Link. Rejected because OpenOCD RTT setup is
-more fragile than `picocom` on `/dev/ttyACM0`. The banner prints
-`NRF_POWER->RESETREAS` and then clears it.
+more fragile than `picocom` on `/dev/ttyACM0`. The banner prints the git build
+ID and `NRF_POWER->RESETREAS`, then clears it.
 
-### Buttons and events: `nrfx_gpiote` with a single event flag loop
+### Buttons and events: GPIOTE IN channels, flags polled by the main loop
 
-Buttons 1 to 4 (`P0.13` to `P0.16`, active low, internal pull-up),
-`SENSOR_INT1`, and `DCF_OUT` use GPIOTE input events. ISRs only record an
-event and a timestamp; the main loop dispatches. A simple software debounce
-(ignore presses within 50 ms) is enough for test selection.
+Buttons 1 to 4 (`P0.13` to `P0.16`, active low, internal pull-up) use GPIOTE
+channels 0 to 3 in toggle mode; `SENSOR_INT1` and `DCF_OUT` use channels 4 and
+5 only while their test runs. ISRs only set flags and timestamps; the main loop
+prints. Debounce: an edge counts as a press only if the pin reads low and the
+previous edge was at least 50 ms earlier, so release bounce does not stop a
+continuous test. Every wait loop calls `app_poll()`, which prints ignored
+presses while a blocking test runs.
 `ponytail:` no event queue; one pending flag per source. Back-to-back DCF edges
 faster than the loop are counted as invalid. Upgrade to a ring buffer if needed.
 
@@ -81,7 +94,7 @@ use.
 
 ### Shared SPI: SPIM0 at 1 MHz, chip select in software
 
-`nrfx_spim` on `SPI_SCK` `P0.03`, `SPI_MOSI` `P0.04`, `SPI_MISO` `P0.02`,
+SPIM0 (EasyDMA) on `SPI_SCK` `P0.03`, `SPI_MOSI` `P0.04`, `SPI_MISO` `P0.02`,
 SPI mode 0 for the e-paper and mode 3 (clock idle high) for the LIS3DH, per
 their datasheets. The bus driver switches mode per device before asserting
 CS. Alternative: one mode for both. Rejected because it relies on behavior
@@ -118,7 +131,7 @@ default active-high, no pull. Test window 10 minutes.
 ### Buzzer: steady step, then tone step, both bounded
 
 Step 1: `BUZZER_EN` high for 500 ms. Step 2: 2.7 kHz square wave for 500 ms
-using `nrfx_pwm` (below the 10 kHz limit for `P0.31`). Whichever step sounds
+using PWM0 (below the 10 kHz limit for `P0.31`). Whichever step sounds
 tells the operator the drive type, which the README asks them to record. The
 pin returns low and the PWM is stopped in `board_safe_state()`.
 
