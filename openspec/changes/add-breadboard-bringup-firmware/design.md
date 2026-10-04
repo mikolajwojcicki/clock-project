@@ -92,7 +92,7 @@ timeouts, and debounce come from it. Alternative: `app_timer`. Rejected; a raw
 counter is fewer SDK modules and is the same timebase the clock firmware will
 use.
 
-### Shared SPI: SPIM0 at 1 MHz, chip select in software
+### Shared SPI: SPIM0 at 250 kHz, chip select in software
 
 SPIM0 (EasyDMA) on `SPI_SCK` `P0.03`, `SPI_MOSI` `P0.04`, `SPI_MISO` `P0.02`,
 SPI mode 0 for the e-paper and mode 3 (clock idle high) for the LIS3DH, per
@@ -100,7 +100,10 @@ their datasheets. The bus driver switches mode per device before asserting
 CS. Alternative: one mode for both. Rejected because it relies on behavior
 outside the LIS3DH datasheet. The driver asserts exactly
 one CS around each transfer and asserts both high between transfers.
-1 MHz tolerates breadboard jumpers; speed tuning is not a goal.
+The plan was 1 MHz, but on the DK breadboard it lost clock edges and garbled the
+e-paper frame (commit `4c5d370`); 250 kHz is clean. Speed tuning is not a goal.
+After reset the firmware reads LIS3DH `WHO_AM_I` once, because the sensor runs
+its I2C interface on `SCK`/`MOSI` while its CS is high (commit `f13e003`).
 
 ### E-paper driver: Waveshare 2.13" V4 (SSD1680) command set
 
