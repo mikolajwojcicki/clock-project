@@ -93,3 +93,23 @@ panel means the firmware ran but the panel did not take the data: check
 `DIN`, `CLK`, `CS`, `DC`, and `BS1 = 0`.
 
 The panel is left in deep sleep. The next run wakes it with a hardware reset.
+
+## Test 2: LIS3DH (guide section 10.2)
+
+1. Put the board on a stable table and press button 2.
+2. Expect `WHO_AM_I = 0x33 (expect 0x33)` and `identification passed`.
+3. Move or tap the board. Each movement prints
+   `INT1 event N: src=0x.. X Y Z` with the axes that crossed about 256 mg.
+4. Stop moving. The events must stop. A high-pass filter removes gravity, so a
+   still board gives no events in any orientation.
+5. Press button 2 again (or wait 60 s).
+
+The last line is `PASS lis3dh: N INT1 events (...)` if at least one event
+arrived, else `STOPPED lis3dh: 0 INT1 events`. The sensor is powered down at
+the end.
+
+| Result | Meaning |
+| --- | --- |
+| `FAIL lis3dh: WHO_AM_I mismatch 0xff` | `MISO` reads high: no sensor answer. Check `SDO`, `CS`, `VIN`. |
+| `FAIL lis3dh: WHO_AM_I mismatch 0x00` | `MISO` reads low or the clock does not reach the sensor. Check `SCK`, `GND`. |
+| ID passes, no events | Check the `INT1` wire to `P0.23`. `INT1` has an internal pull-down, so a missing wire gives no events. |

@@ -8,10 +8,12 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "board.h"
 #include "dk_breadboard_pins.h"
 #include "epd.h"
+#include "lis3dh.h"
 #include "nrf.h"
 #include "nrf_gpio.h"
 #include "spi_bus.h"
@@ -30,8 +32,13 @@ static const char *const test_names[] = {"none", "display", "lis3dh", "dcf77", "
 static const uint32_t button_pins[] = {DK_BUTTON1, DK_BUTTON2, DK_BUTTON3, DK_BUTTON4};
 
 #define BUTTON_DEBOUNCE_MS 50
+#define LIS3DH_TEST_MS     60000u
+
+/* GPIOTE channels 0 to 3 are buttons 1 to 4. */
+#define GPIOTE_CH_INT1 4
 
 static volatile uint8_t s_running;
+static volatile bool s_int1;
 static volatile uint8_t s_pressed;
 static volatile uint8_t s_ignored;
 static volatile bool s_stop;
@@ -86,6 +93,13 @@ static void on_button_edge(uint32_t i)
     }
 }
 
+static void gpiote_off(uint32_t ch)
+{
+    NRF_GPIOTE->INTENCLR = 1u << ch;
+    NRF_GPIOTE->CONFIG[ch] = 0;
+    NRF_GPIOTE->EVENTS_IN[ch] = 0;
+}
+
 void GPIOTE_IRQHandler(void)
 {
     for (uint32_t ch = 0; ch < 4; ch++)
@@ -95,6 +109,11 @@ void GPIOTE_IRQHandler(void)
             NRF_GPIOTE->EVENTS_IN[ch] = 0;
             on_button_edge(ch);
         }
+    }
+    if (NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_INT1])
+    {
+        NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_INT1] = 0;
+        s_int1 = true;
     }
 }
 
@@ -156,6 +175,51 @@ static void run_display(void)
     }
 }
 
+static void run_lis3dh(void)
+{
+    uint8_t id = lis3dh_who_am_i();
+    con_printf("WHO_AM_I = 0x%02x (expect 0x%02x)\n", id, LIS3DH_WHO_AM_I_VALUE);
+    char reason[64];
+    if (id != LIS3DH_WHO_AM_I_VALUE)
+    {
+        snprintf(reason, sizeof reason, "WHO_AM_I mismatch 0x%02x; check SCK, MOSI, MISO, CS, VIN", id);
+        finish(TEST_LIS3DH, "FAIL", reason);
+        return;
+    }
+    con_printf("identification passed; move the board (button 2 or 60 s stops)\n");
+
+    /* Pull-down: a missing INT1 wire gives no events instead of noise. */
+    nrf_gpio_cfg_input(SENSOR_INT1, NRF_GPIO_PIN_PULLDOWN);
+    s_int1 = false;
+    gpiote_in(GPIOTE_CH_INT1, SENSOR_INT1, GPIOTE_CONFIG_POLARITY_LoToHi);
+    lis3dh_motion_int1_enable();
+
+    uint32_t events = 0;
+    uint32_t start = board_ms();
+    while (!s_stop && board_ms() - start < LIS3DH_TEST_MS)
+    {
+        app_poll();
+        /* The line is level-latched: also catch a rise that happened before the channel was armed. */
+        if (s_int1 || nrf_gpio_pin_read(SENSOR_INT1))
+        {
+            s_int1 = false;
+            uint8_t src = lis3dh_int1_source();
+            events++;
+            con_printf("INT1 event %lu: src=0x%02x%s%s%s\n", (unsigned long)events, src,
+                       (src & LIS3DH_INT_XH) ? " X" : "",
+                       (src & LIS3DH_INT_YH) ? " Y" : "",
+                       (src & LIS3DH_INT_ZH) ? " Z" : "");
+        }
+    }
+
+    gpiote_off(GPIOTE_CH_INT1);
+    lis3dh_power_down();
+
+    snprintf(reason, sizeof reason, "%lu INT1 events (%s)", (unsigned long)events,
+             s_stop ? "button 2" : "timeout");
+    finish(TEST_LIS3DH, events ? "PASS" : "STOPPED", reason);
+}
+
 static void run_test(uint8_t t)
 {
     s_stop = false;
@@ -165,6 +229,9 @@ static void run_test(uint8_t t)
     {
         case TEST_DISPLAY:
             run_display();
+            break;
+        case TEST_LIS3DH:
+            run_lis3dh();
             break;
         default:
             run_stub(t);
