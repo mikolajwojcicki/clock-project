@@ -14,7 +14,7 @@
 ## 2. Shared SPI bus and e-paper test
 
 - [x] 2.1 Implement the shared SPIM0 bus driver (1 MHz, per-device SPI mode, one CS asserted per transfer, both CS high between transfers); verify with the logic analyzer that only one CS goes low per transfer
-- [ ] 2.2 Implement the Waveshare 2.13" V4 driver: reset, busy wait with 10 s timeout, full refresh of a generated border + checkerboard frame, deep sleep; verify on hardware that the pattern appears and stays after USB is removed
+- [x] 2.2 Implement the Waveshare 2.13" V4 driver: reset, busy wait with 10 s timeout, full refresh of a generated border + checkerboard frame, deep sleep; verify on hardware that the pattern appears and stays after USB is removed
 - [ ] 2.3 Wire button 1 to the display test with `PASS` / `FAIL` reporting and `board_safe_state()` on every exit; verify a busy timeout (display `BUSY` wire removed, USB off while rewiring) reports `FAIL` with the reason
 - [x] 2.4 Document the display test, expected pattern, and panel-revision check in the bring-up README; verify against guide section 9.2
 - [x] 2.5 Commit: `firmware: add shared SPI bus and e-paper test pattern`
