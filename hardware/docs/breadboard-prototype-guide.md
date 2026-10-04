@@ -751,7 +751,11 @@ With USB power removed:
 
 1. Connect the transistor emitter to `GND`.
 2. Connect the transistor collector to the buzzer negative terminal.
-3. Connect the buzzer positive terminal to the approved supply.
+3. Connect the buzzer positive terminal to the approved supply. The owned
+   buzzer is a 5 V active type (built-in oscillator, about 4 to 7 V operating
+   range, 30 mA or less, see `temp-resources/HCM12.pdf`). It stays silent on
+   `3V3`; use the DK `5V` pin on `P1`. The 5 V reaches only the buzzer and the
+   collector, never `P0.31`.
 4. Connect DK `P0.31` through the 1 kOhm resistor to the transistor base.
 5. Connect the diode banded end to the buzzer positive terminal.
 6. Connect the other diode end to the transistor collector.
@@ -760,7 +764,7 @@ With USB power removed:
 
 Do not power the buzzer from the nRF52 GPIO.
 Do not omit the diode.
-Do not add 5 V until the buzzer datasheet and power budget are checked.
+Use 5 V only for a buzzer whose marking and datasheet confirm a 5 V rating.
 
 ### 12.3 Buzzer test
 
