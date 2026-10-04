@@ -22,11 +22,11 @@
 
 ## 4. KiCad schematic
 
-- [ ] 4.1 Rename DK symbol pins in `hardware/kicad/breadboard-prototype-symbols.kicad_sym` to `P1_VDD`, `P1_GND`, and `P0.xx_SIGNAL` with the new numbers; verify with `rg -n "name \"P" hardware/kicad/breadboard-prototype-symbols.kicad_sym`
-- [ ] 4.2 Apply the same names to the embedded DK symbol in `hardware/kicad/breadboard-prototype.kicad_sch` and update the schematic safety text that names `P0.25`/DK `3V3`; verify `kicad-cli sch export pdf` succeeds
-- [ ] 4.3 Run `kicad-cli sch erc` on the schematic and confirm no new connectivity errors compared with before the change; record the result
-- [ ] 4.4 Export `hardware/kicad/breadboard-prototype.pdf`, view it, and confirm DK pin names match the guide table; commit as `hardware: match schematic DK pins to updated guide`
+- [x] 4.1 Rename DK symbol pins in `hardware/kicad/breadboard-prototype-symbols.kicad_sym` to `P1_VDD`, `P1_GND`, and `P0.xx_SIGNAL` with the new numbers; verify with `rg -n "name \"P" hardware/kicad/breadboard-prototype-symbols.kicad_sym`
+- [x] 4.2 Apply the same names to the embedded DK symbol in `hardware/kicad/breadboard-prototype.kicad_sch` and update the schematic safety text that names `P0.25`/DK `3V3`; verify `kicad-cli sch export pdf` succeeds
+- [x] 4.3 Run `kicad-cli sch erc` on the schematic and confirm no new connectivity errors compared with before the change; record the result
+- [x] 4.4 Export `hardware/kicad/breadboard-prototype.pdf`, view it, and confirm DK pin names match the guide table; commit as `hardware: match schematic DK pins to updated guide`
 
 ## 5. Integration check
 
-- [ ] 5.1 Cross-check the guide pin map, wiring steps, and schematic PDF signal by signal and confirm all three agree; run `openspec validate fix-dk-power-and-pin-map --strict` and confirm it passes
+- [x] 5.1 Cross-check the guide pin map, wiring steps, and schematic PDF signal by signal and confirm all three agree; run `openspec validate fix-dk-power-and-pin-map --strict` and confirm it passes
