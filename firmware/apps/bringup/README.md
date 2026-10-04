@@ -113,3 +113,42 @@ the end.
 | `FAIL lis3dh: WHO_AM_I mismatch 0xff` | `MISO` reads high: no sensor answer. Check `SDO`, `CS`, `VIN`. |
 | `FAIL lis3dh: WHO_AM_I mismatch 0x00` | `MISO` reads low or the clock does not reach the sensor. Check `SCK`, `GND`. |
 | ID passes, no events | Check the `INT1` wire to `P0.23`. `INT1` has an internal pull-down, so a missing wire gives no events. |
+
+## Test 3: DCF-77 (guide section 11.3)
+
+Connect `PON` to `P0.24` only after this firmware is flashed: it holds `PON`
+high (receiver off) except during this test. Connect `OUT` to `P0.25` only
+after you measured its levels with the logic analyzer (guide section 11.2).
+
+1. Place the antenna away from the computer and USB cable.
+2. Press button 3. `PON` goes low and the receiver turns on.
+3. Each pulse prints `pulse width=... ms period=... ms -> 0 | 1 | invalid`.
+   A good signal gives about one line per second, widths near 100 ms (`0`)
+   or 200 ms (`1`), and `-- minute marker --` once per minute.
+4. Every 10 s a `t=...s valid=... invalid=...` line shows the counts.
+5. Press button 3 again, or wait 10 min. `PON` goes high again.
+
+The last line is always `STOPPED dcf77: valid=... invalid=... minute_markers=...
+overruns=...`. Zero valid pulses is an observation for the test record
+(location, time, antenna direction), not a wiring failure.
+
+With `OUT` unconnected, the input floats: expect no lines or random `invalid`
+lines.
+
+The firmware assumes `OUT` is active high (pulse = high) with no pull
+resistor. If every width is about 800 to 900 ms, the output is inverted: set
+`DCF_OUT_ACTIVE_LEVEL` to `0` in
+[`dk_breadboard_pins.h`](../../boards/dk_breadboard_pins.h). If `OUT` never
+changes but the logic analyzer showed it only pulls low, it is open collector:
+set `DCF_OUT_PULL` to `NRF_GPIO_PIN_PULLUP`. Rebuild and flash after either
+change.
+
+Classifier windows: `0` = 40 to 140 ms, `1` = 150 to 260 ms, minute marker =
+1700 to 2300 ms between pulse starts. Host check:
+
+```bash
+gcc -I firmware/src firmware/tests/dcf77_classify_test.c \
+    firmware/src/dcf77_classify.c -o /tmp/dcf_test && /tmp/dcf_test
+```
+
+If `gcc` is not on `PATH`, prefix the command with `nix-shell -p gcc --run '...'`.

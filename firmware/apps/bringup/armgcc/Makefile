@@ -21,6 +21,7 @@ SRC_FILES += \
   $(FW_DIR)/src/spi_bus.c \
   $(FW_DIR)/src/epd.c \
   $(FW_DIR)/src/lis3dh.c \
+  $(FW_DIR)/src/dcf77_classify.c \
   $(PROJ_DIR)/src/main.c \
 
 INC_FOLDERS += \

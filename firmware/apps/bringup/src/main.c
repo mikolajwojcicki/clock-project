@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "board.h"
+#include "dcf77_classify.h"
 #include "dk_breadboard_pins.h"
 #include "epd.h"
 #include "lis3dh.h"
@@ -33,12 +34,24 @@ static const uint32_t button_pins[] = {DK_BUTTON1, DK_BUTTON2, DK_BUTTON3, DK_BU
 
 #define BUTTON_DEBOUNCE_MS 50
 #define LIS3DH_TEST_MS     60000u
+#define DCF77_TEST_MS      (10u * 60u * 1000u)
+#define DCF77_HEARTBEAT_MS 10000u
 
 /* GPIOTE channels 0 to 3 are buttons 1 to 4. */
 #define GPIOTE_CH_INT1 4
+#define GPIOTE_CH_DCF  5
 
 static volatile uint8_t s_running;
 static volatile bool s_int1;
+
+/* ponytail: one pending DCF pulse, no queue. A second pulse before the main
+ * loop prints the first counts as an overrun; add a ring buffer if that shows up. */
+static volatile bool s_dcf_pulse;
+static volatile uint32_t s_dcf_width_ms;
+static volatile uint32_t s_dcf_period_ms;
+static volatile uint32_t s_dcf_overruns;
+static uint32_t s_dcf_start_ms;
+static bool s_dcf_have_start;
 static volatile uint8_t s_pressed;
 static volatile uint8_t s_ignored;
 static volatile bool s_stop;
@@ -93,6 +106,27 @@ static void on_button_edge(uint32_t i)
     }
 }
 
+static void on_dcf_edge(void)
+{
+    uint32_t now = board_ms();
+    if (nrf_gpio_pin_read(DCF_OUT) == DCF_OUT_ACTIVE_LEVEL)
+    {
+        s_dcf_period_ms = s_dcf_have_start ? now - s_dcf_start_ms : 0;
+        s_dcf_start_ms = now;
+        s_dcf_have_start = true;
+    }
+    else if (s_dcf_have_start)
+    {
+        if (s_dcf_pulse)
+        {
+            s_dcf_overruns++;
+            return;
+        }
+        s_dcf_width_ms = now - s_dcf_start_ms;
+        s_dcf_pulse = true;
+    }
+}
+
 static void gpiote_off(uint32_t ch)
 {
     NRF_GPIOTE->INTENCLR = 1u << ch;
@@ -114,6 +148,11 @@ void GPIOTE_IRQHandler(void)
     {
         NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_INT1] = 0;
         s_int1 = true;
+    }
+    if (NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_DCF])
+    {
+        NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_DCF] = 0;
+        on_dcf_edge();
     }
 }
 
@@ -220,6 +259,68 @@ static void run_lis3dh(void)
     finish(TEST_LIS3DH, events ? "PASS" : "STOPPED", reason);
 }
 
+static void run_dcf77(void)
+{
+    static const char *const kinds[] = {"0", "1", "invalid"};
+
+    con_printf("connect OUT to P0.25 only after its level was measured;\n"
+               "with OUT unconnected, invalid pulses or none are expected\n");
+    nrf_gpio_cfg_input(DCF_OUT, DCF_OUT_PULL);
+    s_dcf_pulse = false;
+    s_dcf_have_start = false;
+    s_dcf_overruns = 0;
+    gpiote_in(GPIOTE_CH_DCF, DCF_OUT, GPIOTE_CONFIG_POLARITY_Toggle);
+
+    nrf_gpio_pin_clear(DCF_PON);
+    con_printf("receiver enabled (PON low); button 3 or 10 min stops\n");
+
+    uint32_t valid = 0, invalid = 0, markers = 0;
+    uint32_t start = board_ms();
+    uint32_t heartbeat = start;
+    while (!s_stop && board_ms() - start < DCF77_TEST_MS)
+    {
+        app_poll();
+        if (s_dcf_pulse)
+        {
+            uint32_t width = s_dcf_width_ms;
+            uint32_t period = s_dcf_period_ms;
+            s_dcf_pulse = false;
+
+            if (dcf77_is_minute_gap(period))
+            {
+                markers++;
+                con_printf("-- minute marker (period %lu ms) --\n", (unsigned long)period);
+            }
+            dcf77_pulse_t kind = dcf77_classify_width(width);
+            if (kind == DCF77_INVALID)
+            {
+                invalid++;
+            }
+            else
+            {
+                valid++;
+            }
+            con_printf("pulse width=%lu ms period=%lu ms -> %s\n",
+                       (unsigned long)width, (unsigned long)period, kinds[kind]);
+        }
+        if (board_ms() - heartbeat >= DCF77_HEARTBEAT_MS)
+        {
+            heartbeat += DCF77_HEARTBEAT_MS;
+            con_printf("t=%lus valid=%lu invalid=%lu\n", (unsigned long)((heartbeat - start) / 1000),
+                       (unsigned long)valid, (unsigned long)invalid);
+        }
+    }
+
+    gpiote_off(GPIOTE_CH_DCF);
+
+    char reason[112];
+    snprintf(reason, sizeof reason,
+             "valid=%lu invalid=%lu minute_markers=%lu overruns=%lu (%s); receiver off",
+             (unsigned long)valid, (unsigned long)invalid, (unsigned long)markers,
+             (unsigned long)s_dcf_overruns, s_stop ? "button 3" : "timeout");
+    finish(TEST_DCF77, "STOPPED", reason);
+}
+
 static void run_test(uint8_t t)
 {
     s_stop = false;
@@ -232,6 +333,9 @@ static void run_test(uint8_t t)
             break;
         case TEST_LIS3DH:
             run_lis3dh();
+            break;
+        case TEST_DCF77:
+            run_dcf77();
             break;
         default:
             run_stub(t);
