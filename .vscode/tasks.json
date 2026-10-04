@@ -33,6 +33,33 @@
       },
       "group": "none",
       "problemMatcher": []
+    },
+    {
+      "label": "firmware: bringup build",
+      "type": "shell",
+      "command": "make",
+      "options": {
+        "cwd": "${workspaceFolder}/firmware/apps/bringup"
+      },
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "firmware: bringup flash",
+      "type": "shell",
+      "command": "make flash",
+      "options": {
+        "cwd": "${workspaceFolder}/firmware/apps/bringup"
+      },
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "firmware: serial console",
+      "type": "shell",
+      "command": "picocom -b 115200 /dev/ttyACM0",
+      "group": "none",
+      "problemMatcher": []
     }
   ]
 }
