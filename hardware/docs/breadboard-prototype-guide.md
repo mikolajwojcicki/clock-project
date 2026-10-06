@@ -710,7 +710,9 @@ A valid time frame can require repeated observations.
 ### 11.4 Test with the Nucleo DCF-77 generator
 
 The Nucleo-F411RE can replace the receiver as a repeatable signal source.
-Firmware: `firmware/tools/dcf77-generator/`. Use it when radio reception is
+Firmware: `firmware/tools/dcf77-generator-logic/` (the frozen logic-only
+version; the carrier version in `firmware/tools/dcf77-generator/` also works
+for this test, because `PA0` behaves the same). Use it when radio reception is
 poor or when you need faults on demand.
 
 Wiring (both boards powered from the same computer):
@@ -750,8 +752,10 @@ Wiring (both boards powered from the same computer):
 Nucleo `PA0` stays disconnected from the DK. The module `OUT` drives `P0.25`
 in this test, and two outputs on one pin would fight.
 
-Loop: 5 to 10 turns of hookup wire, about 3 cm across (for example, wound on a
-marker pen). Put it about 30 cm from the ferrite rod, with the loop axis in
+Loop: 5 to 10 turns of hookup wire, each turn a circle about 3 cm in
+diameter (the width of a marker pen; wind the wire around one and slide it
+off). All turns lie on top of each other like a coil of tape, and the two wire
+ends go to `PA6` (via the resistor) and `GND`. Put it about 30 cm from the ferrite rod, with the loop axis in
 line with the rod. Move it closer only if nothing decodes.
 
 Logic analyzer channels (common `GND` on the analyzer):
