@@ -43,5 +43,5 @@
 
 ## 6. Integration
 
-- [ ] 6.1 With all modules wired per guide section 13 step 6, run tests 1 to 4 in order after one reset; verify each ends with its expected result line and the safe states hold between tests
+- [x] 6.1 With all modules wired per guide section 13 step 6, run tests 1 to 4 in order after one reset; verify each ends with its expected result line and the safe states hold between tests
 - [x] 6.2 Run `openspec validate add-breadboard-bringup-firmware --strict`; verify it passes

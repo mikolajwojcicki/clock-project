@@ -1,5 +1,11 @@
 # Handoff: breadboard bring-up hardware verification
 
+> **Closed 2026-10-06.** 4.3 recorded as "no valid DCF frame indoors"
+> (`edf8618`), 6.1 passed on one clean run after reseating display `BUSY`/`RST`.
+> All tasks done; change archived. Follow-up: ESP32-S3 MicroPython DCF frame
+> generator as a test bench (new OpenSpec change). The notes below describe the
+> state on 2026-10-04.
+
 Stopped: 2026-10-04 ~19:45. Session verified tasks on the nRF52 DK with a
 Saleae Logic (8 ch) through the `Saleae Logic 2` MCP server, plus the UART log.
 
