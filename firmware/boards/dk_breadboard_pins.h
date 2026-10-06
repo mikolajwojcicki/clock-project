@@ -28,7 +28,7 @@
 #define DCF_PON      24
 #define DCF_OUT      25
 #define DCF_OUT_ACTIVE_LEVEL 1
-/* Switch to NRF_GPIO_PIN_PULLUP if OUT turns out to be open collector. */
+/* DCF-1060N-800 OUT is push-pull: it held low with the internal pull-up on, so no pull. */
 #define DCF_OUT_PULL NRF_GPIO_PIN_NOPULL
 
 /* Buzzer transistor base (through 1 kOhm) */
