@@ -76,3 +76,26 @@ Build flag `make CFLAGS_EXTRA=-DGEN_FORCE_HSI` skips HSE to test the fallback.
 
 Captures were not saved to the repository (Logic 2 capture ids 2 to 5, CSV in `/tmp`).
 Known quirk: `PA0` pulses for about 5 ms while OpenOCD resets the board.
+
+### Carrier and receiver test, 2026-10-06
+
+Firmware build `Oct  6 2026 21:58:13` (PLL 77.5 MHz from HSE). Logic 8,
+`PA0` ch 1, `PA6` ch 2 (ch 0 `PON`, ch 7 module `OUT`). Captures were not
+saved to the repository.
+
+| Item | Result |
+| --- | --- |
+| Carrier frequency (12 MS/s) | 77 492.98 Hz raw, -91 ppm; the analyzer reads the 1 s `PA0` spacing as 1.00009 s, so this is analyzer clock error |
+| Duty at 0 dB | Idle high 6.42 to 6.5 us (50%), pulse 0.6 us (4.8%) |
+| Duty at -6 dB | Idle 2.1 to 2.2 us, pulse 0.3 us (`CCR` 167 / 24) |
+| Level readback (`l`) | `CCR` idle/pulse 500/48, 167/24, 80/12, 32/5 for 0, -6, -12, -20 dB |
+| Modulation lag | Duty switches within 12 us (one carrier period) of each `PA0` edge |
+| `r`, `m`, `g`, `s` on the carrier | `PA6` low with `r`; no dip for one second with `m`; 10 ms dip at ms 500 with `g`; unmodulated carrier with `s` |
+| `GEN_FORCE_HSI` build | Banner: PLL from HSI, carrier disabled; `PA6` no edges; `PA0` pulses at about 0.99 s |
+| Receiver (DCF-1060N-800), loop about 1.1 turns, 1 kOhm, 0 dB, loop against the ferrite rod | DK button 3, 10 min: `valid=579 invalid=5 minute_markers=10 overruns=0`; frames decode to consecutive minutes with parity OK |
+| Module `OUT` vs `PA0` (4 MS/s, 79 pulses) | `OUT` active high; rises 32.9 to 38.7 ms after `PA0` (mean 34.2 ms); width 108.0 ms for 0 bits (+8.0 ms), 206.5 ms for 1 bits (+6.5 ms) |
+
+Notes: the 5 invalid pulses came while the receiver locked (4 in the first
+seconds) and once later. The carrier couples spikes onto the `PON` analyzer
+wire; `PON` stays low. The level and distance limit was not measured (task
+dropped).
