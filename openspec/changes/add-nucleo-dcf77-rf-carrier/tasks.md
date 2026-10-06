@@ -12,7 +12,7 @@
 - [x] 2.1 Start TIM3 CH1 PWM on `PA6` (AF2, high speed, `PSC=0`, `ARR=999`, `OC1PE`), with the level table from the design, and drive `TIM3_CCR1` from `pin_set()`; verify on the analyzer at 12 MS/s: carrier 77 500 Hz within 0.01%, and at 0 dB an idle duty of 50% and a pulse duty of 4.8% that follow `PA0` edges within one carrier period
 - [x] 2.2 Add the `l` (level cycle, prints the level and `TIM3_CCR1` values) and `r` (carrier on/off) keys, the carrier state in the banner, and -20 dB at reset; verify the -6 dB duty values on the analyzer, `r` holding `PA6` low while `PA0` keeps pulsing, and the printed `CCR` values for -12 and -20 dB
 - [x] 2.3 Verify the faults on the carrier: `m` (no dip for one second), `g` (10 ms dip at ms 500), `s` (unmodulated carrier until the frame start), on the analyzer with `PA0` and `PA6` captured together
-- [ ] 2.4 Add the `GEN_FORCE_HSI` build flag; verify `make clean && make CFLAGS_EXTRA=-DGEN_FORCE_HSI flash` shows the internal oscillator and a disabled carrier in the banner, `PA6` low, and `PA0` pulsing; then reflash the normal build
+- [x] 2.4 Add the `GEN_FORCE_HSI` build flag; verify `make clean && make CFLAGS_EXTRA=-DGEN_FORCE_HSI flash` shows the internal oscillator and a disabled carrier in the banner, `PA6` low, and `PA0` pulsing; then reflash the normal build
 - [x] 2.5 Update the README pins table (`PA6` = `D12` carrier), key table, and level table; verify each documented key against the running board
 - [x] 2.6 Commit: `firmware: modulate 77.5 kHz carrier on PA6 for receiver tests`
 
