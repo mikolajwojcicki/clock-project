@@ -10,7 +10,7 @@
 
 ## 2. Nucleo skeleton: build, flash, clock, LED
 
-- [ ] 2.1 Create `firmware/tools/dcf77-generator/` with a Makefile (`arm-none-eabi-gcc`, `-mcpu=cortex-m4 -mthumb`, `make`, `make flash` via `openocd -f board/st_nucleo_f4.cfg`, `make clean`), a linker script (512 KB flash, 128 KB RAM), a C startup with vector table and `.data`/`.bss` init, and a register header citing RM0383 sections; verify `make` builds without warnings
+- [x] 2.1 Create `firmware/tools/dcf77-generator/` with a Makefile (`arm-none-eabi-gcc`, `-mcpu=cortex-m4 -mthumb`, `make`, `make flash` via `openocd -f board/st_nucleo_f4.cfg`, `make clean`), a linker script (512 KB flash, 128 KB RAM), a C startup with vector table and `.data`/`.bss` init, and a register header citing RM0383 sections; verify `make` builds without warnings
 - [ ] 2.2 Start HSE bypass with a bounded wait and HSI fallback, and run SysTick at 1 ms; blink `LD2` (`PA5`) at 1 Hz; verify after `make flash` that the LED period measures 1000 ms on the logic analyzer
 - [ ] 2.3 Add `USART2` (`PA2`/`PA3`, 115200 8N1) output with the banner (name, build time, clock source, default time, command list); verify in `picocom -b 115200` on the Nucleo's `/dev/ttyACM*` after a reset
 - [ ] 2.4 Add `firmware/tools/dcf77-generator/README.md` (build, flash, serial port, board revision note) and list `tools/` in `firmware/README.md`; verify the documented commands run as written
