@@ -14,7 +14,7 @@
 - [x] 2.2 Start HSE bypass with a bounded wait and HSI fallback, and run SysTick at 1 ms; blink `LD2` (`PA5`) at 1 Hz; verify after `make flash` that the LED period measures 1000 ms on the logic analyzer
 - [x] 2.3 Add `USART2` (`PA2`/`PA3`, 115200 8N1) output with the banner (name, build time, clock source, default time, command list); verify in `picocom -b 115200` on the Nucleo's `/dev/ttyACM*` after a reset
 - [x] 2.4 Add `firmware/tools/dcf77-generator/README.md` (build, flash, serial port, board revision note) and list `tools/` in `firmware/README.md`; verify the documented commands run as written
-- [ ] 2.5 Commit: `firmware: add bare-metal Nucleo-F411RE skeleton for DCF bench`
+- [x] 2.5 Commit: `firmware: add bare-metal Nucleo-F411RE skeleton for DCF bench`
 
 ## 3. Signal output and UART control
 
