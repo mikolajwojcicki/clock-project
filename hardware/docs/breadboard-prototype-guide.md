@@ -729,6 +729,53 @@ Wiring (both boards powered from the same computer):
 
 The Nucleo output is 3.3 V push-pull, the same level as the DK `P0.25` input.
 
+### 11.5 Test the receiver with the Nucleo carrier
+
+The generator also sends a 77.5 kHz carrier on `PA6` (`D12`). A small loop
+near the ferrite antenna turns it into a magnetic field, so the real receiver
+can be tested with known time and faults. Section 11.4 tests the DK without
+the receiver. This section tests the receiver and the DK together.
+
+Wiring (both boards powered from the same computer):
+
+| From | Via | To | Note |
+| --- | --- | --- | --- |
+| Nucleo `PA6` (`D12`) | Coupling loop and 10 kOhm resistor in series | Nucleo `GND` | The loop is not wired to the DK. Use 1 kOhm only if 10 kOhm does not decode |
+| DCF `VDD` | Wire | `3V3` | As in 11.2 |
+| DCF `GND` | Wire | `GND` | As in 11.2 |
+| DCF `PON` | Wire | `P0.24` (`DCF_PON`) | Firmware drives it low for reception |
+| DCF `OUT` | Wire | `P0.25` (`DCF_OUT`) | Only after the 11.2 level check passed |
+| Nucleo `GND` | Wire | DK `GND` | Common reference for the analyzer |
+
+Nucleo `PA0` stays disconnected from the DK. The module `OUT` drives `P0.25`
+in this test, and two outputs on one pin would fight.
+
+Loop: 5 to 10 turns of hookup wire, about 3 cm across (for example, wound on a
+marker pen). Put it about 30 cm from the ferrite rod, with the loop axis in
+line with the rod. Move it closer only if nothing decodes.
+
+Logic analyzer channels (common `GND` on the analyzer):
+
+| Channel | Signal |
+| --- | --- |
+| 0 | Nucleo `PA6` (carrier) |
+| 1 | Nucleo `PA0` (logic reference) |
+| 2 | DCF module `OUT` |
+
+Steps:
+
+1. Flash the generator and check the banner: external clock, carrier on,
+   level `-20 dB` (see the generator README).
+2. Run the DK bring-up DCF-77 test (button 3).
+3. If nothing decodes, raise the level with `l`, then move the loop closer,
+   then switch to 1 kOhm. Record each step.
+4. Compare the DK bit classifications with the generator `bits=` string.
+
+Warning: a nearby DCF-77 clock, such as a bedside clock, can sync to the
+generated time. Keep such clocks out of the room, or set the generator to the
+real time with `T`. Run the carrier only while testing, and turn it off with
+`r` afterwards.
+
 ## 12. Connect the buzzer driver
 
 The MCU pin controls a transistor.
