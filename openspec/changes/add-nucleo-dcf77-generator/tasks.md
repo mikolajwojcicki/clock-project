@@ -26,8 +26,8 @@
 
 ## 4. Bench wiring and DK integration
 
-- [ ] 4.1 Add a section to `hardware/docs/breadboard-prototype-guide.md` (inside or after section 11) with the wiring table: Nucleo `PA0` → 1 kΩ → DK `P0.25`, Nucleo GND → DK GND, DCF module `OUT` disconnected; and add the Nucleo-F411RE to `hardware/bom/proto-bom.md` as owned bench equipment; verify the pins against the design and guide section 6
-- [ ] 4.2 Commit: `hardware: document Nucleo DCF generator bench wiring`
+- [x] 4.1 Add a section to `hardware/docs/breadboard-prototype-guide.md` (inside or after section 11) with the wiring table: Nucleo `PA0` → 1 kΩ → DK `P0.25`, Nucleo GND → DK GND, DCF module `OUT` disconnected; and add the Nucleo-F411RE to `hardware/bom/proto-bom.md` as owned bench equipment; verify the pins against the design and guide section 6
+- [x] 4.2 Commit: `hardware: document Nucleo DCF generator bench wiring`
 - [ ] 4.3 Run the DK bring-up DCF-77 test (button 3) with the generator connected for at least two minutes; verify the DK logs about one valid pulse per second, minute markers 60 s apart, zero invalid pulses, and bit classifications matching the generator's bit string
 - [ ] 4.4 Repeat with the `g` and `m` faults; verify the DK logs an invalid pulse for the glitch and a missing second for the dropped pulse, then returns to valid pulses
 - [ ] 4.5 Record the results (board revision, clock source, pulse counts, analyzer capture name) in the generator README test record; commit: `firmware: verify DCF generator against DK bring-up test`

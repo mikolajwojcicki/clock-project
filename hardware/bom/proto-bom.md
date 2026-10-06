@@ -19,6 +19,7 @@ Detailed tool and ownership record:
 | 8 | Base resistor | Approximately 1 kOhm, 1/4 W | NPN base current limit | Owned | Existing project record |
 | 9 | Breadboard and jumpers | Solderless board, M-M and F-M wires | Temporary wiring | Owned | Existing project record |
 | 10 | Charger and battery | TP4056 USB-C breakout and 400 to 500 mAh Li-Po with JST-PH | Optional power experiments | Owned | Existing project record |
+| 11 | ST Nucleo-F411RE | `MB1136 C-04` | Bench DCF-77 signal generator, not product hardware | Owned | User statement |
 
 ## Warnings and alternatives
 

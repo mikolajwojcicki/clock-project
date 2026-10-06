@@ -707,6 +707,28 @@ DCF-77 reception depends on location, time, antenna direction, interference,
 and weather conditions.
 A valid time frame can require repeated observations.
 
+### 11.4 Test with the Nucleo DCF-77 generator
+
+The Nucleo-F411RE can replace the receiver as a repeatable signal source.
+Firmware: `firmware/tools/dcf77-generator/`. Use it when radio reception is
+poor or when you need faults on demand.
+
+Wiring (both boards powered from the same computer):
+
+| Nucleo | Via | DK | Note |
+| --- | --- | --- | --- |
+| `PA0` (`A0`) | 1 kOhm series resistor | `P0.25` (`DCF_OUT`, header `P4`) | Limits current if a board is unpowered or a step is forgotten |
+| `GND` | Wire | `GND` | Common reference |
+
+1. Disconnect the DCF module `OUT` from `P0.25`. Two push-pull outputs on one
+   pin would fight.
+2. Connect the two rows above.
+3. Flash and open the generator console as described in its README.
+4. Run the DK bring-up DCF-77 test (button 3).
+5. Compare the DK bit classifications with the generator `bits=` string.
+
+The Nucleo output is 3.3 V push-pull, the same level as the DK `P0.25` input.
+
 ## 12. Connect the buzzer driver
 
 The MCU pin controls a transistor.
