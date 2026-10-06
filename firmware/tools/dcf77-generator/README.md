@@ -39,36 +39,18 @@ time, commands).
 | LED `LD2` | `PA5` | mirrors `PA0` |
 | VCP TX/RX | `PA2` / `PA3` | AF7 |
 
-## Output
+## Test record
 
-Pulse at the start of seconds 0 to 58: 100 ms = bit `0`, 200 ms = bit `1`.
-Second 59 has no pulse, so the next pulse marks the minute. A frame encodes the
-minute that starts at the next mark. Zone bit 17 = CEST, 18 = CET.
+2026-10-06, Nucleo-F411RE `MB1136 C-04`, firmware build `Oct  6 2026 21:01:39`.
 
-The default start time is the build time, zone CEST (shown in the banner).
-
-## UART commands
-
-Single keys act immediately. `T` starts a line, finished with Enter.
-
-| Input | Effect |
+| Item | Result |
 | --- | --- |
-| `T YYYY-MM-DD HH:MM S\|W` | Set time (`S` = CEST, `W` = CET). Applies to the next frame; bad date or format prints `ERR` and changes nothing |
-| `p` | Wrong parity (bit 28) in the next frame, once |
-| `d` | Wrong date in the next frame (day + 1, wraps to day 1), parity correct, once |
-| `m` | Skip the pulse in the next second, once |
-| `g` | 10 ms glitch at ms 500 of the next second, once |
-| `s` | Toggle silence: `PA0` stays low; resumes at the next frame start after the second press |
-| `n` | Clear pending one-shot faults (does not change silence) |
-| `?` | Print the command list |
+| Clock source | External 8 MHz (HSE bypass from ST-LINK MCO) |
+| Analyzer (Saleae, `PA0` on ch 1, 1 MS/s, 190 s) | Widths 100.0 / 200.0 ms; spacing 1000 ms, minute gap 2000.19 ms (limit 2 ms); 3 frames decoded from pulses match the UART log bit for bit |
+| Fault keys on analyzer (260 s) | `g`: one 10 ms pulse at ms 500; `m`: one 2000 ms gap; `s`: 40 s low, resumes at next frame start; `p`: decoded frame matches the `[parity fault]` log line |
+| DK bring-up DCF test (button 3, `PA0` -> 1 kOhm -> `P0.25`, GND common) | `t=160s valid=157 invalid=0`; 3 minute markers 60 s apart; the 2 complete frames decoded from the DK log equal the generator `bits=` strings |
+| DK with `g` | `pulse width=10 ms period=500 ms -> invalid`, then back to valid (`t=210s valid=205 invalid=1`) |
+| DK with `m` | One `period=2000 ms` pulse, reported as `-- minute marker --` (mid-frame). The DK classifier cannot tell a dropped second from a minute gap by period alone |
 
-## Log format
-
-One line when each frame starts (about when the DK sees its first pulse):
-
-```text
-frame 2026-10-06 20:15 CEST Tue bits=<59 chars, bit 0 first> [parity fault] [wrong-date fault]
-```
-
-The date shown is the date actually encoded, so a wrong-date frame shows the
-wrong date. Match the `bits=` string to the DK bring-up log.
+Captures were not saved to the repository (Logic 2 capture ids 2 to 5, CSV in `/tmp`).
+Known quirk: `PA0` pulses for about 5 ms while OpenOCD resets the board.
