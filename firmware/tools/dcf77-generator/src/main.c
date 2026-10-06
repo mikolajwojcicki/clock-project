@@ -2,8 +2,17 @@
 #include "dcf77_encode.h"
 #include "stm32f411_regs.h"
 
-static uint32_t f_cpu;
+static uint32_t f_cpu, f_pclk1;
 static bool clk_ext;
+
+/* Carrier (TIM3 CH1 on PA6). Duty D gives fundamental ~ sin(pi*D); pulse = 15% dip. */
+#define CARRIER_ARR 999u
+static const uint16_t idle_ccr[4]  = {500, 167, 80, 32};
+static const uint16_t pulse_ccr[4] = {48, 24, 12, 5};
+static const char *const level_name[4] = {"0 dB", "-6 dB", "-12 dB", "-20 dB"};
+static volatile bool pin_high, carrier_on = true;
+static volatile uint8_t level = 3;
+static bool carrier_ok;
 
 /* ISR <-> main shared state. Main writes next_bits only inside irq_off(). */
 static volatile uint64_t cur_bits, next_bits;
@@ -13,8 +22,15 @@ static volatile bool silence_req, miss_req, glitch_req;
 static void irq_off(void) { __asm volatile("cpsid i" ::: "memory"); }
 static void irq_on(void) { __asm volatile("cpsie i" ::: "memory"); }
 
+static void carrier_apply(void)
+{
+    TIM3_CCR1 = (carrier_ok && carrier_on) ? (pin_high ? pulse_ccr[level] : idle_ccr[level]) : 0;
+}
+
 static void pin_set(bool on)
 {
+    pin_high = on;
+    carrier_apply();
     GPIOA_BSRR = on ? ((1u << PIN_DCF) | (1u << PIN_LED))
                     : ((1u << (PIN_DCF + 16)) | (1u << (PIN_LED + 16)));
 }
@@ -72,22 +88,36 @@ void SysTick_Handler(void)
     }
 }
 
-/* RM0383 6.3.1: HSEBYP+HSEON, bounded wait for HSERDY, else stay on HSI (16 MHz). */
+/*
+ * RM0383 6.3: PLL to 77.5 MHz (see design.md). HSE bypass: M=8 N=310 P=4; HSI: M=16.
+ * Flash wait states and APB1 /2 are set before the switch. Carrier only from HSE.
+ */
 static void clock_init(void)
 {
+    bool hse = false;
+#ifndef GEN_FORCE_HSI
     RCC_CR |= RCC_CR_HSEBYP | RCC_CR_HSEON;
     for (uint32_t i = 0; i < 100000 && !(RCC_CR & RCC_CR_HSERDY); i++) { }
-    if (RCC_CR & RCC_CR_HSERDY) {
-        RCC_CFGR = (RCC_CFGR & ~3u) | RCC_CFGR_SW_HSE;
-        for (uint32_t i = 0; i < 100000 && (RCC_CFGR & RCC_CFGR_SWS_MASK) != RCC_CFGR_SWS_HSE; i++) { }
+    hse = RCC_CR & RCC_CR_HSERDY;
+#endif
+    RCC_PLLCFGR = hse ? PLLCFGR(8u, 310u, 1u, true) : PLLCFGR(16u, 310u, 1u, false);
+    FLASH_ACR = FLASH_ACR_2WS_CACHE;
+    RCC_CFGR |= RCC_CFGR_PPRE1_DIV2;
+    RCC_CR |= RCC_CR_PLLON;
+    for (uint32_t i = 0; i < 100000 && !(RCC_CR & RCC_CR_PLLRDY); i++) { }
+    if (RCC_CR & RCC_CR_PLLRDY) {
+        RCC_CFGR = (RCC_CFGR & ~3u) | RCC_CFGR_SW_PLL;
+        for (uint32_t i = 0; i < 100000 && (RCC_CFGR & RCC_CFGR_SWS_MASK) != RCC_CFGR_SWS_PLL; i++) { }
     }
-    if ((RCC_CFGR & RCC_CFGR_SWS_MASK) == RCC_CFGR_SWS_HSE) {
-        clk_ext = true;
-        f_cpu = 8000000;
-    } else {
-        RCC_CR &= ~(RCC_CR_HSEON | RCC_CR_HSEBYP);
-        f_cpu = 16000000;
+    if ((RCC_CFGR & RCC_CFGR_SWS_MASK) == RCC_CFGR_SWS_PLL) {
+        clk_ext = hse;
+        f_cpu = 77500000;
+        f_pclk1 = f_cpu / 2;
+    } else { /* PLL failed: stay on HSI 16 MHz, APB1 undivided */
+        RCC_CFGR &= ~RCC_CFGR_PPRE1_DIV2;
+        f_cpu = f_pclk1 = 16000000;
     }
+    carrier_ok = clk_ext;
 }
 
 static void gpio_init(void)
@@ -99,10 +129,25 @@ static void gpio_init(void)
     GPIOA_AFRL = (GPIOA_AFRL & ~0xFF00u) | (7u << 8) | (7u << 12); /* PA2/PA3 = AF7 */
 }
 
+static void carrier_init(void)
+{
+    RCC_APB1ENR |= RCC_APB1ENR_TIM3EN;
+    TIM3_PSC = 0;
+    TIM3_ARR = CARRIER_ARR;
+    TIM3_CCMR1 = TIM_CCMR1_OC1M_PWM1 | TIM_CCMR1_OC1PE;
+    carrier_apply(); /* CCR = 0 unless carrier_ok */
+    TIM3_CCER = TIM_CCER_CC1E;
+    TIM3_CR1 = TIM_CR1_ARPE | TIM_CR1_CEN;
+    TIM3_EGR = TIM_EGR_UG; /* load preloaded CCR now */
+    GPIOA_OSPEEDR |= 3u << (2 * PIN_CARRIER);
+    GPIOA_AFRL = (GPIOA_AFRL & ~(0xFu << (4 * PIN_CARRIER))) | (2u << (4 * PIN_CARRIER));
+    GPIOA_MODER = (GPIOA_MODER & ~(3u << (2 * PIN_CARRIER))) | (MODER_AF << (2 * PIN_CARRIER));
+}
+
 static void uart_init(void)
 {
     RCC_APB1ENR |= RCC_APB1ENR_USART2EN;
-    USART2_BRR = (f_cpu + 115200 / 2) / 115200; /* oversampling 16, PCLK1 = HCLK */
+    USART2_BRR = (f_pclk1 + 115200 / 2) / 115200; /* oversampling 16 */
     USART2_CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
 }
 
@@ -166,16 +211,36 @@ static const char help[] =
     "  m  missing pulse in next second\n"
     "  g  10 ms glitch pulse in next second\n"
     "  s  toggle silence (PA0 low until pressed again, resumes at frame start)\n"
+    "  l  cycle carrier level 0 / -6 / -12 / -20 dB\n"
+    "  r  carrier on/off (PA6)\n"
     "  n  clear pending faults\n"
     "  ?  this list\n"
     "  T YYYY-MM-DD HH:MM S|W + Enter  set time (S=CEST, W=CET), next frame\n";
+
+static void carrier_report(void)
+{
+    puts_("carrier: 77.5 kHz on PA6, ");
+    puts_(carrier_on ? "on, level " : "off, level ");
+    puts_(level_name[level]);
+    puts_(", CCR idle=");
+    put_num(idle_ccr[level], 3);
+    puts_(" pulse=");
+    put_num(pulse_ccr[level], 3);
+    putc_('\n');
+}
 
 static void banner(const dcf77_time_t *t)
 {
     puts_("\nDCF-77 generator, Nucleo-F411RE\n");
     puts_("build: " __DATE__ " " __TIME__ "\n");
-    puts_(clk_ext ? "clock: external 8 MHz (HSE bypass, ST-LINK MCO)\n"
-                  : "clock: internal 16 MHz HSI (HSE not ready)\n");
+    puts_(clk_ext ? "clock: 77.5 MHz PLL from external 8 MHz (HSE bypass, ST-LINK MCO)\n"
+                  : f_cpu == 77500000 ? "clock: 77.5 MHz PLL from internal HSI (HSE off or not ready)\n"
+                                      : "clock: internal 16 MHz HSI (PLL not locked)\n");
+    if (!carrier_ok) {
+        puts_("carrier: DISABLED (needs external clock), PA6 low\n");
+    } else {
+        carrier_report();
+    }
     puts_("default time: ");
     put_time(t);
     putc_('\n');
@@ -292,6 +357,22 @@ static void key_cmd(char c)
         silence_req = !silence_req;
         puts_(silence_req ? "silence ON\n" : "silence OFF (resumes at next frame start)\n");
         break;
+    case 'l':
+    case 'r':
+        if (!carrier_ok) {
+            puts_("carrier disabled (needs external clock)\n");
+            break;
+        }
+        irq_off();
+        if (c == 'l') {
+            level = (uint8_t)((level + 1) % 4);
+        } else {
+            carrier_on = !carrier_on;
+        }
+        carrier_apply();
+        irq_on();
+        carrier_report();
+        break;
     case 'n':
         fault_p = fault_d = false;
         miss_req = glitch_req = false;
@@ -333,6 +414,7 @@ int main(void)
     clock_init();
     gpio_init();
     uart_init();
+    carrier_init();
 
     next_t = build_time();
     banner(&next_t);

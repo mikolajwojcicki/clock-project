@@ -6,7 +6,7 @@ BUILD   := _build
 
 CFLAGS  := -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -Os -g -std=c11 \
            -Wall -Wextra -Werror -ffreestanding -ffunction-sections -fdata-sections \
-           -Isrc
+           -Isrc $(CFLAGS_EXTRA)
 LDFLAGS := -mcpu=cortex-m4 -mthumb -nostdlib -Wl,--gc-sections -Wl,-Map=$(BUILD)/dcf77-generator.map \
            -T stm32f411re.ld
 SRCS    := src/startup.c src/main.c src/dcf77_encode.c

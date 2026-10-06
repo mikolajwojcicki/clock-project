@@ -5,7 +5,9 @@ the DK bring-up DCF test can be checked without radio reception. Bare-metal C,
 no STM32Cube, no RTOS. Lab equipment, not product firmware.
 
 Board: Nucleo-F411RE, revision `MB1136 C-04` (8 MHz ST-LINK `MCO` into
-`OSC_IN`, so HSE bypass is expected; HSI 16 MHz is the fallback).
+`OSC_IN`, so HSE bypass is expected). The PLL runs the core at 77.5 MHz
+(HSE 8 MHz: M=8, N=310, P=4; HSI fallback: M=16), so TIM3 divides it to an
+exact 77.5 kHz carrier. With HSI the carrier is disabled (about 1% off).
 
 ## Build and flash
 
@@ -36,8 +38,28 @@ time, commands).
 | Signal | Pin | Note |
 | --- | --- | --- |
 | DCF output | `PA0` (`A0`) | push-pull, high during pulse |
+| Carrier | `PA6` (`D12`) | TIM3 CH1, 77.5 kHz square wave to coupling loop via series resistor to GND |
 | LED `LD2` | `PA5` | mirrors `PA0` |
 | VCP TX/RX | `PA2` / `PA3` | AF7 |
+
+## Carrier keys and levels
+
+| Key | Action |
+| --- | --- |
+| `l` | cycle level 0 / -6 / -12 / -20 dB (prints `TIM3_CCR1` values) |
+| `r` | carrier on/off (`PA6` low when off) |
+
+Reset default: on, -20 dB. Duty is out of `ARR+1 = 1000`; the pulse value
+gives a 15% dip while `PA0` is high.
+
+| Level | Idle `CCR` | Pulse `CCR` |
+| --- | --- | --- |
+| 0 dB | 500 | 48 |
+| -6 dB | 167 | 24 |
+| -12 dB | 80 | 12 |
+| -20 dB | 32 | 5 |
+
+Build flag `make CFLAGS_EXTRA=-DGEN_FORCE_HSI` skips HSE to test the fallback.
 
 ## Test record
 
