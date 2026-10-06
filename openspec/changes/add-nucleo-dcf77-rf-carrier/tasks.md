@@ -22,7 +22,7 @@
 - [x] 3.2 Commit: `hardware: document over-the-air DCF receiver bench test`
 - [x] 3.3 Run the DK bring-up DCF test (button 3) at -20 dB with the loop at about 30 cm; if it does not decode, raise the level, then move the loop closer, then use 1 kΩ, recording each step; verify a run of at least two minutes with about one valid pulse per second, minute markers 60 s apart, and DK bit classifications matching the generator `bits=` strings
 - [x] 3.4 From one analyzer capture of `PA0` versus the module `OUT`, measure the output delay and the pulse widths for `0` and `1` bits; verify the numbers against at least 50 pulses
-- [ ] 3.5 Find the lowest level and largest distance that still decode (5 consecutive minutes with zero invalid pulses), and record the setup, results, and capture names in the generator README test record; commit: `firmware: record DCF-1060N receiver response to bench carrier`
+- [x] 3.5 OBSOLETE (dropped by user 2026-10-06, sweep not needed): ~~Find the lowest level and largest distance that still decode (5 consecutive minutes with zero invalid pulses), and record the setup, results, and capture names in the generator README test record; commit: `firmware: record DCF-1060N receiver response to bench carrier`~~
 
 ## Workflow follow-up
 
