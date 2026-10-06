@@ -2,11 +2,11 @@
 
 ## 1. Pure frame encoder and host check
 
-- [ ] 1.1 Derive by hand the 59-bit DCF-77 reference frame for 2026-10-06 20:15 CEST (Tuesday) from the published bit table and record it with a per-field breakdown in a comment of `firmware/tests/dcf77_encode_test.c`; verify each BCD field and the three even-parity bits by recounting
-- [ ] 1.2 Implement `firmware/tools/dcf77-generator/src/dcf77_encode.{c,h}`: time model (minute increment with hour, day, month, year rollover; leap years; weekday from date) and frame builder returning a `uint64_t`; verify the host check matches the reference frame bit for bit
-- [ ] 1.3 Extend the host check with rollovers (23:59 on 2026-10-31, on 2026-12-31, and on 2028-02-28 / 2028-02-29) and date validation (2026-02-30 rejected); verify `gcc ... && /tmp/dcf_encode_test` prints all checks passed
-- [ ] 1.4 Add the host-check command to `firmware/README.md` next to the classifier check; verify the command runs as written from the repo root
-- [ ] 1.5 Commit: `firmware: add DCF-77 frame encoder with host check`
+- [x] 1.1 Derive by hand the 59-bit DCF-77 reference frame for 2026-10-06 20:15 CEST (Tuesday) from the published bit table and record it with a per-field breakdown in a comment of `firmware/tests/dcf77_encode_test.c`; verify each BCD field and the three even-parity bits by recounting
+- [x] 1.2 Implement `firmware/tools/dcf77-generator/src/dcf77_encode.{c,h}`: time model (minute increment with hour, day, month, year rollover; leap years; weekday from date) and frame builder returning a `uint64_t`; verify the host check matches the reference frame bit for bit
+- [x] 1.3 Extend the host check with rollovers (23:59 on 2026-10-31, on 2026-12-31, and on 2028-02-28 / 2028-02-29) and date validation (2026-02-30 rejected); verify `gcc ... && /tmp/dcf_encode_test` prints all checks passed
+- [x] 1.4 Add the host-check command to `firmware/README.md` next to the classifier check; verify the command runs as written from the repo root
+- [x] 1.5 Commit: `firmware: add DCF-77 frame encoder with host check`
 
 ## 2. Nucleo skeleton: build, flash, clock, LED
 
