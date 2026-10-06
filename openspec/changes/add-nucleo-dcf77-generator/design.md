@@ -171,7 +171,8 @@ unpowered (it protects against back-powering through the ESD diodes).
 None. This adds a new tool and changes no existing firmware or hardware. To
 roll back, delete `firmware/tools/dcf77-generator/` and its guide section.
 
-## Open Questions
+## Board revision
 
-- The board revision (sticker on the Nucleo, for example `MB1136 C-02`). It
-  only decides which clock source the banner will report.
+The user's board is `MB1136 C-04`. From C-02 onward, the default solder
+bridges route the ST-LINK 8 MHz `MCO` to `OSC_IN`, so HSE bypass is expected
+to start. The HSI fallback stays in place for other boards.
