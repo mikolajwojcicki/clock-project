@@ -20,8 +20,8 @@
 
 - [x] 3.1 Add guide subsection 11.5 "Test the receiver with the Nucleo carrier": a wiring table (loop from `PA6` through 10 kΩ to Nucleo GND; module wired per 11.2 with `PON` to `P0.24` and `OUT` to `P0.25`; Nucleo `PA0` disconnected from the DK; common GND), loop placement (about 30 cm, axis in line with the ferrite rod), the analyzer channel map, and a warning to keep other DCF clocks away; verify the pins against guide section 6 and the generator README
 - [x] 3.2 Commit: `hardware: document over-the-air DCF receiver bench test`
-- [ ] 3.3 Run the DK bring-up DCF test (button 3) at -20 dB with the loop at about 30 cm; if it does not decode, raise the level, then move the loop closer, then use 1 kΩ, recording each step; verify a run of at least two minutes with about one valid pulse per second, minute markers 60 s apart, and DK bit classifications matching the generator `bits=` strings
-- [ ] 3.4 From one analyzer capture of `PA0` versus the module `OUT`, measure the output delay and the pulse widths for `0` and `1` bits; verify the numbers against at least 50 pulses
+- [x] 3.3 Run the DK bring-up DCF test (button 3) at -20 dB with the loop at about 30 cm; if it does not decode, raise the level, then move the loop closer, then use 1 kΩ, recording each step; verify a run of at least two minutes with about one valid pulse per second, minute markers 60 s apart, and DK bit classifications matching the generator `bits=` strings
+- [x] 3.4 From one analyzer capture of `PA0` versus the module `OUT`, measure the output delay and the pulse widths for `0` and `1` bits; verify the numbers against at least 50 pulses
 - [ ] 3.5 Find the lowest level and largest distance that still decode (5 consecutive minutes with zero invalid pulses), and record the setup, results, and capture names in the generator README test record; commit: `firmware: record DCF-1060N receiver response to bench carrier`
 
 ## Workflow follow-up
