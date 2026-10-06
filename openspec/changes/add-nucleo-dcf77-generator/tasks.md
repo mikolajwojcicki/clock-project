@@ -20,9 +20,9 @@
 
 - [x] 3.1 Drive `PA0` from the SysTick state machine with the encoder frame (pulse at seconds 0 to 58, 100/200 ms, none at 59), `LD2` mirroring `PA0`, and the per-frame log line; verify on the analyzer over two minutes: 1000 ms spacing, one 2000 ms gap per minute, widths within 2 ms, bits matching the log
 - [x] 3.2 Add RX-interrupt line input and the `T YYYY-MM-DD HH:MM S|W` command applied at the next frame start; verify a valid command shows up in the next frame log and an invalid date prints an error with the sequence unchanged
-- [ ] 3.3 Add fault keys `p`, `d`, `m`, `g`, `s`, `n`, `?` per design; verify each on the analyzer and in the log (one-shot faults clear after one use; silence holds `PA0` low until pressed again)
+- [x] 3.3 Add fault keys `p`, `d`, `m`, `g`, `s`, `n`, `?` per design; verify each on the analyzer and in the log (one-shot faults clear after one use; silence holds `PA0` low until pressed again)
 - [x] 3.4 Document the command table and log format in the generator README; verify each documented command against the running board
-- [ ] 3.5 Commit: `firmware: generate DCF-77 frames with UART time set and faults`
+- [x] 3.5 Commit: `firmware: generate DCF-77 frames with UART time set and faults`
 
 ## 4. Bench wiring and DK integration
 
