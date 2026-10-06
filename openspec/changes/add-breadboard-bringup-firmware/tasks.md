@@ -30,7 +30,7 @@
 
 - [x] 4.1 Implement the pure pulse classifier in `firmware/src/dcf77_classify.c` and the host check `firmware/tests/dcf77_classify_test.c`; verify `gcc -I firmware/src firmware/tests/dcf77_classify_test.c firmware/src/dcf77_classify.c -o /tmp/dcf_test && /tmp/dcf_test` exits 0 (use `nix-shell -p gcc` if host `gcc` is missing)
 - [x] 4.2 Implement the DCF test: `DCF_PON` low only during the window, edge timestamps from RTC1, per-pulse log lines, stop on button 3 or 10 min timeout with counts; verify with a multimeter that `P0.24` is low only while the test runs
-- [ ] 4.3 Verify on hardware with `OUT` connected after its level check: about one pulse per second is logged, or zero valid pulses is reported as an observation
+- [x] 4.3 Verify on hardware with `OUT` connected after its level check: about one pulse per second is logged, or zero valid pulses is reported as an observation
 - [x] 4.4 Document the DCF test, the floating-`OUT` warning, and the pull-up constant in the bring-up README; verify against guide section 11.3
 - [x] 4.5 Commit: `firmware: add DCF-77 pulse capture and classifier`
 
