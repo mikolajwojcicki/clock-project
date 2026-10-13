@@ -1,6 +1,8 @@
-/* Waveshare Arduino epd2in13_V4, Init(FULL) + DisplayPartBaseImage.
- * https://github.com/waveshareteam/e-Paper  (2023-06-25)
- * Gate byte stays 0x00. Setting TB flipped the glass. */
+/* Waveshare Arduino epd2in13_V4 Init(FULL) + DisplayPartBaseImage, then the
+ * GxEPD2 post-refresh "write again" step so the SSD1680 buffer swap does not
+ * turn the next minute upside down.
+ * https://github.com/waveshareteam/e-Paper (2023-06-25)
+ * https://github.com/ZinggJM/GxEPD2 GxEPD2_213_B74 */
 #include "epd.h"
 
 #include <stdint.h>
@@ -71,13 +73,29 @@ static bool test_pixel(uint32_t x, uint32_t y, void *ctx)
     return is_black(x, y);
 }
 
+/* Same as Waveshare SetWindows + SetCursor for the full panel. */
+static void set_ram_area(void)
+{
+    cmd(0x11); /* data entry: X and Y increment */
+    data(0x03);
+    cmd(0x44);
+    data(0x00);
+    data((EPD_WIDTH - 1) >> 3);
+    cmd(0x45);
+    data(0x00);
+    data(0x00);
+    data((EPD_HEIGHT - 1) & 0xFF);
+    data((EPD_HEIGHT - 1) >> 8);
+    cmd(0x4E);
+    data(0x00);
+    cmd(0x4F);
+    data(0x00);
+    data(0x00);
+}
+
 static void write_face(uint8_t ram_cmd, epd_pixel_fn pixel, void *ctx)
 {
-    cmd(0x4E); /* RAM X counter */
-    data(0x00);
-    cmd(0x4F); /* RAM Y counter */
-    data(0x00);
-    data(0x00);
+    set_ram_area();
     cmd(ram_cmd); /* bit 1 = white */
     for (uint32_t y = 0; y < EPD_HEIGHT; y++)
     {
@@ -87,8 +105,6 @@ static void write_face(uint8_t ram_cmd, epd_pixel_fn pixel, void *ctx)
             uint8_t v = 0xFF;
             for (uint32_t bit = 0; bit < 8; bit++)
             {
-                /* Row 0 is the ribbon end of the module. The face already
-                 * puts the weekday there. Do not rotate. */
                 uint32_t x = b * 8 + bit;
                 if (x < EPD_WIDTH && pixel(x, y, ctx))
                 {
@@ -99,6 +115,13 @@ static void write_face(uint8_t ram_cmd, epd_pixel_fn pixel, void *ctx)
         }
         send(true, row, sizeof row);
     }
+}
+
+static void write_both_rams(epd_pixel_fn pixel, void *ctx)
+{
+    /* Waveshare DisplayPartBaseImage order: BW then RED/previous. */
+    write_face(0x24, pixel, ctx);
+    write_face(0x26, pixel, ctx);
 }
 
 bool epd_show_test_pattern(void)
@@ -134,21 +157,7 @@ bool epd_refresh(epd_pixel_fn pixel, void *ctx)
     data((EPD_HEIGHT - 1) & 0xFF);
     data((EPD_HEIGHT - 1) >> 8);
     data(0x00); /* official driver: GD=0, SM=0, TB=0 */
-    cmd(0x11); /* data entry: X and Y increment */
-    data(0x03);
-    cmd(0x44); /* RAM X window, in bytes */
-    data(0x00);
-    data((EPD_WIDTH - 1) >> 3);
-    cmd(0x45); /* RAM Y window */
-    data(0x00);
-    data(0x00);
-    data((EPD_HEIGHT - 1) & 0xFF);
-    data((EPD_HEIGHT - 1) >> 8);
-    cmd(0x4E); /* RAM X counter */
-    data(0x00);
-    cmd(0x4F); /* RAM Y counter */
-    data(0x00);
-    data(0x00);
+    set_ram_area();
     cmd(0x3C); /* border waveform */
     data(0x05);
     cmd(0x21); /* display update control */
@@ -161,10 +170,7 @@ bool epd_refresh(epd_pixel_fn pixel, void *ctx)
         return false;
     }
 
-    /* SSD1680 full update swaps the two RAMs. The one left empty is what
-     * the next minute shows, upside down. Write the same face to both. */
-    write_face(0x26, pixel, ctx);
-    write_face(0x24, pixel, ctx);
+    write_both_rams(pixel, ctx);
 
     cmd(0x22); /* full update sequence */
     data(0xF7);
@@ -173,6 +179,11 @@ bool epd_refresh(epd_pixel_fn pixel, void *ctx)
     {
         return false;
     }
+
+    /* Full update swaps the two RAMs. Without this, the next minute comes from
+     * the other buffer and the glass reads upside down (2→5, Wt→M). GxEPD2
+     * does the same as writeImageAgain after refresh. */
+    write_both_rams(pixel, ctx);
 
     cmd(0x10); /* deep sleep mode 1; needs a hardware reset to wake */
     data(0x01);

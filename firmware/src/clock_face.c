@@ -78,9 +78,7 @@ static bool hit(char c, uint32_t ox, uint32_t oy, uint32_t scale, uint32_t x, ui
     {
         return false;
     }
-    /* Row 0 of the bitmap is the top of the glyph. The panel was drawing
-     * that row at the bottom, so a 2 read as a 5 (22:00 looked like 55:00). */
-    return (glyph(c)[6 - ly] >> (4 - lx)) & 1u;
+    return (glyph(c)[ly] >> (4 - lx)) & 1u;
 }
 
 static bool text_hit(const char *s, uint32_t ox, uint32_t oy, uint32_t scale, uint32_t x, uint32_t y)
