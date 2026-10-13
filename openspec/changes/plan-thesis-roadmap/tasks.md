@@ -9,9 +9,9 @@
 
 ## 2. Thesis skeleton
 
-- [ ] 2.1 Replace template chapters with six chapter files + an empty AI-disclosure heading (no body text) + attachments stubs with section headings from the promotor structure. Verify: CI `thesis-pdf` builds and TOC shows all chapters. The disclosure body stays empty.
+- [x] 2.1 Replace template chapters with six chapter files + an empty AI-disclosure heading (no body text) + attachments stubs with section headings from the promotor structure. Verify: CI `thesis-pdf` builds and TOC shows all chapters. The disclosure body stays empty.
 - [x] 2.2 Check `\stTytulPL` equals APD title; confirm `\stCzyMgr=0`. Verify: diff against `temp-resources/my-thesis.pdf`.
-- [ ] 2.3 Seed `bibliography.bib` with datasheets already used (nRF52832, MDBT42Q, LIS3DH, SSD1680, DCF-1060N, MCP73831, AP2112K) with `urldate`. Verify: biber has no warnings.
+- [x] 2.3 Seed `bibliography.bib` with datasheets already used (nRF52832, MDBT42Q, LIS3DH, SSD1680, DCF-1060N, MCP73831, AP2112K) with `urldate`. Verify: biber has no warnings.
 
 ## 3. Diagrams for consultation
 
