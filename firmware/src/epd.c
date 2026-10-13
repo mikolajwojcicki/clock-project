@@ -87,11 +87,10 @@ static void write_face(uint8_t ram_cmd, epd_pixel_fn pixel, void *ctx)
             uint8_t v = 0xFF;
             for (uint32_t bit = 0; bit < 8; bit++)
             {
-                /* RAM (0,0) is the bottom-right of this module. Rotate 180. */
+                /* Row 0 is the ribbon end of the module. The face already
+                 * puts the weekday there. Do not rotate. */
                 uint32_t x = b * 8 + bit;
-                uint32_t src_x = EPD_WIDTH - 1 - x;
-                uint32_t src_y = EPD_HEIGHT - 1 - y;
-                if (x < EPD_WIDTH && pixel(src_x, src_y, ctx))
+                if (x < EPD_WIDTH && pixel(x, y, ctx))
                 {
                     v &= (uint8_t)~(0x80 >> bit);
                 }
