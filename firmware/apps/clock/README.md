@@ -19,7 +19,7 @@ make flash
 picocom -b 115200 /dev/ttyACM0
 ```
 
-Type one line and press Enter:
+Picocom does not show keystrokes unless started with `--echo`. Enter sends a carriage return. Type one line and press Enter:
 
 ```text
 2026-10-13 21:05:00

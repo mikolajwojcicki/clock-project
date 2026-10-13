@@ -54,13 +54,13 @@ static void poll_uart(void)
     char c;
     while (con_getc(&c))
     {
-        if (c == '\r')
+        /* picocom sends CR for Enter. A following LF must not parse an empty line. */
+        if (c == '\r' || c == '\n')
         {
-            continue;
-        }
-        if (c == '\n')
-        {
-            accept_line();
+            if (s_line_len > 0)
+            {
+                accept_line();
+            }
             continue;
         }
         if (s_line_len + 1 < sizeof s_line)
