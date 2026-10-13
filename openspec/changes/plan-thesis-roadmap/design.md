@@ -17,7 +17,7 @@ Where the repo stands:
 ## Goals / Non-Goals
 
 **Goals:** one ordered roadmap that updates via tasks.md; evidence captured
-from now on; thesis skeleton ready for author prose.
+from now on; thesis skeleton ready for agent drafts the author rewrites.
 **Non-Goals:** writing chapter text; changing locked architecture; building the
 PCB in this change (scheduled, not specified).
 
@@ -39,8 +39,11 @@ PCB in this change (scheduled, not specified).
 5. **Schematic per block from KiCad** (MCU, display, sensor, DCF, power,
    buzzer) with print-safe export script/steps; product schematic precedes
    the PCB layout.
-6. **Author-written prose.** Agents scaffold and review mechanically only.
-   AGENTS.md rule updated accordingly.
+6. **Draft, then rewrite.** Agents may draft chapter prose (author decision,
+   2026-10-13). A paragraph stays in the thesis only after the author rewrites
+   it in their own words. Drafts are labeled and logged in `notes/ai-use.md`.
+   Promotor's hard limits that stay: disclose AI use; explain every sentence
+   at the defence; check sources the agent proposes.
 7. **Human-subject tests avoided** by default (shake test with instrument or
    self-test logged as engineering measurement); ask promotor if volunteers
    are wanted.

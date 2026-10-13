@@ -45,6 +45,6 @@ Each datasheet, document or article used SHALL be added to
 Every use of an AI tool SHALL be logged in `notes/ai-use.md` with date, tool,
 purpose and how the output was verified.
 
-#### Scenario: Agent writes a driver
-- **WHEN** an AI agent generates code that is kept
-- **THEN** `notes/ai-use.md` has an entry naming the tool, the code and the check
+#### Scenario: Agent writes a driver or a prose draft
+- **WHEN** an AI agent generates code or chapter prose that is kept
+- **THEN** `notes/ai-use.md` has an entry naming the tool, the output and how the author checked or rewrote it

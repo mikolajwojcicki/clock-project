@@ -4,10 +4,10 @@
 - [ ] 1.2 Create `notes/` (`README.md`, `media/`, `measurements/`, `ai-use.md`, `sources.md` pointer to bib) and a dated-entry template. Verify: tree exists, committed.
 - [ ] 1.3 Backfill notes from `git log` and archived OpenSpec changes (Sep 12 – Oct 6): one dated note per bring-up milestone with problems and solutions. Verify: each archived change has a note.
 - [ ] 1.4 Backfill `notes/ai-use.md` (agents wrote firmware/docs/specs since start). Verify: entries per tool and purpose.
-- [ ] 1.5 Update `AGENTS.md`/`project-principles.md`: author writes prose, agents scaffold only, evidence-log duty, ethics rule. Verify: grep shows rule; no conflict with writing-rules YAML.
+- [ ] 1.5 Update `AGENTS.md`/`project-principles.md`: agents may draft prose; author rewrites every kept paragraph; log drafts in `notes/ai-use.md`; evidence-log duty; ethics rule. Verify: grep shows the rewrite rule.
 - [ ] 1.6 Ask promotor: PCB expected? human-volunteer tests wanted? Record answers in `notes/`. Verify: answers noted.
 
-## 2. Thesis skeleton (empty, no prose)
+## 2. Thesis skeleton
 
 - [ ] 2.1 Replace template chapters with six chapter files + AI-disclosure + attachments stubs containing only section headings from the promotor structure. Verify: CI `thesis-pdf` builds and TOC shows all chapters.
 - [ ] 2.2 Check `\stTytulPL` equals APD title; confirm `\stCzyMgr=0`. Verify: diff against `temp-resources/my-thesis.pdf`.
@@ -38,8 +38,8 @@
 ## 6. Consultations and writing (author)
 
 - [ ] 6.1 First consultation: working prototype, block diagram, flowchart, datasheets. Verify: promotor feedback noted.
-- [ ] 6.2 Author writes ch.3 and ch.4 from notes. Verify: draft in LaTeX; each figure/listing referenced.
-- [ ] 6.3 Author writes ch.5 from measurements. Verify: tables/charts cite CSV files.
-- [ ] 6.4 Author writes ch.2, then ch.1 and ch.6. Verify: ≥12 cited sources, all cited in text.
+- [ ] 6.2 Agent drafts ch.3 and ch.4 from notes; author rewrites in own words. Verify: LaTeX has rewritten text; each figure/listing referenced; `notes/ai-use.md` lists the draft.
+- [ ] 6.3 Agent drafts ch.5 from measurements; author rewrites. Verify: tables/charts cite CSV files.
+- [ ] 6.4 Agent drafts ch.2, then ch.1 and ch.6; author rewrites. Verify: ≥12 cited sources, all cited in text, each source checked by the author.
 - [ ] 6.5 Fill AI-disclosure section from `notes/ai-use.md`. Verify: matches register.
 - [ ] 6.6 Full draft to promotor ≥1 week before faculty date; final ≤3 days before. Verify: dates from `notes/deadlines.md`.

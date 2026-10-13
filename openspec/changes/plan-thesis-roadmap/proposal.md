@@ -3,7 +3,7 @@
 The promotor (Jarosław Emilianowicz) posted the official thesis process in the
 17-student Teams chat. It sets a work order (prototype first, prose last),
 requires dated evidence collected during bring-up, fixes the chapter layout,
-and forbids AI-generated chapters. The repo has strong hardware/firmware
+and requires disclosure of AI use. The repo has strong hardware/firmware
 bring-up history but no evidence log, a placeholder LaTeX tree, and no
 roadmap tied to these rules.
 
@@ -13,8 +13,8 @@ roadmap tied to these rules.
   measurements, photos, sources and AI-use entries, per promotor rules.
 - Restructure `clock-project-latex/` to the 6-chapter layout (Wprowadzenie,
   Przegląd rozwiązań, Projekt sprzętowy, Projekt programowy, Uruchomienie i
-  testy, Podsumowanie) plus AI-disclosure and attachments. Empty skeletons
-  only; no generated prose.
+  testy, Podsumowanie) plus AI-disclosure and attachments. Agents may draft
+  prose; only text the author has rewritten in their own words stays.
 - Add the mandatory block diagrams (hardware, software) and a hand-drawn or
   drawn algorithm flowchart for consultations.
 - Replace Fritzing-style wiring pictures with a vector, print-ready KiCad
@@ -24,9 +24,11 @@ roadmap tied to these rules.
   order they land in.
 - Track deadlines (faculty date, own date = 3 days earlier, full draft one
   week earlier) and the ethics-commission trigger.
-- **BREAKING** (agent workflow): AGENTS.md says agents draft thesis prose.
-  Promotor forbids AI-generated chapters. Agents limited to structure
-  scaffolding, checks, notes and code; the author writes all chapter text.
+- Working rule (author decision, 2026-10-13): agents still draft chapter
+  prose. The author rewrites every kept paragraph in their own words and
+  expands it. Drafts that were not rewritten do not go into the submitted
+  PDF. AI use stays in the disclosure section. The author must be able to
+  explain every sentence at the defence.
 
 ## Capabilities
 

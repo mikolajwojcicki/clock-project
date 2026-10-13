@@ -37,15 +37,15 @@ The title on the title page SHALL equal the approved APD title.
 - **WHEN** the thesis is prepared for submission
 - **THEN** `\stTytulPL` equals the APD title character for character
 
-### Requirement: Author-written prose
-Chapter prose SHALL be written by the author. AI agents SHALL NOT generate
-chapters or thesis structure text; they may scaffold empty files, check
-typography, and write code and notes. The author SHALL be able to explain
-every included item at the defence.
+### Requirement: Rewritten prose
+Agents MAY draft chapter prose. Text SHALL enter the submitted thesis only
+after the author rewrites it in their own words and expands it. Each kept
+draft SHALL be logged in `notes/ai-use.md`. The author SHALL be able to
+explain every included sentence at the defence.
 
-#### Scenario: Agent asked to draft a chapter
-- **WHEN** an agent is asked to write chapter prose
-- **THEN** it declines and offers an outline checklist or review of the author's text instead
+#### Scenario: Agent drafts a chapter
+- **WHEN** an agent drafts chapter prose
+- **THEN** the draft is marked as a draft, logged in `notes/ai-use.md`, and is not treated as final until the author rewrites it
 
 ### Requirement: Deadline discipline
 The plan SHALL track the faculty deadline, the promotor deadline (3 days
