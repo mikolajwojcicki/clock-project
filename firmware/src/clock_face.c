@@ -119,7 +119,8 @@ bool clock_face_black(uint32_t x, uint32_t y, const clock_time *t)
         return true;
     }
 
-    static const char *abbr[] = {"Pn", "Wt", "Sr", "Cz", "Pt", "So", "Nd"};
+    /* Uppercase only: letter() has no lowercase, so "Wt" drew as "W:". */
+    static const char *abbr[] = {"PN", "WT", "SR", "CZ", "PT", "SO", "ND"};
     const char *day = (t->wday >= 0 && t->wday <= 6) ? abbr[t->wday] : "??";
     char hm[6];
     char sec[3];
