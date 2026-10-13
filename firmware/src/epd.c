@@ -63,7 +63,18 @@ static bool is_black(uint32_t x, uint32_t y)
     return ((x / CHECKER_PX) + (y / CHECKER_PX)) & 1;
 }
 
+static bool test_pixel(uint32_t x, uint32_t y, void *ctx)
+{
+    (void)ctx;
+    return is_black(x, y);
+}
+
 bool epd_show_test_pattern(void)
+{
+    return epd_refresh(test_pixel, NULL);
+}
+
+bool epd_refresh(epd_pixel_fn pixel, void *ctx)
 {
     nrf_gpio_pin_set(EPD_RST);
     nrf_gpio_cfg_output(EPD_RST);
@@ -128,7 +139,7 @@ bool epd_show_test_pattern(void)
             for (uint32_t bit = 0; bit < 8; bit++)
             {
                 uint32_t x = b * 8 + bit;
-                if (x < EPD_WIDTH && is_black(x, y))
+                if (x < EPD_WIDTH && pixel(x, y, ctx))
                 {
                     v &= (uint8_t)~(0x80 >> bit);
                 }

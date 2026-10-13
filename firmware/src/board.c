@@ -1,6 +1,7 @@
 #include "board.h"
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "buzzer.h"
@@ -92,6 +93,18 @@ void con_init(void)
     NRF_UART0->BAUDRATE = UART_BAUDRATE_BAUDRATE_Baud115200;
     NRF_UART0->ENABLE = UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos;
     NRF_UART0->TASKS_STARTTX = 1;
+    NRF_UART0->TASKS_STARTRX = 1;
+}
+
+bool con_getc(char *out)
+{
+    if (!NRF_UART0->EVENTS_RXDRDY)
+    {
+        return false;
+    }
+    *out = (char)NRF_UART0->RXD;
+    NRF_UART0->EVENTS_RXDRDY = 0;
+    return true;
 }
 
 static void con_putc(char c)
