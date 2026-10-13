@@ -63,6 +63,7 @@ static void poll_uart(void)
             }
             continue;
         }
+        con_printf("%c", c);
         if (s_line_len + 1 < sizeof s_line)
         {
             s_line[s_line_len++] = c;

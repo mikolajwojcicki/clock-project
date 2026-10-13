@@ -92,18 +92,30 @@ void con_init(void)
     NRF_UART0->PSELRXD = DK_UART_RX;
     NRF_UART0->BAUDRATE = UART_BAUDRATE_BAUDRATE_Baud115200;
     NRF_UART0->ENABLE = UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos;
+    NRF_UART0->EVENTS_RXDRDY = 0;
+    NRF_UART0->EVENTS_ERROR = 0;
+    NRF_UART0->ERRORSRC = NRF_UART0->ERRORSRC;
     NRF_UART0->TASKS_STARTTX = 1;
     NRF_UART0->TASKS_STARTRX = 1;
 }
 
 bool con_getc(char *out)
 {
+    /* Same order as nrfx_uart: clear the event, then read RXD.
+     * Leaving RXDRDY set makes every later read return the same byte. */
+    if (NRF_UART0->EVENTS_ERROR)
+    {
+        NRF_UART0->EVENTS_ERROR = 0;
+        (void)NRF_UART0->EVENTS_ERROR;
+        NRF_UART0->ERRORSRC = NRF_UART0->ERRORSRC;
+    }
     if (!NRF_UART0->EVENTS_RXDRDY)
     {
         return false;
     }
-    *out = (char)NRF_UART0->RXD;
     NRF_UART0->EVENTS_RXDRDY = 0;
+    (void)NRF_UART0->EVENTS_RXDRDY;
+    *out = (char)NRF_UART0->RXD;
     return true;
 }
 
