@@ -51,8 +51,8 @@ PCB in this change (scheduled, not specified).
 
 ## Risks / Trade-offs
 
-- [Faculty date 10.12.2025 is already past on 13.10.2026] → recorded as the
-  author stated it; confirm the year before scheduling work to it.
+- [2026 harmonogram not confirmed] → use 10.12.2026 as a working date (same
+  day as last year). Replace it when the faculty page for this year is out.
 - [Prototype slips, thesis starts late] → fixed checkpoints per milestone;
   chapter 3 can start once hardware blocks are frozen.
 - [AI-use disclosure incomplete] → agents keep `notes/ai-use.md` only; the author writes the thesis section.
@@ -61,14 +61,16 @@ PCB in this change (scheduled, not specified).
 
 ## Deadlines
 
-Author-supplied faculty line (harmonogram WIT): upload to the antiplagiarism
-system of the final version agreed with the promotor — **10.12.2025**.
+Last year's faculty line (harmonogram WIT): upload to the antiplagiarism
+system of the final version agreed with the promotor — 10.12.2025.
+Working assumption for this year, same calendar day, **not confirmed**:
+**10.12.2026**.
 
 | Milestone | Date |
 | --- | --- |
-| Full draft to promotor (≥1 week earlier) | 03.12.2025 |
-| Promotor's last reading (3 days earlier) | 07.12.2025 |
-| Faculty antiplagiarism upload | 10.12.2025 |
+| Full draft to promotor (≥1 week earlier) | 03.12.2026 |
+| Promotor's last reading (3 days earlier) | 07.12.2026 |
+| Faculty antiplagiarism upload | 10.12.2026 |
 
 ## Open Questions
 

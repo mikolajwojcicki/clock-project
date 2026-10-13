@@ -1,6 +1,6 @@
 ## 1. Process setup
 
-- [ ] 1.1 Write `notes/deadlines.md` from the author-supplied faculty date 10.12.2025 (antiplagiarism upload of the final agreed version), promotor date 07.12.2025, full-draft target 03.12.2025. Verify: file lists those three dates.
+- [ ] 1.1 Write `notes/deadlines.md`: working faculty date 10.12.2026 (same day as last year's 10.12.2025 line, not confirmed for this year), promotor date 07.12.2026, full-draft target 03.12.2026. Verify: file lists those three dates and says the year is assumed.
 - [ ] 1.2 Create `notes/` (`README.md`, `media/`, `measurements/`, `ai-use.md`, `sources.md` pointer to bib) and a dated-entry template. Verify: tree exists, committed.
 - [ ] 1.3 Backfill notes from `git log` and archived OpenSpec changes (Sep 12 – Oct 6): one dated note per bring-up milestone with problems and solutions. Verify: each archived change has a note.
 - [ ] 1.4 Backfill `notes/ai-use.md` (agents wrote firmware/docs/specs since start). Verify: entries per tool and purpose.
@@ -42,4 +42,4 @@
 - [ ] 6.3 Agent drafts ch.5 from measurements; author rewrites. Verify: tables/charts cite CSV files.
 - [ ] 6.4 Agent drafts ch.2, then ch.1 and ch.6; author rewrites. Verify: ≥12 cited sources, all cited in text, each source checked by the author.
 - [ ] 6.5 AUTHOR ONLY. The author writes the AI-disclosure section from `notes/ai-use.md`. Agents must not draft or fill this section. Verify: the section exists and the author confirms they wrote it.
-- [ ] 6.6 Full draft to promotor by 03.12.2025; final version to promotor by 07.12.2025; antiplagiarism upload by 10.12.2025. Verify: dates match `notes/deadlines.md`.
+- [ ] 6.6 Full draft to promotor by 03.12.2026; final version to promotor by 07.12.2026; antiplagiarism upload by 10.12.2026. Verify: dates match `notes/deadlines.md`.
