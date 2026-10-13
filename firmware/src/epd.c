@@ -69,6 +69,34 @@ static bool test_pixel(uint32_t x, uint32_t y, void *ctx)
     return is_black(x, y);
 }
 
+static void write_face(uint8_t ram_cmd, epd_pixel_fn pixel, void *ctx)
+{
+    cmd(0x4E); /* RAM X counter */
+    data(0x00);
+    cmd(0x4F); /* RAM Y counter */
+    data(0x00);
+    data(0x00);
+    cmd(ram_cmd); /* bit 1 = white */
+    for (uint32_t y = 0; y < EPD_HEIGHT; y++)
+    {
+        uint8_t row[EPD_ROW_BYTES];
+        for (uint32_t b = 0; b < EPD_ROW_BYTES; b++)
+        {
+            uint8_t v = 0xFF;
+            for (uint32_t bit = 0; bit < 8; bit++)
+            {
+                uint32_t x = b * 8 + bit;
+                if (x < EPD_WIDTH && pixel(x, y, ctx))
+                {
+                    v &= (uint8_t)~(0x80 >> bit);
+                }
+            }
+            row[b] = v;
+        }
+        send(true, row, sizeof row);
+    }
+}
+
 bool epd_show_test_pattern(void)
 {
     return epd_refresh(test_pixel, NULL);
@@ -129,25 +157,10 @@ bool epd_refresh(epd_pixel_fn pixel, void *ctx)
         return false;
     }
 
-    cmd(0x24); /* write black/white RAM; bit 1 = white */
-    for (uint32_t y = 0; y < EPD_HEIGHT; y++)
-    {
-        uint8_t row[EPD_ROW_BYTES];
-        for (uint32_t b = 0; b < EPD_ROW_BYTES; b++)
-        {
-            uint8_t v = 0xFF;
-            for (uint32_t bit = 0; bit < 8; bit++)
-            {
-                uint32_t x = b * 8 + bit;
-                if (x < EPD_WIDTH && pixel(x, y, ctx))
-                {
-                    v &= (uint8_t)~(0x80 >> bit);
-                }
-            }
-            row[b] = v;
-        }
-        send(true, row, sizeof row);
-    }
+    /* SSD1680 full update swaps the two RAMs. The one left empty is what
+     * the next minute shows, upside down. Write the same face to both. */
+    write_face(0x26, pixel, ctx);
+    write_face(0x24, pixel, ctx);
 
     cmd(0x22); /* full update sequence */
     data(0xF7);
