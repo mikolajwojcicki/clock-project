@@ -44,7 +44,11 @@ void spi_bus_transfer(uint32_t cs_pin, uint8_t mode,
     NRF_SPIM0->RXD.MAXCNT = rx_len;
 
     nrf_gpio_pin_clear(cs_pin);
+    /* Cortex-M4: the write that clears EVENTS_END can land after a 1-byte
+     * transfer has already set it, and then the wait never ends. Read it
+     * back so the clear finishes before START. Same as nrf_spim_event_clear. */
     NRF_SPIM0->EVENTS_END = 0;
+    (void)NRF_SPIM0->EVENTS_END;
     NRF_SPIM0->TASKS_START = 1;
     while (!NRF_SPIM0->EVENTS_END)
     {

@@ -41,5 +41,8 @@
 #define DK_BUTTON4   16
 #define DK_UART_TX   6
 #define DK_UART_RX   8
+/* PCA10040 virtual COM pins. The clock leaves flow control off. */
+#define DK_UART_RTS  5
+#define DK_UART_CTS  7
 
 #endif

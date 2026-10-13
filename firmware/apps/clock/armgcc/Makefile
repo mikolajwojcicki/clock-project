@@ -16,6 +16,13 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
+  $(SDK_ROOT)/components/libraries/fifo/app_fifo.c \
+  $(SDK_ROOT)/components/libraries/uart/app_uart_fifo.c \
+  $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
   $(FW_DIR)/src/board.c \
   $(FW_DIR)/src/buzzer.c \
   $(FW_DIR)/src/spi_bus.c \
@@ -25,13 +32,21 @@ SRC_FILES += \
   $(PROJ_DIR)/src/main.c \
 
 INC_FOLDERS += \
-  $(FW_DIR)/apps/bringup/config \
+  $(PROJ_DIR)/config \
   $(FW_DIR)/src \
   $(FW_DIR)/boards \
   $(SDK_ROOT)/modules/nrfx \
   $(SDK_ROOT)/modules/nrfx/mdk \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/integration/nrfx \
+  $(SDK_ROOT)/integration/nrfx/legacy \
+  $(SDK_ROOT)/modules/nrfx/drivers/include \
+  $(SDK_ROOT)/components/libraries/fifo \
+  $(SDK_ROOT)/components/libraries/uart \
+  $(SDK_ROOT)/components/libraries/log \
+  $(SDK_ROOT)/components/libraries/log/src \
+  $(SDK_ROOT)/components/libraries/delay \
+  $(SDK_ROOT)/components/libraries/experimental_section_vars \
   $(SDK_ROOT)/components/toolchain/cmsis/include \
   $(SDK_ROOT)/components/libraries/util \
   $(SDK_ROOT)/components/drivers_nrf/nrf_soc_nosd \
@@ -44,6 +59,7 @@ OPT = -O3 -g3
 
 CFLAGS += $(OPT)
 CFLAGS += -DBUILD_ID='"$(BUILD_ID)"'
+CFLAGS += -DCLOCK_APP
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52

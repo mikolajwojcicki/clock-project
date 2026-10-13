@@ -2,6 +2,7 @@
 #include "clock.h"
 #include "clock_face.h"
 #include "epd.h"
+#include "spi_bus.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -52,18 +53,26 @@ static void accept_line(void)
 static void poll_uart(void)
 {
     char c;
+    char echo[24];
+    unsigned echo_len = 0;
+    /* Echo after the drain. A TX wait in the middle would leave bytes sitting. */
     while (con_getc(&c))
     {
         /* picocom sends CR for Enter. A following LF must not parse an empty line. */
         if (c == '\r' || c == '\n')
         {
+            if (echo_len > 0)
+            {
+                echo[echo_len] = '\0';
+                con_printf("%s", echo);
+                echo_len = 0;
+            }
             if (s_line_len > 0)
             {
                 accept_line();
             }
             continue;
         }
-        con_printf("%c", c);
         if (s_line_len + 1 < sizeof s_line)
         {
             s_line[s_line_len++] = c;
@@ -72,6 +81,15 @@ static void poll_uart(void)
         {
             s_line_len = 0;
         }
+        if (echo_len + 1 < sizeof echo)
+        {
+            echo[echo_len++] = c;
+        }
+    }
+    if (echo_len > 0)
+    {
+        echo[echo_len] = '\0';
+        con_printf("%s", echo);
     }
 }
 
@@ -116,6 +134,7 @@ int main(void)
     board_safe_state();
     con_init();
     board_time_init();
+    spi_bus_init();
     clock_set(&s_time, 2000, 1, 1, 0, 0, 0);
 
     con_printf("clock-project clock " BUILD_ID "\n");
