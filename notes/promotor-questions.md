@@ -1,11 +1,11 @@
-# Questions for the promotor
+# Hardware minimum and tests with people
 
-Not asked yet. Task 1.6 stays open until the answers are written here.
+Asked the author on 2026-10-13. Not asked of the promotor.
 
-1. Is a custom PCB required for the grade, or is the breadboard prototype enough?
-2. Are tests with other people wanted? Those need an ethics-commission request through the promotor before they start. Instrument measurements and a self-test do not.
+1. What hardware is enough for the grade?
+2. Are tests with other people wanted?
 
 Answers:
 
-- PCB:
-- Volunteers:
+- Hardware: a soldered perfboard (proto / dot board). No jumper wires on the board that counts as the prototype. The breadboard stays the bring-up stage. A custom PCB is not required.
+- Volunteers: no. No ethics-commission request.

@@ -141,7 +141,7 @@ Note: `nrf-bm` may ship sibling `zephyr/` trees for Nordic packaging; ignore tho
 
 ### Prototyping path (before / beside custom PCB)
 
-Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **Production PCB BOM:** [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; the in-tree bare-metal blinky is [`firmware/apps/blinky/`](firmware/apps/blinky/) (nRF5 SDK).
+Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **The thesis prototype is a soldered perfboard** (no jumper wires). A custom PCB is not required. **Production PCB BOM,** if a PCB is started later: [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; the in-tree bare-metal blinky is [`firmware/apps/blinky/`](firmware/apps/blinky/) (nRF5 SDK).
 
 ### Thesis scope (expected chapters / work)
 

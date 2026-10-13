@@ -72,6 +72,7 @@ Working assumption for this year, same calendar day, **not confirmed**:
 | Promotor's last reading (3 days earlier) | 07.12.2026 |
 | Faculty antiplagiarism upload | 10.12.2026 |
 
-## Open Questions
+## Decisions added during apply
 
-- Is a custom PCB expected for the grade, or is the breadboard prototype enough? (ask promotor)
+- **Prototype hardware (author, 2026-10-13):** soldered perfboard, no jumpers. Breadboard is bring-up only. A custom PCB is not required.
+- **No volunteer tests.** No ethics request.

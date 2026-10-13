@@ -5,19 +5,19 @@
 - [x] 1.3 Backfill notes from `git log` and archived OpenSpec changes (Sep 12 – Oct 6): one dated note per bring-up milestone with problems and solutions. Verify: each archived change has a note.
 - [x] 1.4 Backfill `notes/ai-use.md` (agents wrote firmware/docs/specs since start). Verify: entries per tool and purpose.
 - [x] 1.5 Update `AGENTS.md`/`project-principles.md`: agents may draft prose; author rewrites every kept paragraph; log drafts in `notes/ai-use.md`; evidence-log duty; ethics rule. Verify: grep shows the rewrite rule.
-- [ ] 1.6 Ask promotor: PCB expected? human-volunteer tests wanted? Record answers in `notes/`. Verify: answers noted.
+- [x] 1.6 Record the hardware minimum and the volunteer decision in `notes/promotor-questions.md`. Verify: answers noted.
 
 ## 2. Thesis skeleton
 
 - [ ] 2.1 Replace template chapters with six chapter files + an empty AI-disclosure heading (no body text) + attachments stubs with section headings from the promotor structure. Verify: CI `thesis-pdf` builds and TOC shows all chapters. The disclosure body stays empty.
-- [ ] 2.2 Check `\stTytulPL` equals APD title; confirm `\stCzyMgr=0`. Verify: diff against `temp-resources/my-thesis.pdf`.
+- [x] 2.2 Check `\stTytulPL` equals APD title; confirm `\stCzyMgr=0`. Verify: diff against `temp-resources/my-thesis.pdf`.
 - [ ] 2.3 Seed `bibliography.bib` with datasheets already used (nRF52832, MDBT42Q, LIS3DH, SSD1680, DCF-1060N, MCP73831, AP2112K) with `urldate`. Verify: biber has no warnings.
 
 ## 3. Diagrams for consultation
 
-- [ ] 3.1 Draw hardware block diagram (KiCad/vector). Verify: PDF in `hardware/docs/`.
+- [x] 3.1 Draw hardware block diagram (KiCad/vector). Verify: PDF in `hardware/docs/`.
 - [ ] 3.2 Draw software algorithm flowchart (sleep → wake source → handler → sleep; alarm path; DCF sync window). Verify: shown to promotor.
-- [ ] 3.3 Export breadboard schematic blocks as print-safe vector (no grid, black/white). Verify: figures open at print size and are legible.
+- [x] 3.3 Export breadboard schematic blocks as print-safe vector (no grid, black/white). Verify: figures open at print size and are legible.
 
 ## 4. Prototype milestones (DK breadboard)
 
@@ -32,8 +32,8 @@
 
 ## 5. Product hardware
 
-- [ ] 5.1 Product schematic in KiCad per AGENTS.md architecture (MCU, display header, LIS3DH, DCF, charger, LDO, buzzer, SWD). Verify: ERC clean.
-- [ ] 5.2 PCB layout with antenna keep-out, DC-DC parts, 32.768 kHz crystal. Verify: DRC clean (only if promotor expects a PCB).
+- [ ] 5.1 Solder the locked circuit on a perfboard (no jumpers): MCU module, display header, LIS3DH, DCF, charger, LDO, buzzer, SWD. KiCad schematic of that circuit. Verify: ERC clean and the board is soldered.
+- [x] 5.2 Custom PCB is not required. Recorded in `notes/promotor-questions.md` and `design.md`. Verify: both files say perfboard is the minimum.
 
 ## 6. Consultations and writing (author)
 
