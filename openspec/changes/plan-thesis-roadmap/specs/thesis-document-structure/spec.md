@@ -47,6 +47,16 @@ explain every included sentence at the defence.
 - **WHEN** an agent drafts chapter prose
 - **THEN** the draft is marked as a draft, logged in `notes/ai-use.md`, and is not treated as final until the author rewrites it
 
+### Requirement: Author-only AI disclosure
+The body of the "Informacja o wykorzystaniu narzędzi AI" section SHALL be
+written by the author. Agents SHALL NOT draft it, fill it, or generate its
+sentences. Agents MAY leave an empty heading stub. The register in
+`notes/ai-use.md` is source material for the author, not a generated section.
+
+#### Scenario: Agent reaches the disclosure section
+- **WHEN** an agent is asked to write or complete the AI-disclosure section
+- **THEN** it refuses and leaves the section for the author
+
 ### Requirement: Deadline discipline
 The plan SHALL track the faculty deadline, the promotor deadline (3 days
 earlier, final) and a full-draft target at least one week before the faculty

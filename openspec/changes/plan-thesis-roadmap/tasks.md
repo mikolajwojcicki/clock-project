@@ -1,6 +1,6 @@
 ## 1. Process setup
 
-- [ ] 1.1 Look up WIT harmonogram dyplomowania; write the faculty date, promotor date (−3 d) and draft date (−7 d or earlier) into `notes/deadlines.md`. Verify: file lists three dates.
+- [ ] 1.1 Write `notes/deadlines.md` from the author-supplied faculty date 10.12.2025 (antiplagiarism upload of the final agreed version), promotor date 07.12.2025, full-draft target 03.12.2025. Verify: file lists those three dates.
 - [ ] 1.2 Create `notes/` (`README.md`, `media/`, `measurements/`, `ai-use.md`, `sources.md` pointer to bib) and a dated-entry template. Verify: tree exists, committed.
 - [ ] 1.3 Backfill notes from `git log` and archived OpenSpec changes (Sep 12 – Oct 6): one dated note per bring-up milestone with problems and solutions. Verify: each archived change has a note.
 - [ ] 1.4 Backfill `notes/ai-use.md` (agents wrote firmware/docs/specs since start). Verify: entries per tool and purpose.
@@ -9,7 +9,7 @@
 
 ## 2. Thesis skeleton
 
-- [ ] 2.1 Replace template chapters with six chapter files + AI-disclosure + attachments stubs containing only section headings from the promotor structure. Verify: CI `thesis-pdf` builds and TOC shows all chapters.
+- [ ] 2.1 Replace template chapters with six chapter files + an empty AI-disclosure heading (no body text) + attachments stubs with section headings from the promotor structure. Verify: CI `thesis-pdf` builds and TOC shows all chapters. The disclosure body stays empty.
 - [ ] 2.2 Check `\stTytulPL` equals APD title; confirm `\stCzyMgr=0`. Verify: diff against `temp-resources/my-thesis.pdf`.
 - [ ] 2.3 Seed `bibliography.bib` with datasheets already used (nRF52832, MDBT42Q, LIS3DH, SSD1680, DCF-1060N, MCP73831, AP2112K) with `urldate`. Verify: biber has no warnings.
 
@@ -41,5 +41,5 @@
 - [ ] 6.2 Agent drafts ch.3 and ch.4 from notes; author rewrites in own words. Verify: LaTeX has rewritten text; each figure/listing referenced; `notes/ai-use.md` lists the draft.
 - [ ] 6.3 Agent drafts ch.5 from measurements; author rewrites. Verify: tables/charts cite CSV files.
 - [ ] 6.4 Agent drafts ch.2, then ch.1 and ch.6; author rewrites. Verify: ≥12 cited sources, all cited in text, each source checked by the author.
-- [ ] 6.5 Fill AI-disclosure section from `notes/ai-use.md`. Verify: matches register.
-- [ ] 6.6 Full draft to promotor ≥1 week before faculty date; final ≤3 days before. Verify: dates from `notes/deadlines.md`.
+- [ ] 6.5 AUTHOR ONLY. The author writes the AI-disclosure section from `notes/ai-use.md`. Agents must not draft or fill this section. Verify: the section exists and the author confirms they wrote it.
+- [ ] 6.6 Full draft to promotor by 03.12.2025; final version to promotor by 07.12.2025; antiplagiarism upload by 10.12.2025. Verify: dates match `notes/deadlines.md`.

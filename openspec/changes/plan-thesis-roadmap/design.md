@@ -42,20 +42,33 @@ PCB in this change (scheduled, not specified).
 6. **Draft, then rewrite.** Agents may draft chapter prose (author decision,
    2026-10-13). A paragraph stays in the thesis only after the author rewrites
    it in their own words. Drafts are labeled and logged in `notes/ai-use.md`.
-   Promotor's hard limits that stay: disclose AI use; explain every sentence
-   at the defence; check sources the agent proposes.
+   Promotor's hard limits that stay: explain every sentence at the defence;
+   check sources the agent proposes. The AI-disclosure section is author-only:
+   agents never draft or fill it.
 7. **Human-subject tests avoided** by default (shake test with instrument or
    self-test logged as engineering measurement); ask promotor if volunteers
    are wanted.
 
 ## Risks / Trade-offs
 
-- [Deadline unknown in repo] → look up WIT harmonogram first (task 1.1).
+- [Faculty date 10.12.2025 is already past on 13.10.2026] → recorded as the
+  author stated it; confirm the year before scheduling work to it.
 - [Prototype slips, thesis starts late] → fixed checkpoints per milestone;
   chapter 3 can start once hardware blocks are frozen.
-- [AI-use disclosure incomplete] → log at commit time, review monthly.
+- [AI-use disclosure incomplete] → agents keep `notes/ai-use.md` only; the author writes the thesis section.
 - [PCB lead time] → decide order/no-order for PCB with promotor; breadboard
   prototype is acceptable for ch.5 per faculty note.
+
+## Deadlines
+
+Author-supplied faculty line (harmonogram WIT): upload to the antiplagiarism
+system of the final version agreed with the promotor — **10.12.2025**.
+
+| Milestone | Date |
+| --- | --- |
+| Full draft to promotor (≥1 week earlier) | 03.12.2025 |
+| Promotor's last reading (3 days earlier) | 07.12.2025 |
+| Faculty antiplagiarism upload | 10.12.2025 |
 
 ## Open Questions
 

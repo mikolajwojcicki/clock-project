@@ -27,8 +27,12 @@ roadmap tied to these rules.
 - Working rule (author decision, 2026-10-13): agents still draft chapter
   prose. The author rewrites every kept paragraph in their own words and
   expands it. Drafts that were not rewritten do not go into the submitted
-  PDF. AI use stays in the disclosure section. The author must be able to
-  explain every sentence at the defence.
+  PDF. The author must be able to explain every sentence at the defence.
+- The "Informacja o wykorzystaniu narzędzi AI" section is written only by
+  the author. Agents do not draft it and do not fill it from the log.
+- Faculty antiplagiarism deadline given by the author: 10.12.2025
+  (ostateczna, uzgodniona z promotorem wersja). Promotor date: 07.12.2025.
+  Full-draft target: 03.12.2025.
 
 ## Capabilities
 
