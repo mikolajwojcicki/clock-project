@@ -1,0 +1,58 @@
+' Source for firmware/docs/software-flowchart.svg and .pdf.
+' Render with the plantuml-server container, UTF-8 body:
+' curl -H "Content-Type: text/plain; charset=utf-8" --data-binary @software-flowchart.puml http://127.0.0.1:8080/svg
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+
+start
+:Inicjalizacja zegarów, GPIO i przerwań;
+repeat
+  :Sen (WFE).\nOdbiornik DCF wyłączony, e-paper bez zasilania;
+  :Przebudzenie przerwaniem;
+
+  switch (Źródło?)
+  case (RTC, nadeszła minuta)
+    if (Dla tego dnia tygodnia\nalarm jest włączony\ni godzina się zgadza?) then (tak)
+      :Włącz brzęczyk;
+      repeat
+        :Czekaj na przerwanie LIS3DH INT1\nalbo na przycisk;
+        if (Przycisk?) then (tak)
+          :Policz jako awaryjne wyciszenie;
+        else (ruch)
+          :Zwiększ licznik aktywności;
+        endif
+      repeat while (Licznik poniżej progu\ni brak przycisku?) is (tak)
+      :Wyłącz brzęczyk;
+    else (nie)
+      :Zostaw alarm wyłączony;
+    endif
+
+  case (Przycisk poza alarmem)
+    :Obsłuż przycisk\n(następne wskazanie albo ustawienie);
+
+  case (Okno synchronizacji DCF)
+    :Włącz zasilanie odbiornika (PON);
+    :Zbieraj impulsy i złóż ramkę minutową;
+    if (Parzystość i znaczniki minuty\nsą poprawne?) then (tak)
+      :Skoryguj RTC o różnicę ramki;
+    else (nie)
+      :Zostaw RTC bez zmian.\nZapisz przyczynę odrzucenia;
+    endif
+    :Wyłącz odbiornik (PON);
+
+  endswitch
+
+  if (Zmienił się czas\nalbo stan alarmu?) then (tak)
+    :Odśwież e-paper, potem odetnij jego zasilanie;
+  else (nie)
+  endif
+repeat while (Zasilanie jest) is (tak)
+stop
+@enduml
