@@ -1,8 +1,8 @@
 # Clock (nRF52 DK breadboard)
 
-LFXO + RTC1 civil clock. The e-paper shows weekday, HH:MM and seconds, and refreshes when the minute changes. UART prints every second.
+LFXO + RTC1 civil clock. The e-paper shows weekday, HH:MM and seconds, and refreshes when the minute changes. UART prints every second. Console uses Nordic `app_uart` / UARTE (SDK UART example path). Hold the module with the ribbon at the bottom: weekday on top, seconds by the ribbon.
 
-Task 4.1 in the thesis roadmap stays open until a photo and a 24 h drift CSV exist.
+Task 4.1 in the thesis roadmap stays open until a photo and a 24 h drift CSV exist. Session handoff: [`notes/handoff-next.md`](../../../notes/handoff-next.md).
 
 ## Build and flash
 

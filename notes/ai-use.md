@@ -11,5 +11,6 @@ The thesis section "Informacja o wykorzystaniu narzędzi AI" is written only by 
 | 2026-10-04 | Cursor agent | DK pin remap, bring-up firmware (e-paper, LIS3DH, DCF capture, buzzer) | DK logs: safe states, buttons, LIS3DH ID and INT1, e-paper pattern, buzzer |
 | 2026-10-06 | Cursor agent | Nucleo DCF-77 frame generator and 77.5 kHz carrier | Analyzer timing and DK decode logged in firmware README |
 | 2026-10-13 | Cursor agent | Thesis roadmap and this evidence log from the promotor Teams dump | Author set the deadline assumption and the rewrite rule |
+| 2026-10-13 | Cursor agent | Clock UART (`app_uart`/UARTE), SPI EVENTS_END hang, SSD1680 dual-RAM upright refresh, digit/weekday glyphs | Author verified on DK: time-set echo, minute updates stay upright with ribbon at bottom |
 
 No thesis chapter prose has been drafted yet. When a draft is kept, add a row and rewrite it before it stays in the PDF.
