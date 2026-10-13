@@ -1,11 +1,15 @@
 ' Source for firmware/docs/software-flowchart.svg and .pdf.
-' Render with the plantuml-server container, UTF-8 body:
-' curl -H "Content-Type: text/plain; charset=utf-8" --data-binary @software-flowchart.puml http://127.0.0.1:8080/svg
+' The server /pdf endpoint drops Polish letters (ł, ą, ę, ś, ć, ź, ż, ń).
+' Render SVG from the server, then PDF from that SVG:
+' curl -H "Content-Type: text/plain; charset=utf-8" --data-binary @software-flowchart.puml http://127.0.0.1:8080/svg -o software-flowchart.svg
+' rsvg-convert -f pdf -o software-flowchart.pdf software-flowchart.svg
 @startuml
 skinparam monochrome true
 skinparam shadowing false
 skinparam backgroundColor white
-skinparam defaultFontName Serif
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
 skinparam dpi 160
 skinparam ActivityBorderColor black
 skinparam ActivityDiamondBorderColor black
