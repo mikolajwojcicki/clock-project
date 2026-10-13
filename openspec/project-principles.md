@@ -44,6 +44,12 @@ Typography must follow the WIT rules encoded in
 `clock-project-latex/settings.tex`; explicit supervisor instructions override
 both sources.
 
+Agents may draft chapter prose. The author rewrites every kept paragraph
+in their own words and expands it. Log each kept draft in `notes/ai-use.md`.
+Agents must not draft or fill the AI-disclosure section. Record bring-up
+evidence in `notes/`. Do not start tests with volunteers before the promotor
+files an ethics-commission request.
+
 ### 6. Clarify genuine user decisions
 
 When an ambiguous requirement, architecture choice, or other genuine

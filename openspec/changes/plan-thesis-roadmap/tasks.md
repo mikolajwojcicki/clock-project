@@ -1,10 +1,10 @@
 ## 1. Process setup
 
-- [ ] 1.1 Write `notes/deadlines.md`: working faculty date 10.12.2026 (same day as last year's 10.12.2025 line, not confirmed for this year), promotor date 07.12.2026, full-draft target 03.12.2026. Verify: file lists those three dates and says the year is assumed.
-- [ ] 1.2 Create `notes/` (`README.md`, `media/`, `measurements/`, `ai-use.md`, `sources.md` pointer to bib) and a dated-entry template. Verify: tree exists, committed.
-- [ ] 1.3 Backfill notes from `git log` and archived OpenSpec changes (Sep 12 – Oct 6): one dated note per bring-up milestone with problems and solutions. Verify: each archived change has a note.
-- [ ] 1.4 Backfill `notes/ai-use.md` (agents wrote firmware/docs/specs since start). Verify: entries per tool and purpose.
-- [ ] 1.5 Update `AGENTS.md`/`project-principles.md`: agents may draft prose; author rewrites every kept paragraph; log drafts in `notes/ai-use.md`; evidence-log duty; ethics rule. Verify: grep shows the rewrite rule.
+- [x] 1.1 Write `notes/deadlines.md`: working faculty date 10.12.2026 (same day as last year's 10.12.2025 line, not confirmed for this year), promotor date 07.12.2026, full-draft target 03.12.2026. Verify: file lists those three dates and says the year is assumed.
+- [x] 1.2 Create `notes/` (`README.md`, `media/`, `measurements/`, `ai-use.md`, `sources.md` pointer to bib) and a dated-entry template. Verify: tree exists, committed.
+- [x] 1.3 Backfill notes from `git log` and archived OpenSpec changes (Sep 12 – Oct 6): one dated note per bring-up milestone with problems and solutions. Verify: each archived change has a note.
+- [x] 1.4 Backfill `notes/ai-use.md` (agents wrote firmware/docs/specs since start). Verify: entries per tool and purpose.
+- [x] 1.5 Update `AGENTS.md`/`project-principles.md`: agents may draft prose; author rewrites every kept paragraph; log drafts in `notes/ai-use.md`; evidence-log duty; ethics rule. Verify: grep shows the rewrite rule.
 - [ ] 1.6 Ask promotor: PCB expected? human-volunteer tests wanted? Record answers in `notes/`. Verify: answers noted.
 
 ## 2. Thesis skeleton
