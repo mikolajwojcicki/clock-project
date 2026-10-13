@@ -1,4 +1,6 @@
-/* Command sequence follows Waveshare's EPD_2in13_V4 reference driver. */
+/* Waveshare Arduino epd2in13_V4, Init(FULL) + DisplayPartBaseImage.
+ * https://github.com/waveshareteam/e-Paper  (2023-06-25)
+ * Gate byte stays 0x00. Setting TB flipped the glass. */
 #include "epd.h"
 
 #include <stdint.h>
@@ -110,11 +112,9 @@ bool epd_refresh(epd_pixel_fn pixel, void *ctx)
     /* Pull-up: a missing BUSY wire reads busy and fails the test, not passes it. */
     nrf_gpio_cfg_input(EPD_BUSY, NRF_GPIO_PIN_PULLUP);
 
-    board_wait_ms(10);
-    /* 2 ms left the previous gate direction in the controller, so a reboot
-     * and a minute update came out opposite ways. Hold reset for a full POR. */
-    nrf_gpio_pin_clear(EPD_RST);
     board_wait_ms(20);
+    nrf_gpio_pin_clear(EPD_RST);
+    board_wait_ms(2);
     nrf_gpio_pin_set(EPD_RST);
     board_wait_ms(20);
     if (!wait_idle())
@@ -131,7 +131,7 @@ bool epd_refresh(epd_pixel_fn pixel, void *ctx)
     cmd(0x01); /* driver output control: 250 gate lines */
     data((EPD_HEIGHT - 1) & 0xFF);
     data((EPD_HEIGHT - 1) >> 8);
-    data(0x01); /* TB=1: first RAM row is the top of the glass */
+    data(0x00); /* official driver: GD=0, SM=0, TB=0 */
     cmd(0x11); /* data entry: X and Y increment */
     data(0x03);
     cmd(0x44); /* RAM X window, in bytes */
