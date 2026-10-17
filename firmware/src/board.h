@@ -7,6 +7,9 @@
 /** Drive DCF_PON high, EPD_CS high, SENSOR_CS high, BUZZER_EN low. */
 void board_safe_state(void);
 
+/** True while any DK button (P0.13-16, active low) is held. Stage 10 remaps this. */
+bool board_any_button_pressed(void);
+
 /** Start LFCLK from the 32.768 kHz crystal and RTC1 as a free-running timebase. */
 void board_time_init(void);
 uint32_t board_ms(void);

@@ -27,6 +27,7 @@ SRC_FILES += \
   $(FW_DIR)/src/buzzer.c \
   $(FW_DIR)/src/spi_bus.c \
   $(FW_DIR)/src/epd.c \
+  $(FW_DIR)/src/alarm.c \
   $(FW_DIR)/src/clock.c \
   $(FW_DIR)/src/clock_face.c \
   $(PROJ_DIR)/src/main.c \

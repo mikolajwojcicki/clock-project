@@ -26,6 +26,16 @@ void board_safe_state(void)
     nrf_gpio_pin_clear(BUZZER_EN);
     nrf_gpio_cfg_output(BUZZER_EN);
     buzzer_off();
+    nrf_gpio_cfg_input(DK_BUTTON1, NRF_GPIO_PIN_PULLUP);
+    nrf_gpio_cfg_input(DK_BUTTON2, NRF_GPIO_PIN_PULLUP);
+    nrf_gpio_cfg_input(DK_BUTTON3, NRF_GPIO_PIN_PULLUP);
+    nrf_gpio_cfg_input(DK_BUTTON4, NRF_GPIO_PIN_PULLUP);
+}
+
+bool board_any_button_pressed(void)
+{
+    return !nrf_gpio_pin_read(DK_BUTTON1) || !nrf_gpio_pin_read(DK_BUTTON2) ||
+           !nrf_gpio_pin_read(DK_BUTTON3) || !nrf_gpio_pin_read(DK_BUTTON4);
 }
 
 static volatile uint32_t s_rtc_overflows;
