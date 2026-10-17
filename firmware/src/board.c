@@ -8,6 +8,8 @@
 #include "dk_breadboard_pins.h"
 #include "nrf.h"
 #include "nrf_gpio.h"
+#include "nrfx_clock.h"
+#include "nrfx_rtc.h"
 
 #ifdef CLOCK_APP
 #include "app_uart.h"
@@ -39,43 +41,51 @@ bool board_any_button_pressed(void)
 }
 
 static volatile uint32_t s_rtc_overflows;
+static const nrfx_rtc_t s_rtc = NRFX_RTC_INSTANCE(1);
 
-void RTC1_IRQHandler(void)
+static void clock_evt(nrfx_clock_evt_type_t evt)
 {
-    if (NRF_RTC1->EVENTS_OVRFLW)
+    (void)evt;
+}
+
+static void rtc_evt(nrfx_rtc_int_type_t type)
+{
+    if (type == NRFX_RTC_INT_OVERFLOW)
     {
-        NRF_RTC1->EVENTS_OVRFLW = 0;
-        (void)NRF_RTC1->EVENTS_OVRFLW;
         s_rtc_overflows++;
     }
 }
 
 void board_time_init(void)
 {
-    NRF_CLOCK->LFCLKSRC = CLOCK_LFCLKSRC_SRC_Xtal << CLOCK_LFCLKSRC_SRC_Pos;
-    NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
-    NRF_CLOCK->TASKS_LFCLKSTART = 1;
-    while (!NRF_CLOCK->EVENTS_LFCLKSTARTED)
+    nrfx_clock_init(clock_evt);
+    nrfx_clock_enable();
+    nrfx_clock_lfclk_start();
+    while (!nrfx_clock_lfclk_is_running())
     {
     }
 
-    NRF_RTC1->PRESCALER = 0;
-    NRF_RTC1->EVTENSET = RTC_EVTEN_OVRFLW_Msk;
-    NRF_RTC1->INTENSET = RTC_INTENSET_OVRFLW_Msk;
-    NVIC_EnableIRQ(RTC1_IRQn);
-    NRF_RTC1->TASKS_START = 1;
+    const nrfx_rtc_config_t cfg = {
+        .prescaler          = 0,
+        .interrupt_priority = NRFX_RTC_DEFAULT_CONFIG_IRQ_PRIORITY,
+        .reliable           = false,
+        .tick_latency       = NRFX_RTC_US_TO_TICKS(2000, 32768),
+    };
+    nrfx_rtc_init(&s_rtc, &cfg, rtc_evt);
+    nrfx_rtc_overflow_enable(&s_rtc, true);
+    nrfx_rtc_enable(&s_rtc);
 }
 
 uint32_t board_ms(void)
 {
     uint32_t primask = __get_PRIMASK();
     __disable_irq();
-    uint32_t counter = NRF_RTC1->COUNTER;
+    uint32_t counter = nrfx_rtc_counter_get(&s_rtc);
     uint32_t overflows = s_rtc_overflows;
-    if (NRF_RTC1->EVENTS_OVRFLW)
+    if (nrf_rtc_event_pending(s_rtc.p_reg, NRF_RTC_EVENT_OVERFLOW))
     {
         /* Overflow happened but its IRQ has not run yet. */
-        counter = NRF_RTC1->COUNTER;
+        counter = nrfx_rtc_counter_get(&s_rtc);
         overflows++;
     }
     __set_PRIMASK(primask);
