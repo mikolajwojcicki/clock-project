@@ -14,4 +14,4 @@
 - [x] 3.2 Capture BUZZER_EN with the Saleae analyzer: 1 s on/off and a stop at 60 s with no button; record the capture
 - [x] 3.3 Press a button during the alarm (author, on request) and see it stop in 100 ms; press with no alarm and see nothing
 - [x] 3.4 Reset during an alarm and see the buzzer off
-- [ ] 3.5 Add a dated note in `notes/log/` with the result and the firmware commit; author takes the upright-clock photo into `notes/media/` as `YYYY-MM-DD_clock_epaper-upright.jpg`
+- [x] 3.5 Add a dated note in `notes/log/` with the result and the firmware commit; author takes the upright-clock photo into `notes/media/` as `YYYY-MM-DD_clock_epaper-upright.jpg`
