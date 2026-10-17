@@ -4,6 +4,13 @@ Bench signal source: emits logic-level DCF-77 frames on `PA0` (Arduino `A0`) so
 the DK bring-up DCF test can be checked without radio reception. Bare-metal C,
 no STM32Cube, no RTOS. Lab equipment, not product firmware.
 
+Built on libopencm3 (submodule `firmware/third_party/libopencm3`, pinned to
+`96297511`, master v0.8.0-472). The library provides the vector table and the
+linker script is generated from the device name. Run
+`git submodule update --init` first; `make` builds the library on demand.
+The earlier register-level version (own startup and linker script) is in git
+history before commit `260a81f`.
+
 Board: Nucleo-F411RE, revision `MB1136 C-04` (8 MHz ST-LINK `MCO` into
 `OSC_IN`, so HSE bypass is expected). The PLL runs the core at 77.5 MHz
 (HSE 8 MHz: M=8, N=310, P=4; HSI fallback: M=16), so TIM3 divides it to an
@@ -27,7 +34,7 @@ ST-LINK needs USB access (`/etc/udev/rules.d/60-openocd.rules` already covers
 ST-LINK virtual COM port on `USART2` (`PA2`/`PA3`), 115200 8N1:
 
 ```bash
-picocom -b 115200 /dev/ttyACM0
+picocom -b 115200 /dev/ttyACM2   # ST-LINK VCP; ACM0/1 are the nRF DK when plugged in (check: udevadm info /dev/ttyACM* | grep ID_MODEL=)
 ```
 
 Press the black RESET button to see the startup banner (clock source, default
