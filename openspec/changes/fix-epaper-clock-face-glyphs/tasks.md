@@ -1,13 +1,13 @@
 ## 1. Glyphs
 
-- [ ] 1.1 Replace `k_digit[]` with the redrawn digits from design decision 2; adjust after the render if any shape is still unclear
-- [ ] 1.2 Review `letter()` glyphs (`P N W T S R C Z D O`) and the colon; fix any clash with a digit or another letter; use a slashed `0`
+- [x] 1.1 Replace `k_digit[]` with the redrawn digits from design decision 2; adjust after the render if any shape is still unclear
+- [x] 1.2 Review `letter()` glyphs (`P N W T S R C Z D O`) and the colon; fix any clash with a digit or another letter; use a slashed `0`
 
 ## 2. Host check
 
-- [ ] 2.1 Add a glyph accessor in `clock_face.[ch]` and `firmware/tests/clock_face_test.c`: print each glyph as `#` / `.` and assert pairwise inequality
-- [ ] 2.2 Add the run line to the host-check section of `firmware/README.md`
-- [ ] 2.3 Run the host check inside a `nix-shell` that provides `gcc` and review the printed shapes
+- [x] 2.1 Add a glyph accessor in `clock_face.[ch]` and `firmware/tests/clock_face_test.c`: print each glyph as `#` / `.` and assert pairwise inequality
+- [x] 2.2 Add the run line to the host-check section of `firmware/README.md`
+- [x] 2.3 Run the host check inside a `nix-shell` that provides `gcc` and review the printed shapes
 
 ## 3. Verify on the display
 
