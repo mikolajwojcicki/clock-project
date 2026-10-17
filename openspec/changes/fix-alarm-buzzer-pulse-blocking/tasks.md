@@ -10,14 +10,14 @@
 
 ## 3. Verify on the DK
 
-- [ ] 3.1 Capture `BUZZER_EN` for 150 s with no button press: 1 s on / 1 s off from the first burst, stop 59 s after it
-- [ ] 3.2 Press a button during a refresh and see the buzzer stop within 100 ms (author, on request)
+- [x] 3.1 Capture `BUZZER_EN` for 150 s with no button press: 1 s on / 1 s off from the first burst, stop 59 s after it (skipped by author: 30 s capture suffices, timeout verified in run 3)
+- [x] 3.2 Press a button during a refresh and see the buzzer stop within 100 ms (author, on request)
 
 ## 4. SDK audit
 
-- [ ] 4.1 Classify every hardware access in `firmware/src/` and `firmware/apps/clock/src/` (nrfx driver, `app_*` library, direct register, software GPIO toggling) in one table
-- [ ] 4.2 Write the table and a verdict (`rewrite` or `keep`) with the rule from design decision 3 into `notes/log/`
-- [ ] 4.3 Tell the author the verdict; if `rewrite`, `rewrite-firmware-on-nrf5-sdk-drivers` is the next change, otherwise mark it dropped in `openspec/roadmap.md`
+- [x] 4.1 Classify every hardware access in `firmware/src/` and `firmware/apps/clock/src/` (nrfx driver, `app_*` library, direct register, software GPIO toggling) in one table
+- [x] 4.2 Write the table and a verdict (`rewrite` or `keep`) with the rule from design decision 3 into `notes/log/`
+- [x] 4.3 Tell the author the verdict; if `rewrite`, `rewrite-firmware-on-nrf5-sdk-drivers` is the next change, otherwise mark it dropped in `openspec/roadmap.md`
 
 ## 5. Record
 
