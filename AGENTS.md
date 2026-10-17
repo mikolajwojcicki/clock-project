@@ -151,6 +151,10 @@ Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Ad
 - Web: Web Bluetooth schedule upload
 - Research: measure current in sleep / BLE / DCF / alarm vs theoretical budget
 
+## Asking the user (mandatory for agents)
+
+Every question to the user MUST go through the interactive `ask` tool, never as plain chat text. This includes grilling rounds: one `ask` call per round, one entry per question, recommended option first. Keep the question text complete (context, options, tradeoff) so it reads on its own in the dialog.
+
 ## Git workflow (mandatory for agents)
 
 Commit **often** and with **descriptive** messages. Prefer many small, reviewable commits over one large dump at the end of a session.
