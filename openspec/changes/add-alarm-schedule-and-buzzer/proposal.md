@@ -1,6 +1,6 @@
 ## Why
 
-The product is an alarm clock; the app has a clock but no alarms. The bring-up firmware proved the buzzer driver and four buttons separately. Stage of `openspec/roadmap.md`. Needs: stage 2. Unblocks: stages 4, 5, 10.
+The product is an alarm clock; the app has a clock but no alarms. The bring-up firmware proved the buzzer driver and four buttons separately. Stage of `openspec/roadmap.md`. Needs: nothing. Unblocks: stages 4, 5, 10.
 
 ## What Changes
 

@@ -1,6 +1,6 @@
 ## Why
 
-The clock app (`firmware/apps/clock`) keeps civil time on LFXO + RTC1 and draws it on the e-paper, but the roadmap still lacks the evidence: a photo of the upright panel and a 24 h drift record. Chapter 5 needs the drift number. Stage of `openspec/roadmap.md`. Needs: nothing. Unblocks: stage 3.
+The clock app (`firmware/apps/clock`) keeps civil time on LFXO + RTC1 and draws it on the e-paper, but the roadmap still lacks the evidence: a photo of the upright panel and a 24 h drift record. Chapter 5 needs the drift number. Stage of `openspec/roadmap.md`. Needs: stage 5 (runs on the deep-sleep build). Unblocks: stage 12.
 
 ## What Changes
 

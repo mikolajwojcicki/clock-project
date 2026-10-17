@@ -25,8 +25,8 @@ Order follows `design.md` decision 3 of the archived change: sleep numbers drive
 | # | Change | Roadmap source | Needs | Verify (short) |
 | --- | --- | --- | --- | --- |
 | 1 | `prepare-first-consultation` | 3.2, 6.1 | none | promotor saw prototype, block diagram, flowchart; feedback noted |
-| 2 | `add-rtc-clock-drift-log` | 4.1 | none | photo + 24 h drift CSV |
-| 3 | `add-alarm-schedule-and-buzzer` | 4.2 | 2 | alarm fires at set HH:MM, button silences |
+| 2 | `add-rtc-clock-drift-log` | 4.1 | 5 (runs on the deep-sleep build) | photo + 24 h drift CSV |
+| 3 | `add-alarm-schedule-and-buzzer` | 4.2 | none | alarm fires at set HH:MM, any DK button silences |
 | 4 | `add-motion-dismiss` | 4.3 | 3 | MCU wakes on INT1 only on motion; N activity count silences |
 | 5 | `add-deep-sleep-and-current-measurement` | 4.4 | 3, 4 | CSV of sleep, e-paper refresh, DCF window, alarm currents |
 | 6 | `add-dcf77-periodic-sync` | 4.5 | 5 | Nucleo generator drives a sync, PON off after |
@@ -42,7 +42,9 @@ Order follows `design.md` decision 3 of the archived change: sleep numbers drive
 ```mermaid
 flowchart LR
   C1[1 consultation] --> C11
-  C2[2 RTC clock] --> C3[3 alarm]
+  C5 --> C2[2 RTC drift log]
+  C2 --> C12
+  C3[3 alarm]
   C3 --> C4[4 motion dismiss]
   C3 --> C5[5 deep sleep + current]
   C4 --> C5
@@ -69,9 +71,9 @@ Targets, not faculty dates. Adjust at each consultation. Chapter 3 may start onc
 
 | Week of | Work |
 | --- | --- |
-| 19.10 | 1, start 24 h drift in 2 |
+| 19.10 | 1; 3 starts (photo of upright clock taken now) |
 | 26.10 | 3, 4 |
-| 02.11 | 5; 10 starts in parallel |
+| 02.11 | 5; 10 starts in parallel; 24 h drift (2) runs while the author is at work |
 | 09.11 | 6, 7; draft ch.3 |
 | 16.11 | 8, 10 done; draft ch.4 |
 | 23.11 | 9; draft ch.5, then ch.2, 1, 6 |
