@@ -13,10 +13,10 @@
 
 ## 3. Port
 
-- [ ] 3.1 Port `main.c` (clock with HSI fallback, GPIO, TIM3 carrier, SysTick, USART2) to libopencm3 with unchanged behavior
-- [ ] 3.2 Update the `Makefile` to build the library first, link it, and keep `make flash` on OpenOCD
-- [ ] 3.3 Confirm the build is clean (`-Werror` on app sources, library sources excluded)
-- [ ] 3.4 Run `firmware/tests/dcf77_encode_test.c` on the host; it must still pass unchanged
+- [x] 3.1 Port `main.c` (clock with HSI fallback, GPIO, TIM3 carrier, SysTick, USART2) to libopencm3 with unchanged behavior
+- [x] 3.2 Update the `Makefile` to build the library first, link it, and keep `make flash` on OpenOCD
+- [x] 3.3 Confirm the build is clean (`-Werror` on app sources, library sources excluded)
+- [x] 3.4 Run `firmware/tests/dcf77_encode_test.c` on the host; it must still pass unchanged
 - [ ] 3.5 Commit: `firmware: port DCF-77 generator to libopencm3`
 
 ## 4. Re-measure against 2026-10-06

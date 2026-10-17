@@ -1,6 +1,17 @@
 /* DCF-77 bench generator, Nucleo-F411RE: PA0 pulses, UART time set + faults. */
 #include "dcf77_encode.h"
-#include "stm32f411_regs.h"
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/systick.h>
+#include <libopencm3/stm32/flash.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/timer.h>
+#include <libopencm3/stm32/usart.h>
+
+/* Board: Nucleo-F411RE. LD2 = PA5; DCF output = PA0 (A0); VCP = PA2/PA3 (AF7) */
+#define PIN_DCF 0u
+#define PIN_LED 5u
+#define PIN_CARRIER 6u /* D12, TIM3_CH1 */
 
 static uint32_t f_cpu, f_pclk1;
 static bool clk_ext;
@@ -24,22 +35,26 @@ static void irq_on(void) { __asm volatile("cpsie i" ::: "memory"); }
 
 static void carrier_apply(void)
 {
-    TIM3_CCR1 = (carrier_ok && carrier_on) ? (pin_high ? pulse_ccr[level] : idle_ccr[level]) : 0;
+    timer_set_oc_value(TIM3, TIM_OC1,
+                       (carrier_ok && carrier_on) ? (pin_high ? pulse_ccr[level] : idle_ccr[level]) : 0);
 }
 
 static void pin_set(bool on)
 {
     pin_high = on;
     carrier_apply();
-    GPIOA_BSRR = on ? ((1u << PIN_DCF) | (1u << PIN_LED))
-                    : ((1u << (PIN_DCF + 16)) | (1u << (PIN_LED + 16)));
+    if (on) {
+        gpio_set(GPIOA, (1u << PIN_DCF) | (1u << PIN_LED));
+    } else {
+        gpio_clear(GPIOA, (1u << PIN_DCF) | (1u << PIN_LED));
+    }
 }
 
 /*
  * 1 ms tick. Second 0..58 start a 100/200 ms pulse; second 59 stays low.
  * Starts at sec 59 / ms 999 so the first tick opens frame 1 (next_bits).
  */
-void SysTick_Handler(void)
+void sys_tick_handler(void)
 {
     static uint16_t ms = 999;
     static uint8_t sec = 59;
@@ -89,72 +104,79 @@ void SysTick_Handler(void)
 }
 
 /*
- * RM0383 6.3: PLL to 77.5 MHz (see design.md). HSE bypass: M=8 N=310 P=4; HSI: M=16.
- * Flash wait states and APB1 /2 are set before the switch. Carrier only from HSE.
+ * PLL to 77.5 MHz (see design.md): VCO 310 MHz, P=4. HSE bypass: M=8; HSI: M=16.
+ * libopencm3 sets flash wait states and APB1 /2 before the switch. Carrier only from HSE.
+ * Unlike the register-level version, the library waits for PLL lock without a timeout;
+ * the HSE start-up timeout (the fallback that matters on the bench) is kept.
  */
+#define CLK77(m, src)                                                                         \
+    {                                                                                         \
+        .pllm = (m), .plln = 310, .pllp = 4, .pllq = 7, .pllr = 0, .pll_source = (src),       \
+        .flash_config = FLASH_ACR_DCEN | FLASH_ACR_ICEN | FLASH_ACR_LATENCY_2WS,              \
+        .hpre = RCC_CFGR_HPRE_NODIV, .ppre1 = RCC_CFGR_PPRE_DIV2,                             \
+        .ppre2 = RCC_CFGR_PPRE_NODIV, .voltage_scale = PWR_SCALE1,                            \
+        .ahb_frequency = 77500000, .apb1_frequency = 38750000, .apb2_frequency = 77500000,    \
+    }
+static const struct rcc_clock_scale clk_hse = CLK77(8, RCC_CFGR_PLLSRC_HSE_CLK);
+static const struct rcc_clock_scale clk_hsi = CLK77(16, RCC_CFGR_PLLSRC_HSI_CLK);
+
 static void clock_init(void)
 {
     bool hse = false;
 #ifndef GEN_FORCE_HSI
-    RCC_CR |= RCC_CR_HSEBYP | RCC_CR_HSEON;
-    for (uint32_t i = 0; i < 100000 && !(RCC_CR & RCC_CR_HSERDY); i++) { }
-    hse = RCC_CR & RCC_CR_HSERDY;
+    rcc_osc_bypass_enable(RCC_HSE);
+    rcc_osc_on(RCC_HSE);
+    for (uint32_t i = 0; i < 100000 && !hse; i++) {
+        hse = rcc_is_osc_ready(RCC_HSE);
+    }
 #endif
-    RCC_PLLCFGR = hse ? PLLCFGR(8u, 310u, 1u, true) : PLLCFGR(16u, 310u, 1u, false);
-    FLASH_ACR = FLASH_ACR_2WS_CACHE;
-    RCC_CFGR |= RCC_CFGR_PPRE1_DIV2;
-    RCC_CR |= RCC_CR_PLLON;
-    for (uint32_t i = 0; i < 100000 && !(RCC_CR & RCC_CR_PLLRDY); i++) { }
-    if (RCC_CR & RCC_CR_PLLRDY) {
-        RCC_CFGR = (RCC_CFGR & ~3u) | RCC_CFGR_SW_PLL;
-        for (uint32_t i = 0; i < 100000 && (RCC_CFGR & RCC_CFGR_SWS_MASK) != RCC_CFGR_SWS_PLL; i++) { }
-    }
-    if ((RCC_CFGR & RCC_CFGR_SWS_MASK) == RCC_CFGR_SWS_PLL) {
-        clk_ext = hse;
-        f_cpu = 77500000;
-        f_pclk1 = f_cpu / 2;
-    } else { /* PLL failed: stay on HSI 16 MHz, APB1 undivided */
-        RCC_CFGR &= ~RCC_CFGR_PPRE1_DIV2;
-        f_cpu = f_pclk1 = 16000000;
-    }
+    rcc_clock_setup_pll(hse ? &clk_hse : &clk_hsi);
+    clk_ext = hse;
+    f_cpu = rcc_ahb_frequency;
+    f_pclk1 = rcc_apb1_frequency;
     carrier_ok = clk_ext;
 }
 
 static void gpio_init(void)
 {
-    RCC_AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-    GPIOA_MODER = (GPIOA_MODER & ~((3u << 0) | (3u << 4) | (3u << 6) | (3u << 10))) |
-                  (MODER_OUT << (2 * PIN_DCF)) | (MODER_AF << 4) | (MODER_AF << 6) |
-                  (MODER_OUT << (2 * PIN_LED));
-    GPIOA_AFRL = (GPIOA_AFRL & ~0xFF00u) | (7u << 8) | (7u << 12); /* PA2/PA3 = AF7 */
+    rcc_periph_clock_enable(RCC_GPIOA);
+    gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, (1u << PIN_DCF) | (1u << PIN_LED));
+    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2 | GPIO3);
+    gpio_set_af(GPIOA, GPIO_AF7, GPIO2 | GPIO3); /* USART2 via ST-LINK VCP */
 }
 
 static void carrier_init(void)
 {
-    RCC_APB1ENR |= RCC_APB1ENR_TIM3EN;
-    TIM3_PSC = 0;
-    TIM3_ARR = CARRIER_ARR;
-    TIM3_CCMR1 = TIM_CCMR1_OC1M_PWM1 | TIM_CCMR1_OC1PE;
+    rcc_periph_clock_enable(RCC_TIM3);
+    timer_set_prescaler(TIM3, 0);
+    timer_set_period(TIM3, CARRIER_ARR);
+    timer_set_oc_mode(TIM3, TIM_OC1, TIM_OCM_PWM1);
+    timer_enable_oc_preload(TIM3, TIM_OC1);
     carrier_apply(); /* CCR = 0 unless carrier_ok */
-    TIM3_CCER = TIM_CCER_CC1E;
-    TIM3_CR1 = TIM_CR1_ARPE | TIM_CR1_CEN;
-    TIM3_EGR = TIM_EGR_UG; /* load preloaded CCR now */
-    GPIOA_OSPEEDR |= 3u << (2 * PIN_CARRIER);
-    GPIOA_AFRL = (GPIOA_AFRL & ~(0xFu << (4 * PIN_CARRIER))) | (2u << (4 * PIN_CARRIER));
-    GPIOA_MODER = (GPIOA_MODER & ~(3u << (2 * PIN_CARRIER))) | (MODER_AF << (2 * PIN_CARRIER));
+    timer_enable_oc_output(TIM3, TIM_OC1);
+    timer_enable_preload(TIM3);
+    timer_generate_event(TIM3, TIM_EGR_UG); /* load preloaded CCR now */
+    timer_enable_counter(TIM3);
+    gpio_set_output_options(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_100MHZ, 1u << PIN_CARRIER);
+    gpio_set_af(GPIOA, GPIO_AF2, 1u << PIN_CARRIER);
+    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, 1u << PIN_CARRIER);
 }
 
 static void uart_init(void)
 {
-    RCC_APB1ENR |= RCC_APB1ENR_USART2EN;
-    USART2_BRR = (f_pclk1 + 115200 / 2) / 115200; /* oversampling 16 */
-    USART2_CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
+    rcc_periph_clock_enable(RCC_USART2);
+    usart_set_baudrate(USART2, 115200);
+    usart_set_databits(USART2, 8);
+    usart_set_stopbits(USART2, USART_STOPBITS_1);
+    usart_set_parity(USART2, USART_PARITY_NONE);
+    usart_set_flow_control(USART2, USART_FLOWCONTROL_NONE);
+    usart_set_mode(USART2, USART_MODE_TX_RX);
+    usart_enable(USART2);
 }
 
 static void putc_(char c)
 {
-    while (!(USART2_SR & USART_SR_TXE)) { }
-    USART2_DR = (uint32_t)c;
+    usart_send_blocking(USART2, (uint16_t)c);
 }
 
 static void puts_(const char *s)
@@ -251,10 +273,10 @@ static void banner(const dcf77_time_t *t)
 static volatile uint8_t rx_buf[64];
 static volatile uint8_t rx_head, rx_tail;
 
-void USART2_IRQHandler(void)
+void usart2_isr(void)
 {
-    while (USART2_SR & USART_SR_RXNE) { /* reading DR also clears ORE */
-        uint8_t c = (uint8_t)USART2_DR;
+    while (usart_get_flag(USART2, USART_SR_RXNE)) { /* reading DR also clears ORE */
+        uint8_t c = (uint8_t)usart_recv(USART2);
         uint8_t n = (uint8_t)((rx_head + 1) % sizeof rx_buf);
         if (n != rx_tail) {
             rx_buf[rx_head] = c;
@@ -420,12 +442,14 @@ int main(void)
     banner(&next_t);
     build_next();
 
-    USART2_CR1 |= USART_CR1_RXNEIE;
-    NVIC_ISER1 = 1u << (USART2_IRQn - 32);
+    usart_enable_rx_interrupt(USART2);
+    nvic_enable_irq(NVIC_USART2_IRQ);
 
-    SYST_RVR = f_cpu / 1000 - 1;
-    SYST_CVR = 0;
-    SYST_CSR = SYST_CSR_CLKSRC | SYST_CSR_TICKINT | SYST_CSR_ENABLE;
+    systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
+    systick_set_reload(f_cpu / 1000 - 1);
+    systick_clear();
+    systick_interrupt_enable();
+    systick_counter_enable();
 
     for (;;) {
         if (frame_flag) {

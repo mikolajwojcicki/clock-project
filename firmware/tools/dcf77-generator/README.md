@@ -30,7 +30,7 @@ ST-LINK needs USB access (`/etc/udev/rules.d/60-openocd.rules` already covers
 ST-LINK virtual COM port on `USART2` (`PA2`/`PA3`), 115200 8N1:
 
 ```bash
-picocom -b 115200 /dev/ttyACM0
+picocom -b 115200 /dev/ttyACM2   # ST-LINK VCP; ACM0/1 are the nRF DK when plugged in (check: udevadm info /dev/ttyACM* | grep ID_MODEL=)
 ```
 
 Press the black RESET button to see the startup banner (clock source, default
