@@ -1,3 +1,6 @@
 [submodule "clock-project-latex"]
 	path = clock-project-latex
 	url = git@github.com:mikolajwojcicki/clock-project-latex.git
+[submodule "firmware/third_party/libopencm3"]
+	path = firmware/third_party/libopencm3
+	url = https://github.com/libopencm3/libopencm3.git

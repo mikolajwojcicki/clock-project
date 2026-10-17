@@ -1,9 +1,9 @@
 ## 1. Branch and library
 
-- [ ] 1.1 Create branch `experiment/libopencm3-generator` from the current head
-- [ ] 1.2 Add libopencm3 as submodule at `firmware/third_party/libopencm3`, pin one commit, note the hash in `firmware/tools/dcf77-generator/README.md`
-- [ ] 1.3 Build the library for `stm32/f4` with the installed `arm-none-eabi-gcc` and confirm it produces `libopencm3_stm32f4.a`
-- [ ] 1.4 Commit: `firmware: add libopencm3 submodule for generator experiment`
+- [x] 1.1 Create branch `experiment/libopencm3-generator` from the current head
+- [x] 1.2 Add libopencm3 as submodule at `firmware/third_party/libopencm3`, pin one commit, note the hash in `firmware/tools/dcf77-generator/README.md`
+- [x] 1.3 Build the library for `stm32/f4` with the installed `arm-none-eabi-gcc` and confirm it produces `libopencm3_stm32f4.a`
+- [x] 1.4 Commit: `firmware: add libopencm3 submodule for generator experiment`
 
 ## 2. Clock spike (go / no-go)
 

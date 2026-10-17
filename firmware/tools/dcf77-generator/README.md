@@ -4,6 +4,9 @@ Bench signal source: emits logic-level DCF-77 frames on `PA0` (Arduino `A0`) so
 the DK bring-up DCF test can be checked without radio reception. Bare-metal C,
 no STM32Cube, no RTOS. Lab equipment, not product firmware.
 
+Experiment on branch `experiment/libopencm3-generator`: libopencm3 submodule at
+`firmware/third_party/libopencm3`, pinned to `96297511` (master, v0.8.0-472).
+
 Board: Nucleo-F411RE, revision `MB1136 C-04` (8 MHz ST-LINK `MCO` into
 `OSC_IN`, so HSE bypass is expected). The PLL runs the core at 77.5 MHz
 (HSE 8 MHz: M=8, N=310, P=4; HSI fallback: M=16), so TIM3 divides it to an
