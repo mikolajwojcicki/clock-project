@@ -29,5 +29,5 @@
 
 ## 5. Decide
 
-- [ ] 5.1 If every check matches: remove `stm32f411_regs.h`, `startup.c`, `stm32f411re.ld` in a separate commit, update `README.md` build section, merge the branch
+- [x] 5.1 If every check matches: remove `stm32f411_regs.h`, `startup.c`, `stm32f411re.ld` in a separate commit, update `README.md` build section, merge the branch
 - [ ] 5.2 If any check fails and cannot be fixed cleanly: keep the register-level version on `main`, record the reason, delete the branch and the submodule
