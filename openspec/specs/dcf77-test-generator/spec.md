@@ -8,11 +8,15 @@ reception.
 ## Requirements
 
 ### Requirement: Generator builds and flashes with installed tools
-The generator firmware SHALL build with the installed `arm-none-eabi-gcc` and flash through the Nucleo's on-board ST-LINK with the installed OpenOCD, using its `board/st_nucleo_f4.cfg`. It SHALL NOT need STM32Cube, a vendor HAL, an RTOS, a NixOS change, or a download.
+The generator firmware SHALL build with the installed `arm-none-eabi-gcc` and the libopencm3 library pinned as a git submodule, and flash through the Nucleo's on-board ST-LINK with the installed OpenOCD, using its `board/st_nucleo_f4.cfg`. It SHALL NOT need STM32Cube, a vendor HAL, an RTOS, a NixOS change, or any download beyond initializing that submodule.
 
 #### Scenario: Operator builds and flashes
-- **WHEN** the operator runs `make` and then `make flash` in the generator directory with the Nucleo connected over USB
+- **WHEN** the operator initializes the submodule once, runs `make` and then `make flash` in the generator directory with the Nucleo connected over USB
 - **THEN** the build completes without errors and OpenOCD programs, verifies, and resets the board
+
+#### Scenario: No vendor tooling
+- **WHEN** the generator is built on the NixOS host without STM32CubeMX, STM32CubeIDE or any ST package installed
+- **THEN** the build still succeeds
 
 ### Requirement: Output follows DCF-77 pulse timing
 The generator SHALL drive output `PA0` (Arduino header `A0`) as a 3.3 V push-pull signal that is high during each pulse and low otherwise. A pulse SHALL start at each second 0 to 58 and last 100 ms for a `0` bit or 200 ms for a `1` bit. Second 59 SHALL have no pulse, so that the next pulse marks the minute.
