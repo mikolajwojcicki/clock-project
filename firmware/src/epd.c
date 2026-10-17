@@ -114,6 +114,7 @@ static void write_face(uint8_t ram_cmd, epd_pixel_fn pixel, void *ctx)
             row[b] = v;
         }
         send(true, row, sizeof row);
+        app_poll(); /* full-panel write takes seconds; keep buzzer pulsing */
     }
 }
 
