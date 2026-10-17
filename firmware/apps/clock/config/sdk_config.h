@@ -4,6 +4,12 @@
 /* Same UART stack as examples/peripheral/uart (PCA10040): UARTE + EasyDMA.
  * Flow control stays off. The DK virtual COM port echoed with that setup. */
 
+/* nrfx_spim: blocking transfers for the e-paper and the LIS3DH. */
+#define NRFX_SPIM_ENABLED 1
+#define NRFX_SPIM0_ENABLED 1
+#define NRFX_SPIM_MISO_PULL_CFG 0
+#define NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY 6
+
 #ifndef NRFX_PRS_ENABLED
 #define NRFX_PRS_ENABLED 1
 #endif
