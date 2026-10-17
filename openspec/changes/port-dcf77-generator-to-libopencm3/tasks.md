@@ -7,9 +7,9 @@
 
 ## 2. Clock spike (go / no-go)
 
-- [ ] 2.1 Write a minimal app that sets 77.5 MHz from HSE bypass (M=8, N=310, P=4, APB1 /2, 2 wait states) and starts TIM3 CH1 at 77.5 kHz on `PA6`
-- [ ] 2.2 Flash it and measure `PA6` with the Saleae; record frequency (limit 0.01%)
-- [ ] 2.3 If exact 77.5 MHz is not reachable cleanly, stop, write the no-go in `notes/log/`, and drop the branch
+- [x] 2.1 Write a minimal app that sets 77.5 MHz from HSE bypass (M=8, N=310, P=4, APB1 /2, 2 wait states) and starts TIM3 CH1 at 77.5 kHz on `PA6`
+- [x] 2.2 Flash it and measure `PA6` with the Saleae; record frequency (limit 0.01%)
+- [x] 2.3 If exact 77.5 MHz is not reachable cleanly, stop, write the no-go in `notes/log/`, and drop the branch
 
 ## 3. Port
 
