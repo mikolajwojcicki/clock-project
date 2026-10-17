@@ -1,0 +1,57 @@
+---
+description: Commit often with thesis-ready descriptive messages; never batch a session into one dump
+alwaysApply: true
+---
+
+# Thesis-grade commit history
+
+This monorepo is a *praca inżynierska*. Dense `git log` is a primary source for hardware/firmware chronology chapters. Sparse or squash-style history is a liability for the paper.
+
+**This project rule overrides any global “only commit when the user asks” habit.** Create commits as work lands. Honor an explicit user “don’t commit yet.”
+
+## Cadence (bias: more commits)
+
+Commit after each coherent unit — not at end of session:
+
+1. One concern finished (driver stub, net fix, LaTeX subsection, OpenSpec artifact set)
+2. Build/flash milestone reached (or intentional failing checkpoint is describable)
+3. Architecture/decision change locked in docs
+4. Before switching tasks or ending a turn that changed tracked files
+
+**Do not** wait for the whole feature/chapter. **Do not** one catch-all commit for mixed PCB + firmware + docs.
+
+Split: app → flash/tooling → docs. Prefixes: `thesis:`, `hardware:`, `firmware:`, `web:`.
+
+If unsure: **commit**.
+
+## Message depth (thesis-readable)
+
+Subject: imperative, why-focused, ~50–72 chars, with prefix.
+
+Body: write for future-you drafting the thesis — not a file list. Include when relevant:
+
+- **Why** this change (constraint, measurement, promotor/APD scope, power, pin rule)
+- **What was tried / discarded** (so chronology chapters can say “we rejected X because…”)
+- **Decision locked** (component, pin, stack choice) and what it replaces if anything
+- **How to verify** (build target, flash, expected LED/UART behavior) when non-obvious
+
+```text
+# ❌ BAD
+WIP
+fix stuff
+Update firmware files
+
+# ✅ GOOD
+firmware: wake on LIS3DH INT1 for alarm dismiss
+
+Motion dismiss must interrupt deep sleep without polling.
+INT1 on high-G / activity threshold; INT2 reserved for
+free-fall experiments. Verified: DK LED toggle on INT1
+while main loop stays in WFE.
+```
+
+## Safety (unchanged)
+
+- No force-push, no config edits, no secrets / KiCad junk / LaTeX build outputs
+- Stage only related files (no blanket `git add .` with mixed concerns)
+- HEREDOC for message; amend only if user asks and amend-safety holds
