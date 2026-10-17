@@ -23,7 +23,7 @@
 
 - [x] 4.1 Saleae on `PA0`: widths 100/200 ms, spacing 1000 ms, minute gap 2000 ms ±2 ms, 3 frames match the UART log
 - [x] 4.2 Saleae on `PA0` and `PA6`: carrier 77.5 kHz within 0.01%, duty switches within one carrier period of each `PA0` edge, levels 0/-6/-12/-20 dB
-- [ ] 4.3 Fault keys `g m s p` and carrier keys `l r` behave as recorded
+- [x] 4.3 Fault keys `g m s p` and carrier keys `l r` behave as recorded
 - [ ] 4.4 DK bring-up DCF test (button 3): valid pulses, 3 minute markers, DK frames equal the generator `bits=` strings
 - [ ] 4.5 Write `notes/log/` entry with a before/after table (code size, boot code lines, dip lag, results) and the decision
 
