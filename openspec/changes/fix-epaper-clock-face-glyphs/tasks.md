@@ -12,7 +12,7 @@
 ## 3. Verify on the display
 
 - [x] 3.1 Build with `make -C firmware/apps/clock` without warnings and flash
-- [ ] 3.2 Show `88:88`-like times and every weekday on the e-paper; author reviews each digit and letter
+- [x] 3.2 Show `88:88`-like times and every weekday on the e-paper; author reviews each digit and letter
 - [x] 3.3 Author photographs the display into `notes/media/` as `YYYY-MM-DD_clock_epaper-glyphs.jpg`
 
 ## 4. Record
