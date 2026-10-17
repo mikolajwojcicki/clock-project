@@ -1,14 +1,14 @@
 ## 1. Gate
 
-- [ ] 1.1 Read the verdict in `notes/log/` from `fix-alarm-buzzer-pulse-blocking` task 4.2; if `keep`, mark this change dropped and stop
+- [x] 1.1 Read the verdict in `notes/log/` from `fix-alarm-buzzer-pulse-blocking` task 4.2; if `keep`, mark this change dropped and stop
 
 ## 2. Rewrite, one peripheral per commit
 
-- [ ] 2.1 `spi_bus.c` on `nrfx_spim`; enable the module in `sdk_config.h`; build; run the bring-up e-paper and LIS3DH checks
-- [ ] 2.2 `buzzer.c` on `nrfx_pwm`; re-measure the 2.7 kHz tone on Saleae
-- [ ] 2.3 `board.c` time base on `nrfx_rtc` + `nrfx_clock` (or `app_timer`); `board_ms()` unchanged for callers; record the choice and why
-- [ ] 2.4 Replace remaining spin loops with driver events or flags, keeping a timeout on every blocking init path
-- [ ] 2.5 Search `firmware/src/` and `firmware/apps/` for leftover `NRF_SPIM`, `NRF_PWM`, `NRF_RTC`, `NRF_UARTE`, `NRF_TIMER` use; none remains
+- [x] 2.1 `spi_bus.c` on `nrfx_spim`; enable the module in `sdk_config.h`; build; run the bring-up e-paper and LIS3DH checks
+- [x] 2.2 `buzzer.c` on `nrfx_pwm`; re-measure the 2.7 kHz tone on Saleae
+- [x] 2.3 `board.c` time base on `nrfx_rtc` + `nrfx_clock` (or `app_timer`); `board_ms()` unchanged for callers; record the choice and why
+- [x] 2.4 Replace remaining spin loops with driver events or flags, keeping a timeout on every blocking init path
+- [x] 2.5 Search `firmware/src/` and `firmware/apps/` for leftover `NRF_SPIM`, `NRF_PWM`, `NRF_RTC`, `NRF_UARTE`, `NRF_TIMER` use; none remains
 
 ## 3. Verify on the DK
 
