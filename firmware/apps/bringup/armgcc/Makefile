@@ -19,6 +19,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_spim.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
   $(FW_DIR)/src/board.c \
   $(FW_DIR)/src/buzzer.c \
   $(FW_DIR)/src/spi_bus.c \

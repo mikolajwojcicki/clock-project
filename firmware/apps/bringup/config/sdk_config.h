@@ -7,6 +7,11 @@
 #define NRFX_SPIM0_ENABLED 1
 #define NRF_LOG_ENABLED 0
 #define NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY 6
+
+/* nrfx_pwm: 2.7 kHz buzzer tone. */
+#define NRFX_PWM_ENABLED 1
+#define NRFX_PWM0_ENABLED 1
+#define NRFX_PWM_DEFAULT_CONFIG_IRQ_PRIORITY 6
 /* The old register code left MISO without a pull. */
 #define NRFX_SPIM_MISO_PULL_CFG 0
 

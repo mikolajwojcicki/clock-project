@@ -10,6 +10,11 @@
 #define NRFX_SPIM_MISO_PULL_CFG 0
 #define NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY 6
 
+/* nrfx_pwm: 2.7 kHz buzzer tone. */
+#define NRFX_PWM_ENABLED 1
+#define NRFX_PWM0_ENABLED 1
+#define NRFX_PWM_DEFAULT_CONFIG_IRQ_PRIORITY 6
+
 #ifndef NRFX_PRS_ENABLED
 #define NRFX_PRS_ENABLED 1
 #endif
