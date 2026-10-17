@@ -12,11 +12,11 @@
 
 ## 3. Verify on the DK
 
-- [ ] 3.1 Clock app: set time, set alarm, see face refresh, alarm tone and pattern, button silence
-- [ ] 3.2 Bring-up app: same results as the recorded notes
-- [ ] 3.3 Compare `BUZZER_EN` capture to the pre-rewrite capture (tone frequency, 1 s pattern)
+- [x] 3.1 Clock app: set time, set alarm, see face refresh, alarm tone and pattern, button silence
+- [x] 3.2 Bring-up app: same results as the recorded notes
+- [x] 3.3 Compare `BUZZER_EN` capture to the pre-rewrite capture (tone frequency, 1 s pattern)
 
 ## 4. Record
 
-- [ ] 4.1 Update `firmware/README.md` build notes if `sdk_config.h` or the Makefile changed
-- [ ] 4.2 Add a dated note in `notes/log/`: what was replaced, what was kept, results, firmware commits
+- [x] 4.1 Update `firmware/README.md` build notes if `sdk_config.h` or the Makefile changed
+- [x] 4.2 Add a dated note in `notes/log/`: what was replaced, what was kept, results, firmware commits
