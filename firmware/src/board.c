@@ -11,10 +11,8 @@
 #include "nrfx_clock.h"
 #include "nrfx_rtc.h"
 
-#ifdef CLOCK_APP
 #include "app_uart.h"
 #include "nrf_uart.h"
-#endif
 
 void board_safe_state(void)
 {
@@ -61,7 +59,9 @@ void board_time_init(void)
     nrfx_clock_init(clock_evt);
     nrfx_clock_enable();
     nrfx_clock_lfclk_start();
-    while (!nrfx_clock_lfclk_is_running())
+    /* LFXO starts in ~0.3 s. Bounded so a missing crystal cannot hang boot;
+     * the RTC then runs from the RC fallback. */
+    for (uint32_t i = 0; i < 8000000 && !nrfx_clock_lfclk_is_running(); i++)
     {
     }
 
@@ -107,11 +107,12 @@ void board_wait_ms(uint32_t ms)
     }
 }
 
-#ifdef CLOCK_APP
 void app_error_handler_bare(uint32_t error_code)
 {
     (void)error_code;
 }
+
+static bool s_con_ok;
 
 static void uart_evt(app_uart_evt_t *event)
 {
@@ -138,6 +139,7 @@ void con_init(void)
         /* No console. The clock loop still runs. */
         return;
     }
+    s_con_ok = true;
 }
 
 bool con_getc(char *out)
@@ -153,68 +155,15 @@ bool con_getc(char *out)
 
 static void con_putc(char c)
 {
-    while (app_uart_put((uint8_t)c) != NRF_SUCCESS)
+    if (!s_con_ok)
+    {
+        return;
+    }
+    /* Bounded: a stuck TX must not hang the clock loop. */
+    for (uint32_t i = 0; i < 200000 && app_uart_put((uint8_t)c) != NRF_SUCCESS; i++)
     {
     }
 }
-#else
-void con_init(void)
-{
-    nrf_gpio_pin_set(DK_UART_TX);
-    nrf_gpio_cfg_output(DK_UART_TX);
-    nrf_gpio_cfg_input(DK_UART_RX, NRF_GPIO_PIN_NOPULL);
-    /* Hold RTS low ourselves. The UART's own RTS stayed high, so the
-     * DK interface MCU kept every keystroke. CTS is unused. */
-    nrf_gpio_pin_clear(DK_UART_RTS);
-    nrf_gpio_cfg_output(DK_UART_RTS);
-
-    NRF_UART0->CONFIG = UART_CONFIG_HWFC_Disabled << UART_CONFIG_HWFC_Pos;
-    NRF_UART0->PSELTXD = DK_UART_TX;
-    NRF_UART0->PSELRXD = DK_UART_RX;
-    NRF_UART0->PSELRTS = 0xFFFFFFFFu;
-    NRF_UART0->PSELCTS = 0xFFFFFFFFu;
-    NRF_UART0->BAUDRATE = UART_BAUDRATE_BAUDRATE_Baud115200;
-    NRF_UART0->ENABLE = UART_ENABLE_ENABLE_Enabled << UART_ENABLE_ENABLE_Pos;
-    NRF_UART0->EVENTS_RXDRDY = 0;
-    NRF_UART0->EVENTS_ERROR = 0;
-    NRF_UART0->ERRORSRC = NRF_UART0->ERRORSRC;
-    NRF_UART0->TASKS_STARTTX = 1;
-    NRF_UART0->TASKS_STARTRX = 1;
-}
-
-bool con_getc(char *out)
-{
-    /* Same order as nrfx_uart: clear the event, then read RXD.
-     * Leaving RXDRDY set makes every later read return the same byte. */
-    /* A break or overrun stops this UART until STARTRX is written again. */
-    if (NRF_UART0->EVENTS_ERROR || NRF_UART0->EVENTS_RXTO)
-    {
-        NRF_UART0->EVENTS_ERROR = 0;
-        (void)NRF_UART0->EVENTS_ERROR;
-        NRF_UART0->EVENTS_RXTO = 0;
-        (void)NRF_UART0->EVENTS_RXTO;
-        NRF_UART0->ERRORSRC = NRF_UART0->ERRORSRC;
-        NRF_UART0->TASKS_STARTRX = 1;
-    }
-    if (!NRF_UART0->EVENTS_RXDRDY)
-    {
-        return false;
-    }
-    NRF_UART0->EVENTS_RXDRDY = 0;
-    (void)NRF_UART0->EVENTS_RXDRDY;
-    *out = (char)NRF_UART0->RXD;
-    return true;
-}
-
-static void con_putc(char c)
-{
-    NRF_UART0->EVENTS_TXDRDY = 0;
-    NRF_UART0->TXD = (uint8_t)c;
-    while (!NRF_UART0->EVENTS_TXDRDY)
-    {
-    }
-}
-#endif
 
 void con_printf(const char *fmt, ...)
 {
