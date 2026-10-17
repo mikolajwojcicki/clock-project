@@ -14,4 +14,4 @@ OpenSpec change `add-alarm-schedule-and-buzzer`: alarm works on the DK. Defect f
   - UART logging to a file from the host failed (`/tmp/uart.txt` empty), so the `ALARM` lines were seen by the author, not logged.
 - **Why:** Roadmap stage 3; the product needs an alarm before motion dismiss (stage 4) and deep sleep (stage 5).
 - **Evidence refs:** commits `82f0527` (alarm module), `1554014` (button input and clock app wiring), `c4ee7b9` (tasks ticked). Capture CSVs were in `/tmp` and are not saved.
-- **Photo:** author adds `notes/media/YYYY-MM-DD_clock_epaper-upright.jpg` (ribbon at bottom, weekday on top).
+- **Photo:** `notes/media/2026-10-17_clock_epaper-upright.jpeg` (ribbon at bottom, weekday on top).
