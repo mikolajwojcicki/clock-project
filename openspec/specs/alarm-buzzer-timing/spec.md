@@ -1,7 +1,7 @@
 # alarm-buzzer-timing Specification
 
 ## Purpose
-TBD - created by archiving change fix-alarm-buzzer-pulse-blocking. Update Purpose after archive.
+Keep the alarm buzzer on its 1 s on / 1 s off pattern and keep button silence responsive while the e-paper refreshes.
 
 ## Requirements
 

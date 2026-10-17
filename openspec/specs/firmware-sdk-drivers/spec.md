@@ -1,7 +1,7 @@
 # firmware-sdk-drivers Specification
 
 ## Purpose
-TBD - created by archiving change rewrite-firmware-on-nrf5-sdk-drivers. Update Purpose after archive.
+Require product firmware to reach peripherals only through nrfx drivers and nRF5 SDK libraries, with no change in observable behavior.
 
 ## Requirements
 

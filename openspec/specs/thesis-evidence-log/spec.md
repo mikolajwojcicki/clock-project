@@ -1,7 +1,7 @@
 # thesis-evidence-log Specification
 
 ## Purpose
-TBD - created by archiving change plan-thesis-roadmap. Update Purpose after archive.
+Define how bring-up evidence, measurements, sources and AI use are recorded for the thesis.
 
 ## Requirements
 

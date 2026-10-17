@@ -1,7 +1,7 @@
 # thesis-document-structure Specification
 
 ## Purpose
-TBD - created by archiving change plan-thesis-roadmap. Update Purpose after archive.
+Define the chapter layout, diagrams, title, prose and AI-disclosure rules the thesis must follow.
 
 ## Requirements
 
