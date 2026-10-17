@@ -31,4 +31,7 @@ gcc -Wall -Wextra -I firmware/tools/dcf77-generator/src \
     firmware/tests/dcf77_encode_test.c \
     firmware/tools/dcf77-generator/src/dcf77_encode.c \
     -o /tmp/dcf_encode_test && /tmp/dcf_encode_test
+
+gcc -Wall -Wextra -I firmware/src firmware/tests/clock_face_test.c \
+    firmware/src/clock_face.c -o /tmp/clock_face_test && /tmp/clock_face_test
 ```
