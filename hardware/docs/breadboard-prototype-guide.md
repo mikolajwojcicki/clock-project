@@ -352,6 +352,9 @@ Two rules decide where each signal goes:
 
 `P0.22` (header `P4`) is free and kept as a spare.
 
+The per-wire table with both ends of every connection and the rebuild order
+is in [`breadboard-wiring-table.md`](breadboard-wiring-table.md).
+
 ### 6.1 Reserved DK pins
 
 Do not connect any project wire to these pins. The DK already uses them.
