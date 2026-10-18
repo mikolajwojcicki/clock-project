@@ -34,3 +34,13 @@ The reply starts with `set`. After that, each second is one line:
 ## 24 h drift
 
 Leave it running. Copy the UART lines into `notes/measurements/`. Record the meter, temperature, supply and firmware commit next to the CSV. Compare the last line with a reference clock.
+
+## DCF-77 sync
+
+Wiring (from the Nucleo generator): generator `PA0` -> 1 kΩ -> DK `P0.25`, GND common. The receiver module `PON` is driven by `DCF_PON` (high = off).
+
+- `dcf sync` opens a 5 min window now. A second command while one is open prints `dcf: window already open`.
+- Windows open at boot (time not set), at 03:00, and as hourly retries after a failed window.
+- At most 3 retries, then idle until the next 03:00. A window waits while the alarm sounds and is dropped after 5 min.
+- Two valid frames exactly one minute apart are needed. Log lines: `dcf: ok <before> -> <after>`, `dcf: rejected <reason> (time unchanged ...)`, `dcf: timeout (time unchanged ...)`.
+- Constants: `DCF_RETRIES`, `DCF_RETRY_MS`, `DCF_LATE_MS` in `src/main.c`; `DCF77_WINDOW_MS` in `dcf77_sync.h`.

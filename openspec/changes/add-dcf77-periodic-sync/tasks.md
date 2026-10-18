@@ -15,12 +15,12 @@
 
 ## 3. Clock app integration (`firmware/apps/clock/src/main.c`)
 
-- [ ] 3.1 Call `dcf77_sync_step` from `app_poll`; on `ok` set `s_time`, `s_last_ms = edge_ms`, `s_set = true`, `s_draw = true`, run the alarm clock-set hook, print `dcf: ok <before> -> <after>`
-- [ ] 3.2 Print `dcf: rejected <reason> (time unchanged <time>)` and `dcf: timeout (time unchanged <time>)`
-- [ ] 3.3 Parse `dcf sync` in `accept_line` and open a window; refuse and print a message if one is already open
-- [ ] 3.4 Schedule: window at 03:00, one at start while time is not set, hourly retry after a failed window, at most 3 retries, then idle until 03:00; skip while `alarm_active()`, drop a window more than 5 min late
-- [ ] 3.5 Update `firmware/apps/clock/README.md` with `dcf sync`, the wiring from the generator, and the schedule constants
-- [ ] 3.6 Commit: `firmware: sync clock from DCF-77 daily and on dcf sync command`
+- [x] 3.1 Call `dcf77_sync_step` from `app_poll`; on `ok` set `s_time`, `s_last_ms = edge_ms`, `s_set = true`, `s_draw = true`, run the alarm clock-set hook, print `dcf: ok <before> -> <after>`
+- [x] 3.2 Print `dcf: rejected <reason> (time unchanged <time>)` and `dcf: timeout (time unchanged <time>)`
+- [x] 3.3 Parse `dcf sync` in `accept_line` and open a window; refuse and print a message if one is already open
+- [x] 3.4 Schedule: window at 03:00, one at start while time is not set, hourly retry after a failed window, at most 3 retries, then idle until 03:00; skip while `alarm_active()`, drop a window more than 5 min late
+- [x] 3.5 Update `firmware/apps/clock/README.md` with `dcf sync`, the wiring from the generator, and the schedule constants
+- [x] 3.6 Commit: `firmware: sync clock from DCF-77 daily and on dcf sync command`
 
 ## 4. Bench verification with the Nucleo generator
 

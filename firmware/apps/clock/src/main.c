@@ -1,4 +1,5 @@
 #include "board.h"
+#include "dcf77_sync.h"
 #include "alarm.h"
 #include "buzzer.h"
 #include "clock.h"
@@ -8,8 +9,19 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 static clock_time s_time;
+
+#define DCF_RETRIES 3
+#define DCF_RETRY_MS 3600000u
+#define DCF_LATE_MS 300000u
+
+static bool s_dcf_pending;
+static uint32_t s_dcf_pending_ms;
+static uint8_t s_dcf_retries_left;
+static bool s_dcf_retry_wait;
+static uint32_t s_dcf_retry_ms;
 static bool s_set;
 static uint32_t s_last_ms;
 static int s_drawn_min = -1;
@@ -68,6 +80,22 @@ static void accept_line(void)
         return;
     case ALARM_PARSE_NOT_ALARM:
         break;
+    }
+    if (strcmp(s_line, "dcf sync") == 0)
+    {
+        if (dcf77_sync_active())
+        {
+            con_printf("dcf: window already open\n");
+        }
+        else if (!dcf77_sync_open(board_ms()))
+        {
+            con_printf("dcf: open failed\n");
+        }
+        else
+        {
+            con_printf("dcf: window open\n");
+        }
+        return;
     }
     clock_time next;
     if (!clock_parse(s_line, &next))
@@ -153,6 +181,13 @@ static void poll_clock(void)
     {
         announce_alarm(alarm_on_minute(&s_time));
     }
+    if (s_time.min != prev_min && s_time.hour == 3 && s_time.min == 0)
+    {
+        s_dcf_retries_left = DCF_RETRIES;
+        s_dcf_retry_wait = false;
+        s_dcf_pending = true;
+        s_dcf_pending_ms = now;
+    }
     if (s_time.min != s_drawn_min)
     {
         s_draw = true;
@@ -182,11 +217,106 @@ static void poll_alarm(void)
     }
 }
 
+static void print_time(const clock_time *t)
+{
+    con_printf("%04d-%02d-%02d %02d:%02d:%02d", t->year, t->month, t->day,
+               t->hour, t->min, t->sec);
+}
+
+static void poll_dcf(void)
+{
+    uint32_t now = board_ms();
+    if (s_dcf_pending)
+    {
+        if (dcf77_sync_active())
+        {
+            s_dcf_pending = false;
+        }
+        else if (!alarm_active())
+        {
+            s_dcf_pending = false;
+            if (!dcf77_sync_open(now))
+            {
+                con_printf("dcf: open failed\n");
+            }
+            else
+            {
+                con_printf("dcf: window open\n");
+            }
+        }
+        else if (now - s_dcf_pending_ms > DCF_LATE_MS)
+        {
+            s_dcf_pending = false;
+            con_printf("dcf: window dropped, alarm active\n");
+        }
+    }
+    if (s_dcf_retry_wait && (int32_t)(now - s_dcf_retry_ms) >= 0)
+    {
+        s_dcf_retry_wait = false;
+        s_dcf_pending = true;
+        s_dcf_pending_ms = now;
+    }
+
+    dcf77_sync_result_t res;
+    dcf77_sync_step(now, &res);
+    if (res.outcome == DCF77_SYNC_OK)
+    {
+        clock_time before = s_time;
+        bool was_set = s_set;
+        s_time = res.time;
+        s_set = true;
+        s_last_ms = res.edge_ms;
+        s_draw = true;
+        s_dcf_retries_left = 0;
+        s_dcf_retry_wait = false;
+        con_printf("dcf: ok ");
+        if (was_set)
+        {
+            print_time(&before);
+        }
+        else
+        {
+            con_printf("unset");
+        }
+        con_printf(" -> ");
+        print_time(&s_time);
+        con_printf("\n");
+        announce_alarm(alarm_on_clock_set(&s_time));
+    }
+    else if (res.outcome == DCF77_SYNC_REJECTED)
+    {
+        if (res.reason == DCF77_REASON_TIMEOUT)
+        {
+            con_printf("dcf: timeout (time unchanged ");
+        }
+        else
+        {
+            con_printf("dcf: rejected %s (time unchanged ", dcf77_reason_name(res.reason));
+        }
+        if (s_set)
+        {
+            print_time(&s_time);
+        }
+        else
+        {
+            con_printf("unset");
+        }
+        con_printf(")\n");
+    }
+    if (res.closed && res.outcome != DCF77_SYNC_OK && s_dcf_retries_left > 0)
+    {
+        s_dcf_retries_left--;
+        s_dcf_retry_wait = true;
+        s_dcf_retry_ms = now + DCF_RETRY_MS;
+    }
+}
+
 void app_poll(void)
 {
     poll_uart();
     poll_clock();
     poll_alarm();
+    poll_dcf();
 }
 
 static bool face_pixel(uint32_t x, uint32_t y, void *ctx)
@@ -198,6 +328,7 @@ int main(void)
 {
     board_safe_state();
     alarm_init();
+    dcf77_sync_init();
     con_init();
     board_time_init();
     spi_bus_init();
@@ -206,6 +337,9 @@ int main(void)
     con_printf("clock-project clock " BUILD_ID "\n");
     con_printf("LFXO RTC1. Send YYYY-MM-DD HH:MM:SS or alarm <1-7> HH:MM on|off, alarm?\n");
     draw();
+    s_dcf_retries_left = DCF_RETRIES;
+    s_dcf_pending = true;
+    s_dcf_pending_ms = board_ms();
 
     for (;;)
     {
