@@ -344,7 +344,8 @@ int main(void)
     for (;;)
     {
         app_poll();
-        if (s_draw && !s_drawing)
+        /* A refresh inside the sync window corrupts pulses; the window is at most 5 min. */
+        if (s_draw && !s_drawing && !dcf77_sync_active())
         {
             draw();
         }
