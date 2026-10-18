@@ -29,7 +29,7 @@
 - [ ] 4.3 Second boundary: Saleae on `PA0` and a clock-second marker, or the UART second line stamp, confirm the clock second changes within 50 ms of the pulse start
 - [x] 4.4 Generator key `p` (parity) and the wrong-date key: time unchanged, log reasons `parity` and `mismatch`
 - [x] 4.5 Generator key `s` (silence): `dcf: timeout` after 5 min, time unchanged, PON high
-- [ ] 4.6 Schedule: set the clock to 02:59:30, confirm the window opens at 03:00 and, with silence, retries at 04:00, 05:00, 06:00 and then stops
+- [x] 4.6 Schedule: set the clock to 02:59:30, confirm the window opens at 03:00 and, with silence, retries at 04:00, 05:00, 06:00 and then stops
 - [x] 4.7 Alarm at the window time: window opens after the alarm stops
 - [ ] 4.8 Window current from the stage 5 setup if available; otherwise state in the note that it is taken by stage 5
 - [x] 4.9 Write `notes/log/YYYY-MM-DD_dcf-periodic-sync.md` from `notes/TEMPLATE.md` with commands, results, failures and decisions; commit: `docs: log DCF-77 periodic sync bench results`

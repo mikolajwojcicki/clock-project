@@ -8,6 +8,7 @@
   - 4.4 wrong-date key `d` at 0 dB: `dcf: rejected mismatch (time unchanged ...)`. Parity key `p` at 0 dB: `dcf: rejected parity (time unchanged ...)`. Time unchanged in both.
   - 4.5 silence key `s`: `dcf: timeout (time unchanged ...)` 302 s after open.
   - 4.6 (part) clock set to 02:59:30 with generator silent: `dcf: window open` at 03:00.
+  - 4.6 retries, with temporary `DCF_RETRY_MS`=10 s and `DCF77_WINDOW_MS`=20 s (reverted, release values rebuilt and flashed): windows opened at 03:00 and after three retries, each ending `dcf: timeout`; nothing more up to 215 s. Real 1 h / 5 min values not run.
   - 4.7 alarm 02:59 on, clock set to 02:58:50: `ALARM stop (timeout)` then `dcf: window open` at the same second (72 s into the run).
 - **Failed:**
   - At -20 dB every window ended in `rejected pulse` or `timeout`. Signal too weak, not a decoder fault. At -12 dB the frame decodes; at 0 dB the fault reasons are the expected ones.
@@ -17,7 +18,6 @@
 - **Why this part or library:** generator is the proof path because real DCF-77 gave no valid pulses in the room.
 - **Not done:**
   - 4.3 second boundary check (needs Saleae or UART stamp comparison).
-  - 4.6 hourly retries at 04:00, 05:00, 06:00 and the stop after the third. Only the 03:00 open was seen.
   - 4.8 window current: taken by stage 5.
   - PON level after each window was not measured.
 - **Evidence:** commits `5a20c54`, `d6e1e48`; bench script `/tmp/bench.py` (not kept in the repo).
