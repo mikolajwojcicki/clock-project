@@ -28,6 +28,13 @@ Pins `P0.22` to `P0.31` are low-drive. They carry only signals up to 10 kHz
 
 LIS3DH `3Vo` and `INT2` stay unconnected.
 
+Rail placement (bench result, 2026-10-18): the display worked only when its
+`VCC` and `GND` were taken from the rail half that the DK feeds directly. On
+the far half, power reaches the display through the two long jumpers that join
+the rail halves, and the display failed. Plug the display and the buzzer
+stage into the DK-side half. Cause not measured: a refresh draws a current
+pulse, so the resistance and inductance of the long jumpers is the likely one.
+
 ## 2. Shared SPI bus (class `bus`)
 
 The DK is the only source of the bus signals.
