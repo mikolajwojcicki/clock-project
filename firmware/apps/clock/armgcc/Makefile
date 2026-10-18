@@ -27,6 +27,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(FW_DIR)/src/board.c \
   $(FW_DIR)/src/buzzer.c \
   $(FW_DIR)/src/spi_bus.c \
@@ -34,6 +35,8 @@ SRC_FILES += \
   $(FW_DIR)/src/alarm.c \
   $(FW_DIR)/src/clock.c \
   $(FW_DIR)/src/clock_face.c \
+  $(FW_DIR)/src/dcf77_classify.c \
+  $(FW_DIR)/src/dcf77_sync.c \
   $(PROJ_DIR)/src/main.c \
 
 INC_FOLDERS += \

@@ -23,6 +23,11 @@
 #define NRFX_RTC1_ENABLED 1
 #define NRFX_RTC_DEFAULT_CONFIG_IRQ_PRIORITY 6
 
+/* nrfx_gpiote: DCF-77 receiver output edges (one IN channel while a sync window is open). */
+#define NRFX_GPIOTE_ENABLED 1
+#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 1
+#define NRFX_GPIOTE_CONFIG_IRQ_PRIORITY 6
+
 #ifndef NRFX_PRS_ENABLED
 #define NRFX_PRS_ENABLED 1
 #endif
