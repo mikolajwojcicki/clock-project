@@ -21,3 +21,10 @@
   - 4.8 window current: taken by stage 5.
   - PON level after each window was not measured.
 - **Evidence:** commits `5a20c54`, `d6e1e48`; bench script `/tmp/bench.py` (not kept in the repo).
+
+## Saleae capture (4.3 partial, PON check)
+
+- Capture: 3 ch, 1 MS/s, 330 s; CH0 generator `PA0`, CH1 DK `P0.25`, CH2 DK `P0.24` (`DCF_PON`). Window already open at capture start (`dcf sync` sent right after).
+- DCF module output follows the generator pulse 31-36 ms late on both edges (e.g. rise 0.4123 s vs 0.4466 s), widths preserved (about 100 ms / 200 ms).
+- `DCF_PON` low from the start, rose to high at 170.96 s, matching the `dcf: timeout` in the UART log. PON high after the window is confirmed.
+- Not measured: clock second boundary against the pulse edge. Task 4.3 stays open.
