@@ -6,5 +6,5 @@
 
 ## 2. Verify
 
-- [ ] 2.1 Rebuild the board from the table; run `dcf sync` and one display refresh to confirm nothing changed; note wire mistakes found
-- [ ] 2.2 Commit: `hardware: add per-wire breadboard connection table`
+- [x] 2.1 Rebuild the board from the table; run `dcf sync` and one display refresh to confirm nothing changed; note wire mistakes found
+- [x] 2.2 Commit: `hardware: add per-wire breadboard connection table`

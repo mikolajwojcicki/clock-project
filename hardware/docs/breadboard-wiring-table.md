@@ -38,6 +38,12 @@ The DK is the only source of the bus signals.
 | `SPI_MOSI` | `P0.04` (`P2`) | display `DIN`, LIS3DH `SDA` (`SDI`) | Never to `SPI_MISO` |
 | `SPI_MISO` | `P0.02` (`P4`) | LIS3DH `SDO` | The display has no `MISO` |
 
+Routing (bench result, 2026-10-18): tightly bundled jumpers made the display
+fail. The firmware sent correct commands, but `BUSY` never dropped and the
+panel did nothing. After the wires were spaced apart and the SPI wires were
+laid out separately from the other signals, the display and clock worked. Keep
+`SPI_SCK` and `SPI_MOSI` short and away from `EPD_RST` and `EPD_BUSY`.
+
 ## 3. Point-to-point signals (class `signal`)
 
 | Signal | DK pin (header) | Device pin | Note |
