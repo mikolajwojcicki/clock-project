@@ -350,7 +350,7 @@ Two rules decide where each signal goes:
 | `P0.25` | `P4` | `DCF_OUT` | DCF `OUT` | Receiver digital output |
 | `P0.31` | `P2` | `BUZZER_EN` | Transistor base resistor | Buzzer control |
 
-`P0.22` (header `P4`) is free and kept as a spare.
+`P0.22` (header `P4`) is `CLOCK_SEC_MARK`, an optional timing output: the clock app toggles it on every second tick so a logic analyzer can compare the clock second with the DCF pulse. Leave it unwired in normal use.
 
 The per-wire table with both ends of every connection and the rebuild order
 is in [`breadboard-wiring-table.md`](breadboard-wiring-table.md).

@@ -44,3 +44,4 @@ Wiring (from the Nucleo generator): generator `PA0` -> 1 kΩ -> DK `P0.25`, GND 
 - At most 3 retries, then idle until the next 03:00. A window waits while the alarm sounds and is dropped after 5 min.
 - Two valid frames exactly one minute apart are needed. Log lines: `dcf: ok <before> -> <after>`, `dcf: rejected <reason> (time unchanged ...)`, `dcf: timeout (time unchanged ...)`.
 - Constants: `DCF_RETRIES`, `DCF_RETRY_MS`, `DCF_LATE_MS` in `src/main.c`; `DCF77_WINDOW_MS` in `dcf77_sync.h`.
+- `P0.22` (`CLOCK_SEC_MARK`) toggles on every clock second tick. Probe it with a logic analyzer next to generator `PA0` and `P0.25` to measure the second boundary.
