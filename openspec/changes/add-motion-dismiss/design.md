@@ -22,7 +22,7 @@ Existing pieces:
 
 ## Decisions
 
-**1. Event counter is a separate pure module (`motion_count`), alarm stays unchanged in structure.**
+**1. Event counter is a separate module with no hardware access (`motion_count`), alarm stays unchanged in structure.**
 `motion_count_event(now_ms)` returns true when the 20th counted event lands inside the 30 s window. It keeps a ring of the last N timestamps and a last-counted timestamp for the 300 ms gap. `main.c` feeds it from the INT1 handler flag and, on true, tells the alarm to stop.
 Alternative: put counting inside `alarm.c`. Rejected: mixes hardware events into the schedule/pattern logic and makes the host check harder.
 
@@ -45,7 +45,7 @@ New enum value and `alarm_stop_motion()` entry point that behaves like the butto
 T (30 s) is below `ALARM_TIMEOUT_MS` (60 s), so the window can fill twice in one alarm.
 
 **7. Verification.**
-Host check: one small C test of `motion_count` (still, slow, one hard shake = one event, 20 in 30 s, 20 over 31 s). Bench: DK on UART plus Saleae on INT1 (`P0.23`) and `BUZZER_EN`, self-shaken: still, shake-to-silence, button-with-no-motion. Notes in `notes/log/`, capture in `notes/measurements/`, per the spec.
+No host test (no host gcc in the agent environment). Bench only: DK on UART plus Saleae on INT1 (`P0.23`) and `BUZZER_EN`, self-shaken: still, shake-to-silence, button-with-no-motion. Notes in `notes/log/`, capture in `notes/measurements/`, per the spec.
 
 ## Risks / Trade-offs
 
