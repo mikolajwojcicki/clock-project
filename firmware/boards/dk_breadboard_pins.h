@@ -34,6 +34,9 @@
 /* Buzzer transistor base (through 1 kOhm) */
 #define BUZZER_EN    31
 
+/* Spare pin P0.22: toggles on every clock second tick (bench timing marker, task 4.3 of add-dcf77-periodic-sync). */
+#define CLOCK_SEC_MARK 22
+
 /* DK on-board parts (reserved pins, used only for operator I/O) */
 #define DK_BUTTON1   13
 #define DK_BUTTON2   14

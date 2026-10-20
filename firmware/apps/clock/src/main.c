@@ -6,6 +6,8 @@
 #include "clock_face.h"
 #include "epd.h"
 #include "spi_bus.h"
+#include "dk_breadboard_pins.h"
+#include "nrf_gpio.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -173,6 +175,7 @@ static void poll_clock(void)
     int prev_min = s_time.min;
     clock_add_seconds(&s_time, steps);
     s_last_ms += steps * 1000u;
+    nrf_gpio_pin_toggle(CLOCK_SEC_MARK);
     con_printf("%04d-%02d-%02d %02d:%02d:%02d %s\n",
                s_time.year, s_time.month, s_time.day,
                s_time.hour, s_time.min, s_time.sec,
@@ -327,6 +330,8 @@ static bool face_pixel(uint32_t x, uint32_t y, void *ctx)
 int main(void)
 {
     board_safe_state();
+    nrf_gpio_pin_clear(CLOCK_SEC_MARK);
+    nrf_gpio_cfg_output(CLOCK_SEC_MARK);
     alarm_init();
     dcf77_sync_init();
     con_init();
