@@ -27,4 +27,12 @@
 - Capture: 3 ch, 1 MS/s, 330 s; CH0 generator `PA0`, CH1 DK `P0.25`, CH2 DK `P0.24` (`DCF_PON`). Window already open at capture start (`dcf sync` sent right after).
 - DCF module output follows the generator pulse 31-36 ms late on both edges (e.g. rise 0.4123 s vs 0.4466 s), widths preserved (about 100 ms / 200 ms).
 - `DCF_PON` low from the start, rose to high at 170.96 s, matching the `dcf: timeout` in the UART log. PON high after the window is confirmed.
-- Not measured: clock second boundary against the pulse edge. Task 4.3 stays open.
+- Not measured in that capture: clock second boundary against the pulse edge. Measured on 2026-10-20, see below.
+
+## Second boundary (4.3 closed, 2026-10-20)
+
+- **Setup:** firmware `4124c38` toggles `P0.22` (`CLOCK_SEC_MARK`) after every `clock_add_seconds`. Saleae ch0 `PA0` (pulse start = rising edge), ch1 `P0.25`, ch2 `P0.22`, ch3 `P0.24` (`DCF_PON`). Digital only, 260 s. Serial driven by a pyserial script (`dcf sync`, wait for `dcf: ok`).
+- **Result:** after `dcf: ok` (PON high at 159.12 s) the marker toggles 31.4 ms after the `PA0` pulse start and drifts to 32.3 ms over 93 s (about 10 ppm, generator against DK crystal). Limit is 50 ms: pass, margin about 18 ms.
+- **Reference:** the 50 ms is measured from the `PA0` pulse start. The module adds 31-36 ms itself, so the clock second is aligned to the module output edge to within about 1 ms `[INFERENCE: P0.25 has no edges after the window, PON high, so this is deduced from the earlier module-delay figure]`.
+- **Anomaly:** the marker stops for about 8 s after sync (gaps 7.96 s and 7.68 s in the CSV, plus one off-phase toggle at 166.80 s). `poll_clock` returns while the e-paper refresh runs (`s_drawing`); on return it catches up with `steps`, so the time stays right but the second tick is late by up to the refresh time. Not changed here.
+- **Evidence:** `notes/measurements/2026-10-20_dcf-sync-second-marker_edges.csv` (Saleae Logic, 4-channel edge export, DK clock firmware `4124c38`, generator at 0 dB). The `.sal` save timed out and is not kept.
