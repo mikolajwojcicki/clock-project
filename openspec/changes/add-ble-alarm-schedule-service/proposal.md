@@ -14,7 +14,7 @@ Configuration is over BLE only. It comes after the sleep numbers because the Sof
 - `ble-schedule-service`: GATT layout, schedule encoding, advertising policy.
 
 ### Modified Capabilities
-<!-- none -->
+- `alarm-schedule`: 8 slots per weekday, flash persistence, extended UART commands.
 
 ## Impact
 
