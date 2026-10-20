@@ -28,6 +28,7 @@ typedef enum {
 typedef enum {
     ALARM_STOP_NONE,
     ALARM_STOP_BUTTON,
+    ALARM_STOP_MOTION,
     ALARM_STOP_TIMEOUT
 } alarm_stop_reason;
 
@@ -55,6 +56,9 @@ bool alarm_on_clock_set(const clock_time *t);
 bool alarm_step(uint32_t now_ms, bool button_pressed);
 
 bool alarm_active(void);
+
+/** Stop a sounding alarm because enough motion events arrived. No-op if not active. */
+void alarm_stop_motion(void);
 
 /** Returns why the alarm stopped since the last call, then clears it. */
 alarm_stop_reason alarm_take_stop(void);

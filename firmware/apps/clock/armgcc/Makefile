@@ -33,6 +33,8 @@ SRC_FILES += \
   $(FW_DIR)/src/spi_bus.c \
   $(FW_DIR)/src/epd.c \
   $(FW_DIR)/src/alarm.c \
+  $(FW_DIR)/src/motion_count.c \
+  $(FW_DIR)/src/lis3dh.c \
   $(FW_DIR)/src/clock.c \
   $(FW_DIR)/src/clock_face.c \
   $(FW_DIR)/src/dcf77_classify.c \

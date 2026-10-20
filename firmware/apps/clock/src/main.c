@@ -12,6 +12,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "lis3dh.h"
+#include "motion_count.h"
+#include "nrfx_gpiote.h"
 
 static clock_time s_time;
 
@@ -197,10 +200,69 @@ static void poll_clock(void)
     }
 }
 
+static volatile bool s_int1;
+
+static void on_int1(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+{
+    (void)pin;
+    (void)action;
+    s_int1 = true;
+}
+
+static void motion_arm(void)
+{
+    nrfx_gpiote_in_config_t cfg = NRFX_GPIOTE_CONFIG_IN_SENSE_LOTOHI(true);
+    cfg.pull = NRF_GPIO_PIN_PULLDOWN;
+    if (nrfx_gpiote_in_init(SENSOR_INT1, &cfg, on_int1) != NRFX_SUCCESS)
+    {
+        con_printf("motion: INT1 channel busy\n");
+        return;
+    }
+    s_int1 = false;
+    motion_count_reset();
+    nrfx_gpiote_in_event_enable(SENSOR_INT1, true);
+    lis3dh_motion_int1_enable();
+}
+
+static void motion_disarm(void)
+{
+    nrfx_gpiote_in_event_disable(SENSOR_INT1);
+    nrfx_gpiote_in_uninit(SENSOR_INT1);
+    lis3dh_power_down();
+    motion_count_reset();
+    s_int1 = false;
+}
+
 static void poll_alarm(void)
 {
     static bool buzzing;
+    static bool was_active;
     bool want = alarm_step(board_ms(), board_any_button_pressed());
+    if (alarm_active() && !was_active)
+    {
+        motion_arm();
+    }
+    if (alarm_active() && s_int1)
+    {
+        s_int1 = false;
+        uint32_t now = board_ms();
+        (void)lis3dh_int1_source(); /* releases the latch */
+        if (motion_count_event(now))
+        {
+            con_printf("MOTION event %u (stop)\n", MOTION_N);
+            alarm_stop_motion();
+            want = false;
+        }
+        else
+        {
+            con_printf("MOTION event %u\n", motion_count_events());
+        }
+    }
+    if (!alarm_active() && was_active)
+    {
+        motion_disarm();
+    }
+    was_active = alarm_active();
     if (want != buzzing)
     {
         buzzing = want;
@@ -216,7 +278,9 @@ static void poll_alarm(void)
     alarm_stop_reason why = alarm_take_stop();
     if (why != ALARM_STOP_NONE)
     {
-        con_printf("ALARM stop (%s)\n", why == ALARM_STOP_BUTTON ? "button" : "timeout");
+        con_printf("ALARM stop (%s)\n", why == ALARM_STOP_BUTTON   ? "button"
+                                         : why == ALARM_STOP_MOTION ? "motion"
+                                                                    : "timeout");
     }
 }
 

@@ -149,6 +149,15 @@ bool alarm_active(void)
     return s_active;
 }
 
+void alarm_stop_motion(void)
+{
+    if (s_active)
+    {
+        s_active = false;
+        s_stop = ALARM_STOP_MOTION;
+    }
+}
+
 alarm_stop_reason alarm_take_stop(void)
 {
     alarm_stop_reason r = s_stop;
