@@ -11,7 +11,7 @@
 - [x] 2.4 Pairing: second frame must be exactly one minute after the first (via `clock_add_seconds`); otherwise reason `mismatch` and both frames cleared
 - [x] 2.5 After the second valid frame wait for the minute-start edge and return `ok` with decoded minute, seconds 0 and `edge_ms`
 - [x] 2.6 `dcf77_sync_open`, `dcf77_sync_step`, `dcf77_sync_active`; one `close()` path that disables the GPIOTE channel and drives `DCF_PON` high; 5 min window timeout with reason `timeout`
-- [ ] 2.7 Commit: `firmware: add DCF-77 frame decoder and sync window module`
+- [x] 2.7 Commit: `firmware: add DCF-77 frame decoder and sync window module`
 
 ## 3. Clock app integration (`firmware/apps/clock/src/main.c`)
 
@@ -31,5 +31,5 @@
 - [x] 4.5 Generator key `s` (silence): `dcf: timeout` after 5 min, time unchanged, PON high
 - [x] 4.6 Schedule: set the clock to 02:59:30, confirm the window opens at 03:00 and, with silence, retries at 04:00, 05:00, 06:00 and then stops
 - [x] 4.7 Alarm at the window time: window opens after the alarm stops
-- [ ] 4.8 Window current from the stage 5 setup if available; otherwise state in the note that it is taken by stage 5
+- [x] 4.8 Window current from the stage 5 setup if available; otherwise state in the note that it is taken by stage 5
 - [x] 4.9 Write `notes/log/YYYY-MM-DD_dcf-periodic-sync.md` from `notes/TEMPLATE.md` with commands, results, failures and decisions; commit: `docs: log DCF-77 periodic sync bench results`
