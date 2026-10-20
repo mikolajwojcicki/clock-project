@@ -18,8 +18,8 @@
 
 ## 4. Bench verification (self-test, no volunteers)
 
-- [ ] 4.1 Run with the DK on UART and the Saleae on `P0.23` (INT1) and `BUZZER_EN`: alarm sounding, board still for 30 s; verify no counted events and the buzzer keeps its 1 s / 1 s pattern. If the buzzer triggers INT1, raise the driver threshold and repeat
-- [ ] 4.2 Shake until the alarm stops; verify `ALARM stop (motion)` appears, `BUZZER_EN` goes quiet, and the capture shows 20 counted events inside 30 s
-- [ ] 4.3 Trigger an alarm and press a button with no motion; verify `ALARM stop (button)`
-- [ ] 4.4 Shake the board with no alarm sounding; verify INT1 stays low in the capture and no wake is logged
-- [ ] 4.5 Write the dated note in `notes/log/` and save the capture and UART log in `notes/measurements/` with instrument, supply and firmware commit; verify the note shows still, shake-to-silence, button, and no-alarm cases
+- [x] 4.1 Run with the DK on UART and the Saleae on `P0.23` (INT1) and `BUZZER_EN`: alarm sounding, board still for 30 s; verify no counted events and the buzzer keeps its 1 s / 1 s pattern. If the buzzer triggers INT1, raise the driver threshold and repeat
+- [x] 4.2 Shake until the alarm stops; verify `ALARM stop (motion)` appears, `BUZZER_EN` goes quiet, and the capture shows 20 counted events inside 30 s
+- [x] 4.3 Trigger an alarm and press a button with no motion; verify `ALARM stop (button)`
+- [x] 4.4 Shake the board with no alarm sounding; verify INT1 stays low in the capture and no wake is logged
+- [x] 4.5 Write the dated note in `notes/log/` and save the capture and UART log in `notes/measurements/` with instrument, supply and firmware commit; verify the note shows still, shake-to-silence, button, and no-alarm cases
