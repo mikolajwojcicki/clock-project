@@ -55,6 +55,26 @@
       "problemMatcher": []
     },
     {
+      "label": "firmware: clock flash",
+      "type": "shell",
+      "command": "make flash",
+      "options": {
+        "cwd": "${workspaceFolder}/firmware/apps/clock"
+      },
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "firmware: clock flash no UART",
+      "type": "shell",
+      "command": "make SLEEP_UART=0 flash",
+      "options": {
+        "cwd": "${workspaceFolder}/firmware/apps/clock"
+      },
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
       "label": "firmware: serial console",
       "type": "shell",
       "command": "picocom -b 115200 /dev/ttyACM0",
