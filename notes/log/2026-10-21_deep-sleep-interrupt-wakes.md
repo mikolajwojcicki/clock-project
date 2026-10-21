@@ -44,3 +44,18 @@ Same reasons as 2026-10-18.
 
 - Caveats: the first run of this session started with a boot DCF window still open on the DK, so its "valid frame" case only saw that old window time out after 8 s; I reran it from a closed window (the `ok` line above). The silence case reused the window opened for the `d` run: it ended in `timeout` 300 s after opening, with the generator silent for the last 63 s only. That is a weaker test than a full silent window.
 - The DK clock showed `unset` before the sync, so a reset must have happened between the earlier alarm runs and this session. I did not find the cause.
+
+## 2.4 Regression after 2.1 to 2.3
+
+Firmware: WFE loop with button wake, e-paper BUSY wake and DCF window deadline. Same wiring and test alarm as the group 1 note (Wednesday 12:01, clock set to 12:00:30). Saleae ch 0 `CLOCK_SEC_MARK`, ch 1 `BUZZER_EN`, ch 2 `SENSOR_INT1`.
+
+| Case | Result |
+|---|---|
+| Taps | 20 events, `MOTION event 20 (stop)` and `ALARM stop (motion)` 8.3 s after `ALARM 12:01` |
+| Button, no motion | `MOTION event 1` at start, `ALARM stop (button)` 1.4 s later, no other `MOTION` line |
+| Shake, no alarm | no `MOTION` or `ALARM` line in 45 s; 0 edges on Ch 1 and Ch 2 in 50 s |
+| Board still | no `MOTION` line; Ch 2 had no edge in 105 s; `ALARM stop (timeout)` 60.00 s after start; buzzer edges from 35.228 s to 94.233 s |
+
+DCF generator results are in the 2.3 section above. Same outcomes as the 2026-10-20 note and the group 1 note. No boot banner appeared during any of these runs, so the DK did not reset in them. The unexplained INT1 failure from the group 1 note did not come back in this session's four runs.
+
+Captures in `notes/measurements/`: `2026-10-21_deep-sleep_group2-motion-tap.sal`, `..._group2-motion-button.sal`, `..._group2-motion-shake-no-alarm.sal`, `..._group2-motion-still-timeout.sal`.
