@@ -85,6 +85,9 @@ static bool wait_idle(void)
     board_wake_cancel(BOARD_WAKE_WAIT);
     nrfx_gpiote_in_event_disable(EPD_BUSY);
     nrfx_gpiote_in_uninit(EPD_BUSY);
+    /* uninit calls nrf_gpio_cfg_default: input buffer off, BUSY then reads 0
+     * and every later wait_idle returns at once (mid-refresh deep sleep). */
+    nrf_gpio_cfg_input(EPD_BUSY, NRF_GPIO_PIN_PULLUP);
     return ok;
 }
 
