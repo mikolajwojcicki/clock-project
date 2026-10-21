@@ -59,3 +59,12 @@ Firmware: WFE loop with button wake, e-paper BUSY wake and DCF window deadline. 
 DCF generator results are in the 2.3 section above. Same outcomes as the 2026-10-20 note and the group 1 note. No boot banner appeared during any of these runs, so the DK did not reset in them. The unexplained INT1 failure from the group 1 note did not come back in this session's four runs.
 
 Captures in `notes/measurements/`: `2026-10-21_deep-sleep_group2-motion-tap.sal`, `..._group2-motion-button.sal`, `..._group2-motion-shake-no-alarm.sal`, `..._group2-motion-still-timeout.sal`.
+
+## Open observation: panel stale after a boot-time DCF sync
+
+The user saw the panel stay on the old time after a reset, even though the boot DCF sync succeeded and minutes passed; setting the time by hand first and then syncing updated the panel. I could not reproduce it on the 2.2 build (`cb19354-dirty`, the WFE loop with e-paper BUSY wake):
+- OpenOCD soft reset, generator at 0 dB: `dcf: ok unset -> 2026-10-17 21:18:00` at 157.6 s, the UART clock ran on, and the panel showed 21:18 and followed the minutes (user check).
+- DK reset button, same generator: panel updated normally (user check).
+- An earlier attempt with the generator unplugged only gave `rejected pulse` and `timeout`, as expected without a signal.
+
+Not explained. Candidates not tested: a different firmware on the board at that time (I flashed the pre-change firmware `a7c7cbf` and a diagnostic build earlier in the session), or a sync that finishes while a refresh is still running. Reopen if it shows again; the UART log would show `display FAIL` if a refresh failed.
