@@ -49,6 +49,9 @@ void dcf77_sync_step(uint32_t now_ms, dcf77_sync_result_t *res);
 
 bool dcf77_sync_active(void);
 
+/** While a window is open: board_ms() time at which dcf77_sync_step reports the timeout. */
+uint32_t dcf77_sync_deadline_ms(void);
+
 const char *dcf77_reason_name(dcf77_reason_t reason);
 
 #endif

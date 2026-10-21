@@ -9,6 +9,7 @@
 #include "nrf.h"
 #include "nrf_gpio.h"
 #include "nrfx_clock.h"
+#include "nrfx_gpiote.h"
 #include "nrfx_rtc.h"
 
 #include "app_uart.h"
@@ -38,6 +39,29 @@ bool board_any_button_pressed(void)
            !nrf_gpio_pin_read(DK_BUTTON3) || !nrf_gpio_pin_read(DK_BUTTON4);
 }
 
+static void on_button(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+{
+    /* The interrupt is the wake; app_poll reads the pin levels. */
+    (void)pin;
+    (void)action;
+}
+
+void board_button_wake_enable(void)
+{
+    static const uint32_t pins[] = { DK_BUTTON1, DK_BUTTON2, DK_BUTTON3, DK_BUTTON4 };
+    /* hi_accuracy false: PORT event via SENSE, no IN channel, no extra idle current.
+     * A held button keeps DETECT high and masks other SENSE pins, so only buttons use it. */
+    nrfx_gpiote_in_config_t cfg = NRFX_GPIOTE_CONFIG_IN_SENSE_HITOLO(false);
+    cfg.pull = NRF_GPIO_PIN_PULLUP;
+    for (unsigned i = 0; i < sizeof pins / sizeof pins[0]; i++)
+    {
+        if (nrfx_gpiote_in_init(pins[i], &cfg, on_button) == NRFX_SUCCESS)
+        {
+            nrfx_gpiote_in_event_enable(pins[i], true);
+        }
+    }
+}
+
 static volatile uint32_t s_rtc_overflows;
 static const nrfx_rtc_t s_rtc = NRFX_RTC_INSTANCE(1);
 
@@ -48,6 +72,7 @@ static void clock_evt(nrfx_clock_evt_type_t evt)
 
 static void rtc_evt(nrfx_rtc_int_type_t type)
 {
+    /* Compare channels: nrfx already disabled the channel (one-shot); the IRQ is the wake. */
     if (type == NRFX_RTC_INT_OVERFLOW)
     {
         s_rtc_overflows++;
@@ -98,13 +123,68 @@ __attribute__((weak)) void app_poll(void)
 {
 }
 
+/* Set by board_wake_at for a target already reached; thread context only. */
+static bool s_wake_due;
+
+void board_wake_at(board_wake_t ch, uint32_t target_ms)
+{
+    int32_t d = (int32_t)(target_ms - board_ms());
+    if (d <= 0)
+    {
+        (void)nrfx_rtc_cc_disable(&s_rtc, ch);
+        s_wake_due = true;
+        return;
+    }
+    /* The counter is 24 bits (512 s); a far target wakes early and the owner re-arms. */
+    if (d > 500000)
+    {
+        d = 500000;
+    }
+    /* Round up: board_ms() floors ticks, so the wake lands at or after target_ms. */
+    uint32_t ticks = (uint32_t)(((uint64_t)d * 32768u + 999u) / 1000u);
+    uint32_t cc = (nrfx_rtc_counter_get(&s_rtc) + ticks) & 0xFFFFFFu;
+    (void)nrfx_rtc_cc_set(&s_rtc, ch, cc, true);
+}
+
+void board_wake_cancel(board_wake_t ch)
+{
+    (void)nrfx_rtc_cc_disable(&s_rtc, ch);
+}
+
+void board_sleep(void)
+{
+    if (s_wake_due)
+    {
+        s_wake_due = false;
+        return;
+    }
+#if (__FPU_USED == 1)
+    /* nRF52 anomaly 87: a set FPU exception flag keeps FPU_IRQn pending and blocks sleep. */
+    __set_FPSCR(__get_FPSCR() & ~0x0000009Fu);
+    (void)__get_FPSCR();
+    NVIC_ClearPendingIRQ(FPU_IRQn);
+#endif
+    /* An IRQ taken since the caller checked its flags set the event register,
+     * so the first WFE returns at once instead of losing that wake. SEV+WFE clears it. */
+    __WFE();
+    __SEV();
+    __WFE();
+}
+
 void board_wait_ms(uint32_t ms)
 {
-    uint32_t start = board_ms();
-    while (board_ms() - start < ms)
+    uint32_t end = board_ms() + ms;
+    for (;;)
     {
         app_poll();
+        if ((int32_t)(board_ms() - end) >= 0)
+        {
+            break;
+        }
+        board_wake_at(BOARD_WAKE_WAIT, end);
+        board_sleep();
     }
+    board_wake_cancel(BOARD_WAKE_WAIT);
 }
 
 void app_error_handler_bare(uint32_t error_code)

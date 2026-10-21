@@ -80,6 +80,11 @@ bool dcf77_sync_active(void)
     return s_state != ST_OFF;
 }
 
+uint32_t dcf77_sync_deadline_ms(void)
+{
+    return s_open_ms + DCF77_WINDOW_MS;
+}
+
 bool dcf77_sync_open(uint32_t now_ms)
 {
     if (s_state != ST_OFF)

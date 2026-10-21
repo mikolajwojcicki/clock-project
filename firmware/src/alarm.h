@@ -57,6 +57,10 @@ bool alarm_step(uint32_t now_ms, bool button_pressed);
 
 bool alarm_active(void);
 
+/** While active: the board_ms() time of the next buzzer phase change or timeout check.
+ * Assumes ALARM_ON_MS == ALARM_OFF_MS. */
+uint32_t alarm_next_ms(uint32_t now_ms);
+
 /** Stop a sounding alarm because enough motion events arrived. No-op if not active. */
 void alarm_stop_motion(void);
 

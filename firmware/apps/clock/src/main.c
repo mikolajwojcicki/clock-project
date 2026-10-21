@@ -386,6 +386,52 @@ void app_poll(void)
     poll_dcf();
 }
 
+static void want_wake(bool *have, uint32_t *next, uint32_t t)
+{
+    if (!*have || (int32_t)(t - *next) < 0)
+    {
+        *next = t;
+        *have = true;
+    }
+}
+
+/* Earliest time any handler has work without an interrupt. ISR-driven work
+ * (UART, INT1, DCF edges, buttons) wakes the CPU by itself. */
+static void arm_wake(void)
+{
+    uint32_t now = board_ms();
+    uint32_t next = now;
+    bool have = false;
+    if (s_set)
+    {
+        want_wake(&have, &next, s_last_ms + 1000u);
+    }
+    if (alarm_active())
+    {
+        want_wake(&have, &next, alarm_next_ms(now));
+    }
+    if (dcf77_sync_active())
+    {
+        want_wake(&have, &next, dcf77_sync_deadline_ms());
+    }
+    if (s_dcf_pending)
+    {
+        want_wake(&have, &next, s_dcf_pending_ms + DCF_LATE_MS + 1u);
+    }
+    if (s_dcf_retry_wait)
+    {
+        want_wake(&have, &next, s_dcf_retry_ms);
+    }
+    if (have)
+    {
+        board_wake_at(BOARD_WAKE_APP, next);
+    }
+    else
+    {
+        board_wake_cancel(BOARD_WAKE_APP);
+    }
+}
+
 static bool face_pixel(uint32_t x, uint32_t y, void *ctx)
 {
     return clock_face_black(x, y, ctx);
@@ -398,6 +444,7 @@ int main(void)
     nrf_gpio_cfg_output(CLOCK_SEC_MARK);
     alarm_init();
     dcf77_sync_init();
+    board_button_wake_enable();
     con_init();
     board_time_init();
     spi_bus_init();
@@ -417,6 +464,9 @@ int main(void)
         if (s_draw && !s_drawing && !dcf77_sync_active())
         {
             draw();
+            continue;
         }
+        arm_wake();
+        board_sleep();
     }
 }

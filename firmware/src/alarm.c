@@ -149,6 +149,23 @@ bool alarm_active(void)
     return s_active;
 }
 
+_Static_assert(ALARM_ON_MS == ALARM_OFF_MS, "alarm_next_ms steps by ALARM_ON_MS");
+
+uint32_t alarm_next_ms(uint32_t now_ms)
+{
+    if (s_start_pending)
+    {
+        return now_ms;
+    }
+    uint32_t elapsed = now_ms - s_start_ms;
+    if (elapsed >= ALARM_TIMEOUT_MS)
+    {
+        return now_ms;
+    }
+    /* ON and OFF phases change on whole periods of ALARM_ON_MS from the start. */
+    return now_ms + (ALARM_ON_MS - elapsed % ALARM_ON_MS);
+}
+
 void alarm_stop_motion(void)
 {
     if (s_active)
