@@ -1,0 +1,6 @@
+---
+description: Reading hadnoff notes
+alwaysApply: true
+---
+
+When at the beginning of the session always check if there are any handoff notes in the repo, recursively, then use the built-in interactive question tool to ask user whether these are outdated or not. If the user states that they are outdated ask him for permission of their removal. If they are not outdated then read them entirely and summarise to the user your understanding.

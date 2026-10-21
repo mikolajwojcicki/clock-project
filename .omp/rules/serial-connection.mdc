@@ -1,0 +1,6 @@
+---
+description: Establishing connection with UART device
+alwaysApply: true
+---
+
+Whenever establishing one, or two way connection via UART always use nix-shell with pyserial package.
