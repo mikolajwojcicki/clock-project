@@ -4,7 +4,7 @@
 
 - [x] 1.1 In `firmware/src/board.c` move `board_ms()` to the `nrfx_rtc` RTC1 counter with 24-bit wrap handling; add compare 0 as a 1 Hz tick and compares 1 and 2 as one-shot deadlines (set, cancel, expired callback). Verify: `make` builds, and a throwaway host-side check of the wrap subtraction (values across 0x00FFFFFF to 0) gives the right delta.
 - [x] 1.2 Add `s_events` bits in `firmware/apps/clock/src/main.c` and replace `for(;;) app_poll()` with a WFE loop that sleeps when no bit is set (`__SEV(); __WFE(); __WFE();` with the pending check). Turn `poll_clock`, `poll_alarm`, `poll_uart`, `poll_dcf` into handlers run on their bit. Verify on the DK with UART on: after `YYYY-MM-DD HH:MM:SS` the UART second line advances at 1 s per line for 2 min, and `CLOCK_SEC_MARK` toggles at 1 Hz on the Saleae.
-- [ ] 1.3 Move the alarm trigger, alarm timeout and buzzer timing to the minute tick and RTC1 deadlines. Verify on the DK: set an alarm for the next minute, the buzzer starts within 1 s, a button press silences it, and a timeout run ends the alarm at the existing timeout.
+- [x] 1.3 Move the alarm trigger, alarm timeout and buzzer timing to the minute tick and RTC1 deadlines. Verify on the DK: set an alarm for the next minute, the buzzer starts within 1 s, a button press silences it, and a timeout run ends the alarm at the existing timeout.
 - [ ] 1.4 Regression with UART on: repeat the motion-dismiss checks from `notes/log/2026-10-20_motion-dismiss.md` (still, tap-to-silence, button with no motion). Record the UART text in a dated note under `notes/log/`. Verify: same results as the earlier note.
 - [ ] 1.5 Commit the firmware (`firmware:` prefix) after 1.1-1.4 pass.
 
