@@ -27,3 +27,20 @@ Change: `add-deep-sleep-and-current-measurement`, tasks 2.1 to 2.4. Group 1 resu
 - First BUSY capture showed Ch 3 toggling at hundreds of kHz for two minutes (87 million edges). The probe wire lay next to the SPI clock. The panel update stalled until the experiment ended; the BUSY edge interrupt probably fired nonstop. Without the probe the panel updated within 15 s. After moving the probe and hanging the analyzer so the wires cross the noisy lines at right angles, Ch 3 was clean outside one burst during the third refresh's SPI data, when the edge event is off.
 - The 1.7 GB CSV export from that capture blocked the Saleae export tool for minutes. Closing the capture ended it. Large exports of a noisy channel need a shorter capture.
 - Between 6.2338 s and 9.9035 s `EPD_BUSY` stays low for 3.7 s, so the refresh is CPU-bound there, not BUSY-bound: SPI writes at 250 kHz plus `clock_face_black()` per pixel, twice per face. This awake time is likely larger than the BUSY time. Check it in task 4.3.
+
+## 2.3 DCF
+
+- Code: DCF edges were already GPIOTE IN events timestamped from the RTC1-derived `board_ms()` (1 ms), and the window end is now an RTC1 deadline in `arm_wake` (`dcf77_sync_deadline_ms`). No missed-second deadline: the decoder only changes state when a pulse arrives, and such a deadline would turn a silent window from `timeout` into `pulse` (decided with the user, design.md updated).
+- Bench: DK with DCF-1060N module, Nucleo generator on `/dev/ttyACM2`, no wire (antenna to antenna), carrier 0 dB, same as the 2026-10-18 note. Firmware: the WFE loop with e-paper and button wakes.
+
+| Case | Result |
+|---|---|
+| Valid frames | `dcf: ok unset -> 2026-10-17 21:25:00` 216 s after `dcf sync`, matching the generator frames 21:24 and 21:25 |
+| Key `d` (wrong date) | `dcf: rejected mismatch (time unchanged unset)` 175 s after `dcf sync` |
+| Key `p` (parity) | `dcf: rejected parity (time unchanged unset)` |
+| Key `s` (silence) | window ended with `dcf: timeout (time unchanged unset)` |
+
+Same reasons as 2026-10-18.
+
+- Caveats: the first run of this session started with a boot DCF window still open on the DK, so its "valid frame" case only saw that old window time out after 8 s; I reran it from a closed window (the `ok` line above). The silence case reused the window opened for the `d` run: it ended in `timeout` 300 s after opening, with the generator silent for the last 63 s only. That is a weaker test than a full silent window.
+- The DK clock showed `unset` before the sync, so a reset must have happened between the earlier alarm runs and this session. I did not find the cause.
