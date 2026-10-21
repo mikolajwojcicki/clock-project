@@ -15,8 +15,16 @@
 #include "app_uart.h"
 #include "nrf_uart.h"
 
+/* 0 = no UARTE: con_* compile to nothing, so nothing keeps HFCLK or the UARTE
+ * on while idle. Used for the idle, DCF and alarm current measurements. */
+#ifndef SLEEP_UART
+#define SLEEP_UART 1
+#endif
+
 void board_safe_state(void)
 {
+    /* The PCA10040 carries the DC/DC inductors; a board without them must not enable this. */
+    NRF_POWER->DCDCEN = POWER_DCDCEN_DCDCEN_Enabled;
     /* Set OUT before DIR so the pins never glitch to the active level. */
     nrf_gpio_pin_set(DCF_PON);
     nrf_gpio_cfg_output(DCF_PON);
@@ -192,6 +200,7 @@ void app_error_handler_bare(uint32_t error_code)
     (void)error_code;
 }
 
+#if SLEEP_UART
 static bool s_con_ok;
 
 static void uart_evt(app_uart_evt_t *event)
@@ -262,3 +271,21 @@ void con_printf(const char *fmt, ...)
         con_putc(*p);
     }
 }
+#else
+
+void con_init(void)
+{
+}
+
+bool con_getc(char *out)
+{
+    (void)out;
+    return false;
+}
+
+void con_printf(const char *fmt, ...)
+{
+    (void)fmt;
+}
+
+#endif

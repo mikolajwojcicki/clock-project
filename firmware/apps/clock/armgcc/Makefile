@@ -1,6 +1,8 @@
 PROJECT_NAME     := clock_pca10040
 TARGETS          := nrf52832_xxaa
-OUTPUT_DIRECTORY := _build
+# make SLEEP_UART=0 builds into _build_nouart, so flag changes never reuse objects.
+SLEEP_UART ?= 1
+OUTPUT_DIRECTORY := _build$(if $(filter 0,$(SLEEP_UART)),_nouart)
 
 ifndef NRF5_SDK_DIR
 $(error NRF5_SDK_DIR is not set. Export it or pass NRF5_SDK_DIR=/path/to/nRF5_SDK)
@@ -70,6 +72,7 @@ OPT = -O3 -g3
 CFLAGS += $(OPT)
 CFLAGS += -DBUILD_ID='"$(BUILD_ID)"'
 CFLAGS += -DCLOCK_APP
+CFLAGS += -DSLEEP_UART=$(SLEEP_UART)
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52
