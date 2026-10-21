@@ -378,14 +378,6 @@ static void poll_dcf(void)
     }
 }
 
-void app_poll(void)
-{
-    poll_uart();
-    poll_clock();
-    poll_alarm();
-    poll_dcf();
-}
-
 static void want_wake(bool *have, uint32_t *next, uint32_t t)
 {
     if (!*have || (int32_t)(t - *next) < 0)
@@ -432,6 +424,16 @@ static void arm_wake(void)
     }
 }
 
+void app_poll(void)
+{
+    poll_uart();
+    poll_clock();
+    poll_alarm();
+    poll_dcf();
+    /* Also reached from driver waits (e-paper refresh), so the buzzer keeps its phase. */
+    arm_wake();
+}
+
 static bool face_pixel(uint32_t x, uint32_t y, void *ctx)
 {
     return clock_face_black(x, y, ctx);
@@ -466,7 +468,6 @@ int main(void)
             draw();
             continue;
         }
-        arm_wake();
         board_sleep();
     }
 }

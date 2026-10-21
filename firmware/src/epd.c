@@ -10,6 +10,7 @@
 #include "board.h"
 #include "dk_breadboard_pins.h"
 #include "nrf_gpio.h"
+#include "nrfx_gpiote.h"
 #include "spi_bus.h"
 
 #define EPD_WIDTH      122
@@ -42,19 +43,49 @@ static void data(uint8_t d)
     send(true, &d, 1);
 }
 
-/* BUSY is high while the controller works. */
+static void on_busy(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
+{
+    /* The falling edge is the wake; wait_idle re-reads the pin. */
+    (void)pin;
+    (void)action;
+}
+
+/* BUSY is high while the controller works. The CPU sleeps until the falling
+ * edge, a handler deadline, or the timeout. */
 static bool wait_idle(void)
 {
-    uint32_t start = board_ms();
+    if (!nrf_gpio_pin_read(EPD_BUSY))
+    {
+        return true;
+    }
+    nrfx_gpiote_in_config_t cfg = NRFX_GPIOTE_CONFIG_IN_SENSE_HITOLO(true);
+    cfg.pull = NRF_GPIO_PIN_PULLUP; /* a missing BUSY wire reads busy and times out */
+    if (nrfx_gpiote_in_init(EPD_BUSY, &cfg, on_busy) != NRFX_SUCCESS)
+    {
+        return false;
+    }
+    nrfx_gpiote_in_event_enable(EPD_BUSY, true);
+    uint32_t end = board_ms() + EPD_BUSY_TIMEOUT_MS;
+    bool ok = true;
     while (nrf_gpio_pin_read(EPD_BUSY))
     {
-        if (board_ms() - start > EPD_BUSY_TIMEOUT_MS)
-        {
-            return false;
-        }
         app_poll();
+        if (!nrf_gpio_pin_read(EPD_BUSY))
+        {
+            break;
+        }
+        if ((int32_t)(board_ms() - end) >= 0)
+        {
+            ok = false;
+            break;
+        }
+        board_wake_at(BOARD_WAKE_WAIT, end);
+        board_sleep();
     }
-    return true;
+    board_wake_cancel(BOARD_WAKE_WAIT);
+    nrfx_gpiote_in_event_disable(EPD_BUSY);
+    nrfx_gpiote_in_uninit(EPD_BUSY);
+    return ok;
 }
 
 static bool is_black(uint32_t x, uint32_t y)
