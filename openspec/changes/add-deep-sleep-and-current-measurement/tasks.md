@@ -19,8 +19,8 @@
 ## 3. Power gating and UART switch
 
 - [x] 3.1 Add the `SLEEP_UART` build flag (default 1) in `firmware/apps/clock/armgcc/Makefile` and `board.c`: with 0, no `app_uart` init and `con_printf` is a no-op. Enable DC-DC (`NRF_POWER->DCDCEN`) in `board_safe_state` if the DK allows it. Verify: both `make` and `make SLEEP_UART=0` build and the 0 build runs the clock on the panel.
-- [ ] 3.2 Check the power-gate states with the Saleae on a `SLEEP_UART=0` build: `DCF_PON` low outside a window, accelerometer and buzzer driver off outside an alarm, panel deep sleep after a refresh. Verify: a capture saved under `notes/measurements/` shows each state.
-- [ ] 3.3 Commit the flag and DC-DC change as its own commit.
+- [x] 3.2 Check the power-gate states with the Saleae on a `SLEEP_UART=0` build: `DCF_PON` high (receiver powered down) outside a window, accelerometer and buzzer driver off outside an alarm, panel deep sleep after a refresh. Verify: a capture saved under `notes/measurements/` shows each state.
+- [x] 3.3 Commit the flag and DC-DC change as its own commit.
 
 ## 4. Current measurement
 

@@ -74,3 +74,20 @@ Not explained. Candidates not tested: a different firmware on the board at that 
 - `make SLEEP_UART=0` builds into `armgcc/_build_nouart` with the console compiled to nothing (no UARTE init, `con_printf` empty); the default is 1. Text size 26948 B against 22540 B without the UART. `NRF_POWER->DCDCEN` is enabled in `board_safe_state()` for all apps (the DK carries the inductors).
 - Bench: no-UART build flashed, generator at 0 dB. The boot DCF sync set the clock, `CLOCK_SEC_MARK` started toggling at 176.7 s and kept 1 s spacing (65 of 68 gaps within 0.99 to 1.01 s; the rest are refresh catch-ups), and the user saw the panel show the synced time and follow the minutes. Capture: `notes/measurements/2026-10-21_deep-sleep_nouart-boot-sync.sal`.
 - DC-DC: the DK kept running with it enabled, so the inductors are fitted. Its current effect is not measured separately (that needs a PPK2 run with and without the line).
+
+## 3.2 Power-gate states (no-UART build)
+
+Setup: `SLEEP_UART=0` build, DK reset by OpenOCD about 3.3 s into a 330 s capture, generator at 0 dB. Saleae ch 0 `DCF_PON` (`P0.24`), ch 1 `BUZZER_EN`, ch 2 `SENSOR_INT1`, ch 3 `EPD_BUSY` (`P0.29`). Capture: `notes/measurements/2026-10-21_deep-sleep_power-gate-states.sal`.
+
+| State | Evidence |
+|---|---|
+| Receiver off outside a window | `DCF_PON` high at the start, low from 11.33 s (boot window open), high again from 140.74 s (sync done) and no edge for the last 190 s |
+| Buzzer driver off | `BUZZER_EN` low for all 330 s, no edge (no alarm was set: the build has no console) |
+| Accelerometer off, no wake | `SENSOR_INT1` low for all 330 s, no edge. This shows only that INT1 is quiet; the sensor's own current is a PPK2 question for 4.2 |
+| Panel in deep sleep after a refresh | `EPD_BUSY` high 3 times in each refresh: 2.29 s while the update runs, then high in deep sleep. Between refreshes it has no edge: 148.358 s to 200.662 s (52 s), and again 209.220 s to 260.668 s |
+
+Refreshes follow the sync (140.76 s) and each minute change (200.66, 260.67, 320.67 s), as before.
+
+The task text had the `DCF_PON` polarity reversed: `board_safe_state()` drives `DCF_PON` high to power the receiver down, and `dcf77_sync_open()` pulls it low only while a window is open. Task 3.2 was corrected.
+
+Not covered: accelerometer and buzzer in an alarm (needs the UART build, covered by the group 1 and 2 notes), and any current figure.
