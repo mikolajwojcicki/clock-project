@@ -41,7 +41,7 @@ The DK is the only source of the bus signals.
 
 | Signal | DK pin (header) | Devices on the line | Note |
 | --- | --- | --- | --- |
-| `SPI_SCK` | `P0.03` (`P2`) | display `CLK`, LIS3DH `SCL` (`SCK`) | Fast signal |
+| `SPI_SCK` | `P0.03` (`P2`) | display `CLK`, LIS3DH `SCL` (`SCK`) | Fast signal. About 100 Ω in series at the DK pin (47–220 Ω) |
 | `SPI_MOSI` | `P0.04` (`P2`) | display `DIN`, LIS3DH `SDA` (`SDI`) | Never to `SPI_MISO` |
 | `SPI_MISO` | `P0.02` (`P4`) | LIS3DH `SDO` | The display has no `MISO` |
 
@@ -50,6 +50,15 @@ fail. The firmware sent correct commands, but `BUSY` never dropped and the
 panel did nothing. After the wires were spaced apart and the SPI wires were
 laid out separately from the other signals, the display and clock worked. Keep
 `SPI_SCK` and `SPI_MOSI` short and away from `EPD_RST` and `EPD_BUSY`.
+
+SCK ringing (bench result, 2026-10-22): with nothing extra on the line, every
+refresh hung (`BUSY` high for the 10 s timeout). One unconnected logic-analyser
+hook on display `CLK` made every refresh work. The hook adds capacitance and
+damps ringing on the clock edge, which the panel otherwise counts as extra
+clocks. Fit a series resistor of about 100 Ω on `SPI_SCK`, right at `P0.03`.
+On the perfboard, keep `SPI_SCK` as short as possible and put this resistor in
+the layout from the start. Log:
+[`notes/log/2026-10-22_epd-sck-ringing.md`](../../notes/log/2026-10-22_epd-sck-ringing.md).
 
 ## 3. Point-to-point signals (class `signal`)
 
