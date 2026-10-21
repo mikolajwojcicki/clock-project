@@ -68,3 +68,9 @@ The user saw the panel stay on the old time after a reset, even though the boot 
 - An earlier attempt with the generator unplugged only gave `rejected pulse` and `timeout`, as expected without a signal.
 
 Not explained. Candidates not tested: a different firmware on the board at that time (I flashed the pre-change firmware `a7c7cbf` and a diagnostic build earlier in the session), or a sync that finishes while a refresh is still running. Reopen if it shows again; the UART log would show `display FAIL` if a refresh failed.
+
+## 3.1 SLEEP_UART flag and DC-DC
+
+- `make SLEEP_UART=0` builds into `armgcc/_build_nouart` with the console compiled to nothing (no UARTE init, `con_printf` empty); the default is 1. Text size 26948 B against 22540 B without the UART. `NRF_POWER->DCDCEN` is enabled in `board_safe_state()` for all apps (the DK carries the inductors).
+- Bench: no-UART build flashed, generator at 0 dB. The boot DCF sync set the clock, `CLOCK_SEC_MARK` started toggling at 176.7 s and kept 1 s spacing (65 of 68 gaps within 0.99 to 1.01 s; the rest are refresh catch-ups), and the user saw the panel show the synced time and follow the minutes. Capture: `notes/measurements/2026-10-21_deep-sleep_nouart-boot-sync.sal`.
+- DC-DC: the DK kept running with it enabled, so the inductors are fitted. Its current effect is not measured separately (that needs a PPK2 run with and without the line).
