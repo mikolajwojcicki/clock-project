@@ -40,10 +40,9 @@ static bool face_pixel(uint32_t x, uint32_t y, void *ctx);
 static void draw(void)
 {
     s_drawing = true;
-    if (!epd_refresh(face_pixel, &s_time))
-    {
-        con_printf("display FAIL\n");
-    }
+    uint32_t t0 = board_ms();
+    bool ok = epd_refresh(face_pixel, &s_time);
+    con_printf("display %s %lu ms\n", ok ? "ok" : "FAIL", (unsigned long)(board_ms() - t0));
     s_drawn_min = s_time.min;
     s_draw = false;
     s_drawing = false;
