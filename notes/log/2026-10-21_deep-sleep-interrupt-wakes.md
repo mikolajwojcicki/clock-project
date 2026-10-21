@@ -91,3 +91,75 @@ Refreshes follow the sync (140.76 s) and each minute change (200.66, 260.67, 320
 The task text had the `DCF_PON` polarity reversed: `board_safe_state()` drives `DCF_PON` high to power the receiver down, and `dcf77_sync_open()` pulls it low only while a window is open. Task 3.2 was corrected.
 
 Not covered: accelerometer and buzzer in an alarm (needs the UART build, covered by the group 1 and 2 notes), and any current figure.
+
+## Open: stale panel content after a refresh (no-UART + PPK2)
+
+Symptom (user): the border flashes (panel runs the update) but the glass keeps the old minute. Irregular: sometimes every other minute, sometimes two minutes in a row. Seen on the no-UART build with the PPK2 at 3.3 V. UART + PPK2 and UART + USB runs in the same session followed the minutes.
+
+Suspects, in order: (1) SPI image bytes not landing / RAM swap leaving the old buffer, (2) supply sag on the PPK2 rail during the SPI burst, (3) `draw()` never retries after a failed refresh (`s_drawn_min` is set even when `epd_refresh` returns false).
+
+### Working capture (keep this)
+
+- File: `notes/measurements/2026-10-21-21-41-screen-measurement.csv` (11 MB, ~524k rows, ~314 s). User recorded and exported it by hand after the MCP capture was lost.
+- Firmware: no-UART (`SLEEP_UART=0`), PPK2 3.3 V, DCF generator on.
+- Saleae digital channels (confirmed):
+  - Ch 0 `SPI_SCK` `P0.03`
+  - Ch 1 `SPI_MOSI` `P0.04`
+  - Ch 2 `EPD_CS` `P0.11` (active low)
+  - Ch 3 `EPD_DC` `P0.12`
+- CS-fall bursts (gap > 0.5 s):
+
+| Burst | Time (s) | Span | CS falls | Note |
+|---|---|---|---|---|
+| 0 | 4.491–4.711 | 0.22 s | 41 | short, boot |
+| 1 | 6.996–14.890 | 7.89 s | 3811 | full refresh (boot draw) |
+| 2 | 183.319–183.321 | ~1 ms | 37 | short, not a full RAM write |
+| 3 | 243.232–243.233 | ~1 ms | 35 | short, ~60 s later |
+| 4 | 303.238–303.239 | ~1 ms | 37 | short, ~60 s later |
+| 5 | 305.524–313.104 | 7.58 s | 3450 | full refresh |
+
+### SPI decode (Mode 0, MSB first; DC 0=cmd 1=data)
+
+Full refresh (boot burst0+1, and minute burst4+5) matches `epd_refresh()`:
+1. Init SPI through `0x12`…`0x18` (~2 ms of CS activity)
+2. Quiet gap **2.285 s** (`wait_idle()` after init; BUSY high)
+3. `0x24` / `0x26` RAM writes, `0x22`/`0x20` update, second RAM write, `0x10` sleep (~8 s, ~16k data bytes)
+
+Failed minute attempts (burst2 @ 183.3 s, burst3 @ 243.2 s):
+- Same init through `0x18`, then **no further SPI** until the next minute (~60 s)
+- No `0x24`/`0x26`, no `0x22`/`0x20`, no `0x10`
+- This is `wait_idle()` returning false after the init block in `epd_refresh()`, before `write_both_rams()`
+- Visible “border flash, old content” fits: HW/soft reset + init run; image RAM and master activation never run
+
+Burst4 @ 303.2 s is not a failure: it is the init half of the successful refresh that continues at 305.5 s after the same 2.285 s BUSY wait.
+
+Not yet known: whether `wait_idle()` fails from a BUSY timeout (10 s) or from `nrfx_gpiote_in_init(EPD_BUSY)` failing. Needs a BUSY trace or a UART build that logs which path failed.
+
+`draw()` now leaves `s_drawn_min` unchanged on failure and retries after a 2 s backoff. `wait_idle` prints `display FAIL <stage>: busy-timeout|gpiote`.
+
+### UART 20-time forced refresh (user scored glass)
+
+Script `/tmp/epd20.py`: set 20 distinct times, 18 s apart. User scored first 10 on the glass. Firmware was the UART diagnostic build. Serial showed **no `display FAIL`** on #01–#05 (and the draw blocked ~8 s = full refresh path), yet several of those were STALE on the glass:
+
+| # | Time | Glass |
+|---|---|---|
+| 01 | 00:00 | STALE |
+| 02 | 01:11 | STALE |
+| 03 | 02:22 | SHOW |
+| 04 | 03:33 | STALE |
+| 05 | 04:44 | STALE |
+| 06 | 05:55 | SHOW |
+| 07 | 06:06 | SHOW |
+| 08 | 07:17 | STALE |
+| 09 | 08:28 | SHOW |
+| 10 | 09:39 | STALE |
+
+So there are **two** failure modes:
+1. Saleae short burst: abort after init (`wait_idle` false) — no RAM write.
+2. This UART run: `epd_refresh` returns true (~8 s full path) but the glass keeps the previous image (border may flash).
+
+Mode 2 is not explained by the draw-retry bug. Next: SPI+BUSY capture while scoring another 20, or prove whether RAM bytes change on a STALE “success”.
+
+Power: nRF Connect PPK app was running during follow-up (`pc-nrfconnect-ppk`), so the Mode 2 UART run was very likely on the PPK2 rail. A/B on USB is the next check for supply sag. `wait_idle` now logs `display wait <stage>: <ms>|idle-0ms` and falls back to polling if GPIOTE IN init fails (no longer hard-fails with `gpiote`).
+
+Root cause candidate for Mode 2: `wait_idle` returned success when BUSY never went high (`after-init: 0ms`, boot `activate: idle-0ms`). RAM write / deep-sleep then ran without a real update. Fix: wait up to 100 ms for BUSY to rise; for soft-reset / after-init / activate a missing pulse is `display FAIL <stage>: no-busy` (triggers draw retry).
