@@ -73,7 +73,9 @@ CFLAGS += $(OPT)
 CFLAGS += -DBUILD_ID='"$(BUILD_ID)"'
 CFLAGS += -DCLOCK_APP
 CFLAGS += -DSLEEP_UART=$(SLEEP_UART)
-CFLAGS += -DCONFIG_GPIO_AS_PINRESET
+# No CONFIG_GPIO_AS_PINRESET: with DK USB unplugged the unpowered interface
+# MCU holds P0.21 at ~1.3 V and keeps the nRF in reset. UICR keeps PSELRESET
+# from older builds until `make erase`.
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52
 CFLAGS += -DNRF52832_XXAA
@@ -90,7 +92,6 @@ ASMFLAGS += -g3
 ASMFLAGS += -mcpu=cortex-m4
 ASMFLAGS += -mthumb -mabi=aapcs
 ASMFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
-ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
 ASMFLAGS += -DFLOAT_ABI_HARD
 ASMFLAGS += -DNRF52
 ASMFLAGS += -DNRF52832_XXAA
