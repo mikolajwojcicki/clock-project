@@ -50,3 +50,45 @@ to the interface MCU. Working explanation `[INFERENCE, not checked on the DK
 schematic]`: the interface MCU's SWO input sinks a small current from DK `VDD`
 through LED2. That path is DK `VDD` to the interface MCU and does not pass
 through `VDD_nRF`, so it is outside the run A reading.
+
+## Run A, nRF alone — first capture
+
+Setup: PPK2 Source Meter 3.0 V on the nRF side of P22, every breadboard wire
+unplugged from the DK, DK on USB for the interface MCU. Firmware: clock app
+`make SLEEP_UART=0 flash`, last firmware change `70b067b` (repo HEAD
+`296210a`). Sampling 100 kS/s, 300 s, recording started shortly after the
+flash. Raw CSV: `notes/measurements/ppk-20261024T114909.csv` (448 MB, kept
+local, not in git). Plots with `firmware/tools/ppk-plot/ppk-plot.sh`:
+
+- full run: `notes/media/2026-10-24_deep-sleep_ppk2-A_full.png`
+- one second inside the first phase: `notes/media/2026-10-24_deep-sleep_ppk2-A_dcf-window-1s.png`
+- the step at 283.4 s: `notes/media/2026-10-24_deep-sleep_ppk2-A_window-close.png`
+
+| Interval | Mean | What runs |
+| --- | --- | --- |
+| 0–283.3 s | 3.977 µA | DCF window open: GPIOTE IN channel on `DCF_OUT`, pin floating (no pull, wire unplugged) |
+| 283.6–300 s | 0.584 µA | window closed: System ON, RTC1 on LFXO, no armed peripheral |
+| whole file | 3.789 µA | mix of the two |
+
+Only one CPU wake in 300 s: about 80 µs at 283.389 s, peak 2.77 mA (no other
+sample above 100 µA). That is the DCF window deadline: the window opens at
+boot and lasts `DCF77_WINDOW_MS` = 300 s, so it closed about 17 s after the
+recording started counting from boot. The next retry is 1 h later.
+
+What the capture is not: the clock idle. `poll_clock()` does nothing until the
+time is set (`s_set`), and with `SLEEP_UART=0` and no DCF signal nothing sets
+it. So there were no 1 s ticks and no minute redraw attempts.
+
+Reading:
+
+- 0.584 µA is the floor of this chip on this board with RTC1 running and
+  nothing else armed. Check it against the nRF52832 product specification
+  table for System ON, RTC running, before quoting it; it may sit below the
+  datasheet figure. A possible reason `[INFERENCE]`: DK `VDD` slightly above
+  3.0 V back-feeds `VDD_nRF` through LED2 or the interface pins, so the PPK2
+  sources less than the chip uses. The PPK2 trace touches 0 µA between
+  regulator pulses, which fits.
+- About 3.4 µA extra while the DCF window is open. Part is the GPIOTE IN
+  channel; part can be the floating `DCF_OUT` input buffer. On the clock the
+  receiver drives the pin, so this number is an upper bound for the window
+  cost on the MCU side, not the real one.
