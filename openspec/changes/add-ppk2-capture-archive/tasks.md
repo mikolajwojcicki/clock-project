@@ -24,10 +24,10 @@
 
 ## 4. Evidence rules and the in-progress measurement change
 
-- [ ] 4.1 Update the evidence-log line in `AGENTS.md` ("Measurements are CSV with ...") to allow a verified packed PPK2 capture, matching the delta in `specs/thesis-evidence-log/spec.md`. Verify: the line names `ppk-archive.sh pack` and the 50 MB rule.
-- [ ] 4.2 In `openspec/changes/add-deep-sleep-and-current-measurement`, change "CSV" to "CSV or packed capture" in `specs/low-power-sleep-policy/spec.md` (requirement "Measurements are stored with conditions") and in tasks 4.2-4.5. Verify: `openspec validate add-deep-sleep-and-current-measurement --strict` passes.
-- [ ] 4.3 Add an entry to `notes/ai-use.md` for the tool code (tool, output, how it was checked). Verify: the entry names `ppk_archive.py` and the round-trip checks from 1.3-1.4.
-- [ ] 4.4 Run `openspec validate add-ppk2-capture-archive --strict` and commit 4.1-4.3 (`docs:` prefix). Verify: validation passes.
+- [x] 4.1 Update the evidence-log line in `AGENTS.md` ("Measurements are CSV with ...") to allow a verified packed PPK2 capture, matching the delta in `specs/thesis-evidence-log/spec.md`. Verify: the line names `ppk-archive.sh pack` and the 50 MB rule.
+- [x] 4.2 In `openspec/changes/add-deep-sleep-and-current-measurement`, change "CSV" to "CSV or packed capture" in `specs/low-power-sleep-policy/spec.md` (requirement "Measurements are stored with conditions") and in tasks 4.2-4.5. Verify: `openspec validate add-deep-sleep-and-current-measurement --strict` passes.
+- [x] 4.3 Add an entry to `notes/ai-use.md` for the tool code (tool, output, how it was checked). Verify: the entry names `ppk_archive.py` and the round-trip checks from 1.3-1.4.
+- [x] 4.4 Run `openspec validate add-ppk2-capture-archive --strict` and commit 4.1-4.3 (`docs:` prefix). Verify: validation passes.
 
 ## Workflow follow-up
 

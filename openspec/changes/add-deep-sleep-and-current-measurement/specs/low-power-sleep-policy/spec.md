@@ -57,11 +57,11 @@ The measurement SHALL cover: idle deep sleep, e-paper refresh, DCF window, and a
 - **THEN** idle is measured with the nRF alone (P22 only, no external line on its pins), and the four states are measured both on the peripheral rail alone and on one shared rail feeding the nRF and the peripherals, and the note compares the shared result with the sum of the separate results
 
 ### Requirement: Measurements are stored with conditions
-Each measurement SHALL be stored as raw CSV under `notes/measurements/` with instrument, temperature, supply voltage and firmware commit. A dated note in `notes/log/` SHALL describe the setup, results and failures. The measurement SHALL state what else is on the supply path, such as DK regulators or debug interface, that could add current.
+Each measurement SHALL be stored as raw CSV or packed capture under `notes/measurements/` with instrument, temperature, supply voltage and firmware commit. A dated note in `notes/log/` SHALL describe the setup, results and failures. The measurement SHALL state what else is on the supply path, such as DK regulators or debug interface, that could add current.
 
 #### Scenario: Record complete
 - **WHEN** a measurement is saved
-- **THEN** its CSV and a record of instrument, temperature, supply and commit exist, and the log note links them
+- **THEN** its CSV or packed capture and a record of instrument, temperature, supply and commit exist, and the log note links them
 
 ### Requirement: Software flowchart matches the sleep structure
 If the implemented sleep and wake structure differs from `firmware/docs/software-flowchart.*`, the flowchart SHALL be updated in the same change.
