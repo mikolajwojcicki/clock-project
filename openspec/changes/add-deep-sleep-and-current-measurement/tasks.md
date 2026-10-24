@@ -24,7 +24,7 @@
 
 ## 4. Current measurement
 
-- [ ] 4.0 Leak check, no code. With the PPK2 disconnected and USB plugged in, measure the voltage on the nRF side of P22 and on DK P1 `VDD` with a multimeter. Verify: both values are in the note. A nonzero P22 value confirms back-feed. The P1 `VDD` value becomes the Source Meter voltage for A and C.
+- [x] 4.0 Leak check, no code. With the PPK2 disconnected and USB plugged in, measure the voltage on the nRF side of P22 and on DK P1 `VDD` with a multimeter. Verify: both values are in the note. A nonzero P22 value confirms back-feed. The P1 `VDD` value becomes the Source Meter voltage for A and C. Done 2026-10-24: P22 nRF side ~1.5 V, P1 `VDD` ~3.0 V; back-feed confirmed, Source Meter 3.0 V (`notes/log/2026-10-24_deep-sleep-current.md`).
 - [ ] 4.1 Prepare the DK for the PPK2 (configurations A, B, C in design.md). Flash first with OpenOCD (`SLEEP_UART=0`), then switch the supply. Verify: in C the clock runs on the panel on PPK2 power. Photograph each wiring as `YYYY-MM-DD_deep-sleep_ppk2-<A|B|C>.jpg` under `notes/media/`.
 - [ ] 4.2 A, nRF alone: idle for at least 60 s between minute changes, all breadboard wires unplugged from the DK. Verify: a CSV exists with the configuration, PPK2 serial, mode, supply, room temperature and `git rev-parse --short HEAD`; the note compares it with the nRF52832 System ON, RTC-running figure and explains the gap.
 - [ ] 4.3 B and C: idle for at least 60 s, then e-paper refresh (align with `EPD_BUSY` on the Saleae). Verify: one CSV per configuration and state; the note gives refresh duration and average current, and compares C with A + B.
