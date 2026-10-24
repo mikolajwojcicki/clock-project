@@ -163,3 +163,32 @@ and the 700 µA is mostly back-feed into the interface MCU side.
 Confirmed 2026-10-24: with `TP11` tied to 3.0 V (nRF side of `P22`), `P0.22`
 went from low to high about 10 s later, the normal init time. The nRF was held
 in pin reset by the unpowered interface MCU.
+
+## Run A3, pin reset off, DK USB unplugged — 1.19 mA floor
+
+Firmware: commit `575150c` (no `CONFIG_GPIO_AS_PINRESET`), `make erase` first
+(UICR `PSELRESET[0..1]` read back `0xffffffff`), then `make SLEEP_UART=0 flash`.
+DK USB unplugged after flashing, PPK2 Source Meter 3.0 V on `P22`, logic `D0` on
+`P0.22` with logic `VCC` on the nRF side of `P22`, breadboard unplugged.
+100 kS/s, 210 s. Raw CSV: `notes/measurements/ppk-20261024T142752.csv` (kept
+local).
+
+| Interval | Mean | What runs |
+| --- | --- | --- |
+| 0-0.70 s | 0.34 µA | before the PPK2 output came on (`D0` reads high, probably floating) |
+| 0.70-11.14 s | ~3.5 mA | power-on and init, `D0` low; 28-52 mA inrush at 0.70 s |
+| 12-210 s | 1189 µA | after init, `D0` high; min 1.04 mA, flat in every 10 s window |
+
+Init now finishes after a real power-on with USB unplugged (`D0` rises 10.4 s
+after power-on), so the reset hold is fixed. The floor is not: about 1.19 mA,
+2000 times run A's 0.58 µA. On top of it, peaks to about 2.9 mA repeat every
+7.33 ms (about 136 Hz), with no gap over the whole capture.
+
+No firmware output pin goes to the interface MCU (`P0.05`-`P0.08`, `P0.18`,
+`P0.21` are left disconnected). Run A, 0.58 µA, used the same firmware path with
+USB plugged in and no PPK2 logic port. Suspects, not yet separated:
+the PPK2 logic port (`VCC` and `D0` are new in this setup and draw from the
+measured rail), or the nRF powering the unpowered interface MCU through shared
+pins such as SWDIO, which has an internal pull-up. A regular 136 Hz pattern
+fits a part on a half-powered rail that keeps starting and browning out
+`[INFERENCE]`.
