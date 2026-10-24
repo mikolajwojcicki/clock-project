@@ -176,7 +176,7 @@ local).
 | Interval | Mean | What runs |
 | --- | --- | --- |
 | 0-0.70 s | 0.34 µA | before the PPK2 output came on (`D0` reads high, probably floating) |
-| 0.70-11.14 s | ~3.5 mA | power-on and init, `D0` low; 28-52 mA inrush at 0.70 s |
+| 0.70-11.14 s | ~1.2 mA | power-on and init, `D0` low; 28-52 mA inrush at 0.70 s, then a few ms at 3-8 mA |
 | 12-210 s | 1189 µA | after init, `D0` high; min 1.04 mA, flat in every 10 s window |
 
 Init now finishes after a real power-on with USB unplugged (`D0` rises 10.4 s
@@ -189,6 +189,39 @@ No firmware output pin goes to the interface MCU (`P0.05`-`P0.08`, `P0.18`,
 USB plugged in and no PPK2 logic port. Suspects, not yet separated:
 the PPK2 logic port (`VCC` and `D0` are new in this setup and draw from the
 measured rail), or the nRF powering the unpowered interface MCU through shared
-pins such as SWDIO, which has an internal pull-up. A regular 136 Hz pattern
-fits a part on a half-powered rail that keeps starting and browning out
-`[INFERENCE]`.
+pins such as SWDIO, which has an internal pull-up.
+
+## Run A4, separating the 1.19 mA — interface MCU is the load
+
+Same firmware and wiring as A3. One capture, 96 s at 100 kS/s, steps done by
+hand during the recording. Raw CSV: `notes/measurements/ppk-20261024T143919.csv`
+(kept local). Step times read from the current trace.
+
+| Interval | Mean | State |
+| --- | --- | --- |
+| 1 s | inrush to 53 mA | PPK2 output on, USB unplugged (real power-on) |
+| 2-11 s | 1187 µA | init, `D0` low |
+| 11.54 s | | `D0` rises: init done |
+| 12-26 s | 1254 → 1340 µA, rising | idle, `D0` high, logic port connected |
+| 27-37 s | 1227 → 1198 µA | logic `VCC` and `D0` removed (`D0` then reads high, floating) |
+| 38 s | | DK USB plugged in |
+| 39-96 s | **5.85 µA** | idle, interface MCU powered; max 26 µA, min 0 |
+
+Removing the logic port took off 100-150 µA, and that part only grew while
+`D0` was high. Plugging USB in took off the remaining ~1.19 mA. So the
+unpowered interface MCU, fed by the nRF through the shared pins, was the load.
+Powered from USB, its pins sit at the same 3.0 V as `VDD_nRF` and draw nothing
+from the measured rail `[INFERENCE]`.
+
+The sawtooth pattern stays after USB is plugged in: peaks about 12 µA decaying
+over ~0.5 ms, period 7.46 ms. That rules out the "half-powered part browning out"
+idea for the A3 136 Hz peaks. The rhythm belongs to the nRF or its supply, for
+example regulator refresh in System ON `[INFERENCE]`.
+
+5.85 µA is idle with the DCF window still open (the capture ends at 96 s, the
+window closes at 300 s). Run A had 3.98 µA in the same phase and 0.58 µA after.
+Not in debug mode: that draws milliamps.
+
+Procedure that follows: flash; unplug USB; PPK2 output off, then on (real
+power-on, debug interface off); wait for init; plug USB back in; record. The
+next capture must run past 300 s to get the window-closed floor.
