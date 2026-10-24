@@ -24,9 +24,10 @@ Bench results from the breadboard build that the layout MUST respect:
 
 `P0.22` stays free (the clock app uses it as a timing marker; leave a test
 pad). Do not use `P0.05` to `P0.08`; they belong to the DK virtual COM port.
-Check the header assignment of `P0.13` to `P0.16` against the DK user guide
-before you cut the long header sockets. `[INFERENCE]` I took it from the
-wiring table for the other pins only.
+Header assignment checked against Figure 10 of the nRF52 DK User Guide v3.x
+(`temp-resources/docs/nrf/`): `P3` carries `P0.11` to `P0.18`, `P4` carries
+`P0.02` and `P0.22` to `P0.27`, `P2` carries `P0.03`, `P0.04`, `P0.28` to
+`P0.31`. `P0.17` to `P0.20` are the DK LEDs; leave them unused.
 
 ## Buttons
 
