@@ -23,6 +23,10 @@ def main():
     ap.add_argument("--from", dest="t0", type=float, help="window start [s] (default 0)")
     ap.add_argument("--to", dest="t1", type=float, help="window end [s] (default end of file)")
     ap.add_argument("--max-ua", type=float, help="drop samples above this current [uA]")
+    ap.add_argument("--decimate", type=int, default=1, metavar="N",
+                    help="keep every Nth CSV row (plot only; default 1)")
+    ap.add_argument("--mean", action="store_true",
+                    help="print mean current of the entire file (all rows)")
     a = ap.parse_args()
 
     # Load whole file (~0.5 GB for 30M rows), bin by time below.
@@ -36,12 +40,18 @@ def main():
     lo = np.full(a.bins, np.inf)
     hi = np.full(a.bins, -np.inf)
     n_used = 0
+    v_sum = 0.0
+    row = 0  # global row index of the chunk start, keeps decimation phase across chunks
     for c in chunks:
         t = c.iloc[:, 0].to_numpy()
         v = c.iloc[:, 1].to_numpy()
+        v_sum += v.sum()  # mean covers every row, ignoring window/filter/decimate
         m = (t >= t0) & (t <= t1)
         if a.max_ua is not None:
             m &= v <= a.max_ua
+        if a.decimate > 1:
+            m &= (np.arange(row, row + len(t)) % a.decimate) == 0
+        row += len(t)
         t, v = t[m], v[m]
         n_used += len(t)
         i = np.minimum(((t - t0) / width).astype(np.int64), a.bins - 1)
@@ -53,6 +63,8 @@ def main():
     centers = (t0 + (np.arange(a.bins) + 0.5) * width) / 1000.0  # s
     print(f"{n_used}/{n_total} samples, {t0/1000:.3f}-{t1/1000:.3f} s, "
           f"min {lo[ok].min():.3f} uA, max {hi[ok].max():.3f} uA", file=sys.stderr)
+    if a.mean:
+        print(f"mean {v_sum / n_total:.3f} uA over all {n_total} rows", file=sys.stderr)
 
     fig, ax = plt.subplots(figsize=(14, 6))
     ax.scatter(centers[ok], hi[ok], s=4, label="max per bin", color="tab:red")
