@@ -45,6 +45,8 @@ Expectation: C ≈ A + B. A gap is the back-feed or a measurement error, and the
 
 Flash first, then switch the supply to the PPK2. UART logging is off, so state timing comes from the Saleae digital markers already present (`CLOCK_SEC_MARK`, `DCF_PON`, `BUZZER_EN`, plus `EPD_BUSY`). PPK2 CSV and Saleae export are aligned by a marker edge visible in both (the DCF_PON rising edge at window start, since PPK2 shows the step). Each state is measured for at least 60 s for idle and for its natural duration for the others. Record: configuration (A, B or C), PPK2 serial and mode, supply, ambient temperature from a room thermometer, `git rev-parse --short HEAD`, and which DK parts stay on the path. Compare A idle with the nRF52832 datasheet figure for System ON, RTC running, and explain the gap.
 
+**Capture start.** The PPK2 app (v4.4.1) has a Scope mode with a digital trigger. `CLOCK_SEC_MARK` (`P0.22`) is low from reset until `main()` finishes init, then goes high and toggles every second. Wire `P0.22` to PPK2 logic `D0` and trigger on `D0` high, so a capture skips power-on, LFXO start and the boot refresh. For runs longer than the Scope buffer, use Data Logger and cut the CSV at the first `D0` rising edge instead. Either way the PPK2 logic port needs `VCC` on the DUT rail (1.6–5.5 V) and shared `GND`.
+
 **Flowchart.** `software-flowchart.puml` shows a poll loop. After the code lands, redraw it as event-driven: event bits, ISR sources, WFE. Regenerate svg and pdf with the existing method in `firmware/docs/`.
 
 ## Risks / Trade-offs
