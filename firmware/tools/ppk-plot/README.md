@@ -10,8 +10,9 @@ and reinstall when `requirements.txt` changes.
 firmware/tools/ppk-plot/ppk-plot.sh notes/measurements/ppk-20261024T143919.csv --mean
 ```
 
-Min/max-per-bin scatter plot of a CSV export, streamed in chunks. Options: `--from/--to` (s), `--max-ua`,
-`--decimate N`, `--mean`, `--log`, `-b BINS`. Run with `--help` for all.
+Min/max-per-bin scatter plot of a PPK2 CSV export or a `.ppkz` packed capture (see below), streamed in
+chunks. A `.ppkz` gives the same sample count, min, max, mean and window summary as its CSV. Options:
+`--from/--to` (s), `--max-ua`, `--decimate N`, `--mean`, `--log`, `-b BINS`. Run with `--help` for all.
 
 ## ppk-archive: keep captures in git
 

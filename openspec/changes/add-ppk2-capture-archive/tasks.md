@@ -7,13 +7,13 @@
 - [x] 1.3 Implement `pack <csv> [--from S] [--to S] [-o OUT] [--level N]`: header check for the two known layouts, streamed chunks, uniform-timing check with the row of the first irregular step, read-back verification of every row (`%.3f` text and bits), float64 fallback, removal of partial outputs on failure, 50 MB warning with the duration that would fit. The source CSV is opened read-only. Verify: unittests cover both layouts, a gap, a repeated timestamp, an unknown header, a value that needs float64, a `--from/--to` window, and that a forced mismatch leaves no output files.
 - [x] 1.4 Implement `unpack <ppkz> [-o CSV]` writing the source header, timestamps formatted like the PPK2 app (`0`, `0.01`, `699.41`), current with three decimals and the `D0-D7` string. Verify: a unittest round trip compares the unpacked text with the synthetic source CSV line for line, and on the real 96 s file `cmp` of the current and digital columns (`cut -d, -f2-`) between source and unpacked CSV reports no difference.
 - [x] 1.5 Document pack, unpack and the format in a `README.md` in `firmware/tools/ppk-plot/` (commands, sidecar fields, the 50 MB rule, that CSVs stay local). Verify: the commands in the README run as written on `notes/measurements/ppk-20261024T143919.csv`.
-- [ ] 1.6 Commit the tool (`firmware:` prefix) after 1.1-1.5 pass.
+- [x] 1.6 Commit the tool (`firmware:` prefix) after 1.1-1.5 pass.
 
 ## 2. ppk-plot reads packed captures
 
-- [ ] 2.1 Make `ppk_plot.py` choose the loader by extension (`.ppkz` or CSV) and stream the packed file through the same binning, `--mean`, `--from/--to`, `--max-ua` and `--decimate` path. Verify: on `ppk-20261024T143919.csv` and its `.ppkz`, `ppk-plot.sh --mean` prints the same sample count, min, max and mean, and `--from 100 --to 103` prints the same window summary line for both.
-- [ ] 2.2 Update the `ppk-plot` README section and `--help` text for the new input. Verify: `ppk-plot.sh --help` names both inputs.
-- [ ] 2.3 Commit (`firmware:` prefix).
+- [x] 2.1 Make `ppk_plot.py` choose the loader by extension (`.ppkz` or CSV) and stream the packed file through the same binning, `--mean`, `--from/--to`, `--max-ua` and `--decimate` path. Verify: on `ppk-20261024T143919.csv` and its `.ppkz`, `ppk-plot.sh --mean` prints the same sample count, min, max and mean, and `--from 100 --to 103` prints the same window summary line for both.
+- [x] 2.2 Update the `ppk-plot` README section and `--help` text for the new input. Verify: `ppk-plot.sh --help` names both inputs.
+- [x] 2.3 Commit (`firmware:` prefix).
 
 ## 3. Pack and track today's captures
 
