@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Run ppk_plot.py inside a project venv (created on first use).
+# Run ppk_plot.py (or $PPK_SCRIPT, see ppk-archive.sh) inside a project venv
+# (created on first use).
 # NixOS: manylinux wheels need libstdc++/zlib, so the venv is built and used
 # inside nix-shell unless already there.
 set -euo pipefail
@@ -18,4 +19,4 @@ if ! cmp -s "$here/requirements.txt" "$venv/.requirements.installed"; then
     pip install -q -r "$here/requirements.txt"
     cp "$here/requirements.txt" "$venv/.requirements.installed"
 fi
-exec python "$here/ppk_plot.py" "$@"
+exec python "$here/${PPK_SCRIPT:-ppk_plot.py}" "$@"
