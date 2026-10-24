@@ -21,11 +21,25 @@ Detailed tool and ownership record:
 | 10 | Charger and battery | TP4056 USB-C breakout and 400 to 500 mAh Li-Po with JST-PH | Optional power experiments | Owned | Existing project record |
 | 11 | ST Nucleo-F411RE | `MB1136 C-04` | Bench DCF-77 signal generator, not product hardware | Owned | User statement |
 | 12 | SCK series resistor | Approximately 100 Ohm (47 to 220 Ohm), 1/4 W | Damps ringing on `SPI_SCK` at `P0.03`; without it the display hangs | To buy | `notes/log/2026-10-22_epd-sck-ringing.md` |
+| 13 | Perfboard | Approx. 7x9 cm, double-sided, 2.54 mm pitch, plated holes | Shield for the nRF52 DK; carries all peripherals | To buy | Decision 2026-10-24: perfboard is a DK shield |
+| 14 | Female header, long pin | 1x10 and 1x8, 2.54 mm, for DK connectors | Plugs the shield onto the DK GPIO and power headers | To buy | Shield decision |
+| 15 | Female header 1x8 | 2.54 mm | Waveshare e-Paper connection | To buy | Shield decision |
+| 16 | Female headers | 2.54 mm, sized to LIS3DH and DCF-1060N-800 pin rows | Keeps the breakouts removable | To buy | Shield decision |
+| 17 | Male pin header strip | 1x40, 2.54 mm | Breakout pins and test points | To buy | Shield decision |
+| 18 | Pull-up resistors | 10 kOhm, 1/4 W | Button and bus pull-ups | To buy | Shield decision |
+| 19 | Tactile buttons | 6x6 mm THT, 3 to 4 pcs | MODE, UP, DOWN, SNOOZE | To buy | Shield decision |
+| 20 | Decoupling capacitors | 100 nF ceramic and 10 uF | Local decoupling at DCF and LIS3DH | To buy | Shield decision |
+| 21 | Battery connector | JST-PH 2-pin, THT | Li-Po connection on the shield | To buy | Shield decision |
+| 22 | Slide switch | SPDT, 2.54 mm | Power on/off | To buy | Shield decision |
+| 23 | Standoffs | M3 with screws | Mount the shield | To buy | Shield decision |
 
 ## Warnings and alternatives
 
 - Use the nRF52 DK for early firmware. The Raytac `MDBT42Q` belongs to the
   custom PCB.
+- The perfboard is a shield for the nRF52 DK, not a standalone device. The
+  MDBT42Q module stays on the custom PCB. Pin map and wiring diagram go under
+  `hardware/docs/`.
 - Keep display SPI away from P0.22 through P0.30. These pins have the module
   drive and frequency restrictions described in `AGENTS.md`.
 - The AP-1205V-P1 voltage and drive requirements are not confirmed in this
