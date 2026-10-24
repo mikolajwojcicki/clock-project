@@ -140,3 +140,23 @@ Consequence: captures start from the RESET button with the PPK2 output on, and
 the `D0` rising edge marks the end of init. A pin reset restarts the firmware
 the same way as a power-on reset; it may not clear a debug-interface state,
 which only a real power-on clears `[INFERENCE]`.
+
+## USB unplugged: nRF apparently held in reset
+
+The nRF52 DK guide (v3.x, sections 4.5 and 5) says to unplug USB and power
+cycle the DK before measuring current. Board here: PCA10040 v3.0.1. Same
+firmware `b31048a` (`SLEEP_UART=0`), PPK2 3.0 V on `P22`, DK USB unplugged,
+PPK2 output switched off and on:
+
+- `P0.22` on PPK2 `D0` never goes high, so init never finishes.
+- `TP11` (`P0.21`, nRF RESET) reads about 1.3 V to GND (multimeter).
+- PPK2 current about 700 µA average.
+
+1.3 V is below the nRF52832 input-high minimum (0.7 × 3.0 V = 2.1 V), so the
+RESET pin is not a valid high. `P0.21` reaches the unpowered interface MCU
+through SB26. The likely path `[INFERENCE]`: the nRF's RESET pull-up and other
+shared pins feed the interface MCU's unpowered rail through its ESD diodes,
+which holds RESET near 1.3 V. The firmware enables pin reset
+(`CONFIG_GPIO_AS_PINRESET`), so the chip stays in reset or resets at random,
+and the 700 µA is mostly back-feed into the interface MCU side. Not yet proven:
+pulling `P0.21` up hard should let init finish.
