@@ -457,6 +457,10 @@ int main(void)
     s_dcf_retries_left = DCF_RETRIES;
     s_dcf_pending = true;
     s_dcf_pending_ms = board_ms();
+    /* Boot marker: low from reset until here, so its first rising edge is a
+     * PPK2 digital trigger that skips power-on, LFXO start and the first
+     * refresh. Later second ticks toggle from this level. */
+    nrf_gpio_pin_set(CLOCK_SEC_MARK);
 
     for (;;)
     {
