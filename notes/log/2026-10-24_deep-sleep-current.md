@@ -295,3 +295,30 @@ difference, no back-feed); if idle rises to about 2 µA, back-feed was it.
 
 Still open: the bib entry `nRF52832PS` cites v1.4 (2017); the figures above
 come from v1.9 (2023-12-06).
+
+## Run A6, same as A5 at 3.3 V — 14.7 µA idle
+
+Capture `notes/measurements/ppk-20261024T160837.ppkz` (500 s, 100 kS/s, packed
+41.3 MB). Same sequence as A5; only change: PPK2 Source Meter 3.3 V. PPK2 S/N
+`FACEF4EE8A0A`, room 24 °C, firmware `c7edb52` (no UART, pin reset on).
+
+- `D0` rises at 11.39 s (init done). No ticks until 171 s, so the DCF sync took
+  about 160 s; 20-160 s mean 23.2 µA with the DCF window open.
+- After sync: idle median **14.7 µA**, 10 s means 16.2 µA including ticks.
+  Tick charge 0.25 µC (A5: about 0.3 µC), so the firmware behaves the same.
+- Minute redraw unchanged: 3.08 mA for 9.1 s, every 60 s.
+- Logic port removed at about 421 s (last `D0` edge); idle 420-500 s stays at
+  16.2 µA, so the logic port is not the extra load.
+
+Reading: 0.3 V more supply turned 0.58-0.81 µA into 14.7 µA. The datasheet
+expects about 2 µA for either voltage, and with DC/DC on the chip's own draw
+barely depends on VDD. So both A5 and A6 are dominated by current between
+`VDD_nRF` and the USB-powered interface MCU, in opposite directions
+`[INFERENCE]`: at 3.0 V it feeds the nRF (reading too low), at 3.3 V the nRF
+side leaks into it (reading too high). Neither run is a valid nRF figure.
+
+The DK guide v3.x.x solder-bridge table documents the isolation: SB20/SB21
+(SWDIO/SWDCLK), SB22-SB25 (`P0.05`-`P0.08`, UART), SB26 (`P0.21`, RESET) and
+SB27 (`P0.18`, SWO) are "Cut to isolate ... from nRF52832 to the interface
+MCU". Check before cutting: sweep the Source Meter 3.0 → 3.1 → 3.2 → 3.3 V
+during one idle capture; a strong voltage dependence confirms the coupling.
