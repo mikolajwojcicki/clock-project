@@ -28,3 +28,16 @@ is not yet separated; run A answers part of that.
 
 Decision: the PPK2 Source Meter runs at **3.0 V** in A and C, equal to DK
 `VDD`, so no line from the `VDD` domain sits above `VDD_nRF` in C.
+
+Repeat with every breadboard wire unplugged from the DK headers: the nRF side
+of P22 still reads ~1.5 V. The breadboard is not the leak path; the source is
+on the DK. Candidates are the four LEDs (anode on DK `VDD`, cathode on an nRF
+GPIO, so LED + pin ESD diode is a forward path into `VDD_nRF`) and the
+interface UART. The LEDs light in this state, so the LED path is confirmed
+active; whether the UART adds to it is not separated. Roughly 3.0 V minus an
+LED drop minus an ESD diode drop gives about 1.5 V, which fits the LED path.
+
+Consequence for run A: the leak needs `VDD_nRF` below DK `VDD`. With the
+PPK2 sourcing 3.0 V on `VDD_nRF` and DK `VDD` at ~3.0 V, the LED path has no
+forward voltage and should stop. Check during run A: the DK LEDs go dark once
+the PPK2 is on, unless firmware drives them.
