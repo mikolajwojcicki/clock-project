@@ -8,6 +8,7 @@ import argparse
 import sys
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import AutoMinorLocator, MultipleLocator
 import numpy as np
 import pandas as pd
 
@@ -58,9 +59,16 @@ def main():
     ax.scatter(centers[ok], lo[ok], s=4, label="min per bin", color="tab:blue")
     ax.set_xlabel("Time [s]")
     ax.set_ylabel("Current [µA]")
+    ax.set_xlim(t0 / 1000.0, t1 / 1000.0)
+    if (t1 - t0) / 1000.0 >= 120:
+        ax.xaxis.set_major_locator(MultipleLocator(60))  # 60 s majors
+    ax.xaxis.set_minor_locator(AutoMinorLocator(6))  # 10 s minors on 60 s majors
     if a.log:
-        ax.set_yscale("log")
-    ax.grid(True, alpha=0.3)
+        ax.set_yscale("log")  # log axis has its own minor ticks
+    else:
+        ax.yaxis.set_minor_locator(AutoMinorLocator(5))
+    ax.grid(True, which="major", alpha=0.5)
+    ax.grid(True, which="minor", alpha=0.2, linewidth=0.5)
     ax.legend()
     ax.set_title(a.csv.rsplit("/", 1)[-1])
     fig.tight_layout()
