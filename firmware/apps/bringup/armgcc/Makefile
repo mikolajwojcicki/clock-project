@@ -126,10 +126,13 @@ FORCE:
 .PHONY: flash erase
 
 HEX := $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
+# Optional: make flash ACM=/dev/ttyACMn picks the J-Link that owns that port.
+ACM ?=
+OPENOCD_SERIAL := $(if $(ACM),-c "adapter serial $(shell udevadm info -q property -n $(ACM) | sed -n 's/^ID_SERIAL_SHORT=//p')")
 
 flash: default
 	@echo Flashing: $(HEX)
-	openocd -f interface/jlink.cfg -c "transport select swd" -f target/nrf52.cfg \
+	openocd -f interface/jlink.cfg $(OPENOCD_SERIAL) -c "transport select swd" -f target/nrf52.cfg \
 		-c "program $(abspath $(HEX)) verify reset exit"
 
 erase:

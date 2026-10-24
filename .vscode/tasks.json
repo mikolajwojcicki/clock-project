@@ -17,7 +17,7 @@
     {
       "label": "firmware: blinky flash",
       "type": "shell",
-      "command": "make flash",
+      "command": "make flash ACM=${input:acmDevice}",
       "options": {
         "cwd": "${workspaceFolder}/firmware/apps/blinky"
       },
@@ -47,7 +47,7 @@
     {
       "label": "firmware: bringup flash",
       "type": "shell",
-      "command": "make flash",
+      "command": "make flash ACM=${input:acmDevice}",
       "options": {
         "cwd": "${workspaceFolder}/firmware/apps/bringup"
       },
@@ -57,7 +57,7 @@
     {
       "label": "firmware: clock flash",
       "type": "shell",
-      "command": "make flash",
+      "command": "make flash ACM=${input:acmDevice}",
       "options": {
         "cwd": "${workspaceFolder}/firmware/apps/clock"
       },
@@ -67,7 +67,7 @@
     {
       "label": "firmware: clock flash no UART",
       "type": "shell",
-      "command": "make SLEEP_UART=0 flash",
+      "command": "make SLEEP_UART=0 flash ACM=${input:acmDevice}",
       "options": {
         "cwd": "${workspaceFolder}/firmware/apps/clock"
       },
@@ -77,9 +77,24 @@
     {
       "label": "firmware: serial console",
       "type": "shell",
-      "command": "picocom -b 115200 /dev/ttyACM0",
+      "command": "picocom -b 115200 ${input:acmDevice}",
       "group": "none",
       "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "acmDevice",
+      "type": "pickString",
+      "description": "ACM device (J-Link DK = flash target; check /dev/serial/by-id)",
+      "options": [
+        "/dev/ttyACM0",
+        "/dev/ttyACM1",
+        "/dev/ttyACM2",
+        "/dev/ttyACM3",
+        "/dev/ttyACM4"
+      ],
+      "default": "/dev/ttyACM0"
     }
   ]
 }
