@@ -88,9 +88,9 @@
       "type": "command",
       "command": "shellCommand.execute",
       "args": {
-        "command": "ls -1 /dev/serial/by-id | sed 's|^|/dev/serial/by-id/|'",
-        "description": "Pick serial device (SEGGER J-Link = DK flash target)",
-        "useSingleResult": true
+        "command": "for p in /dev/serial/by-id/*; do echo \"$p|$(basename $p)|$(readlink -f $p)\"; done",
+        "fieldSeparator": "|",
+        "description": "Pick serial device (SEGGER J-Link = DK flash target)"
       }
     }
   ]
