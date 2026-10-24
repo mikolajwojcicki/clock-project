@@ -92,3 +92,31 @@ Reading:
   channel; part can be the floating `DCF_OUT` input buffer. On the clock the
   receiver drives the pin, so this number is an upper bound for the window
   cost on the MCU side, not the real one.
+
+## Run A2, nRF alone with time set — anomaly
+
+Setup as run A, plus the Nucleo generator on `P0.25` for the boot sync, then
+unplugged after the first minute burst (about 207 s). PPK2 output switched on
+at about 13 s into the recording (cold power-on, not an OpenOCD reset).
+100 kS/s, 400 s. Raw CSV: `notes/measurements/ppk-20261024T132153.csv` (kept
+local). Plots: `notes/media/2026-10-24_deep-sleep_ppk2-A2_full.png`,
+`…_A2_boot.png`, `…_A2_3s.png`.
+
+| Interval | Mean | What runs |
+| --- | --- | --- |
+| 13–196 s | 3.04 mA | DCF window open, generator driving `DCF_OUT` |
+| 196–207 s | 6.24 mA | first minute redraw: 10 s `EPD_BUSY` timeout, no panel |
+| whole file | 3.31 mA | |
+
+The floor is a flat 2.9–3.15 mA band from power-on to the end. It does not
+drop when the generator is unplugged. Run A had 0.58–4 µA with the same
+firmware. 3 mA matches the CPU running from flash on DC/DC, so the core
+never reaches a real sleep, or the debug interface is powered `[INFERENCE]`.
+On top: 1 Hz spikes (generator edges, later clock ticks) and four 10 s
+minute bursts at about 6.3 mA. The time was set, so the boot sync worked.
+
+Difference to run A: cold power-on with the J-Link interface on USB and
+nRF Connect for Desktop running (its `nrfutil device list --hotplug` polls
+J-Link probes). A probe that attaches on power-up turns on the nRF debug
+interface, which keeps clocks on until the next power-on reset. Not yet
+proven; the next capture separates it.
