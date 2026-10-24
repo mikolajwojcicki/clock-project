@@ -267,6 +267,31 @@ Raw capture: [`notes/measurements/ppk-20261024T151738.ppkz`](../measurements/ppk
   which looks like the CPU staying awake, not System ON sleep `[INFERENCE]`.
   To check before run B.
 
-Not recorded yet for task 4.2: room temperature and PPK2 serial. The datasheet
-comparison waits for the nRF52832 Product Specification System ON + RTC figure,
-which was not reachable on 2026-10-24 (403).
+Conditions: PPK2 S/N `FACEF4EE8A0A`, Source Meter 3.0 V, room 24 °C.
+
+**Against the datasheet** (`temp-resources/docs/nrf/nRF52832_PS_v1.9.pdf`,
+section 17.1.1 "Current consumption: Ultra-low power", typical at VDD 3 V,
+25 °C, DC/DC on, which matches `board.c` setting `DCDCEN`):
+
+| Symbol | Condition | Typ. |
+| --- | --- | --- |
+| `ION_RAMOFF_EVENT` | System ON, no RAM retention, wake on any event | 1.2 µA |
+| `ION_RAMON_EVENT` | System ON, full RAM retention, wake on any event | 1.5 µA |
+| `ION_RAMOFF_RTC` | System ON, no RAM retention, wake on RTC | 1.9 µA |
+| `IGPIOTE,IN` | GPIOTE input channel active (adds) | 0.1 µA (max 0.5) |
+
+The firmware keeps full RAM and wakes on RTC1 with LFXO, so the closest
+expectation is about 1.9-2.2 µA (the PS has no RAM-on + RTC row; `ION_RAMOFF_RTC`
+plus the 0.3 µA RAM-retention difference between the two EVENT rows). Measured
+0.81 µA with ticks and 0.58 µA without (run A) are **below** even the lowest
+System ON figure. A chip drawing less than its typical sleep current is not
+plausible, so part of the nRF supply is likely not passing through the PPK2
+`[INFERENCE]`. Candidate: back-feed from the USB-powered interface MCU through
+the SWD, RESET and UART lines into `VDD_nRF` via the pin protection diodes,
+if the interface drives them at 3.3 V (OpenOCD reported `VTarget = 3.300 V`)
+against the PPK2's 3.0 V. The DK guide's back-feed warning fits this. Check
+before trusting A-numbers: repeat the idle at PPK2 3.3 V (no voltage
+difference, no back-feed); if idle rises to about 2 µA, back-feed was it.
+
+Still open: the bib entry `nRF52832PS` cites v1.4 (2017); the figures above
+come from v1.9 (2023-12-06).
