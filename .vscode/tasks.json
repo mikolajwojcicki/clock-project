@@ -85,16 +85,13 @@
   "inputs": [
     {
       "id": "acmDevice",
-      "type": "pickString",
-      "description": "ACM device (J-Link DK = flash target; check /dev/serial/by-id)",
-      "options": [
-        "/dev/ttyACM0",
-        "/dev/ttyACM1",
-        "/dev/ttyACM2",
-        "/dev/ttyACM3",
-        "/dev/ttyACM4"
-      ],
-      "default": "/dev/ttyACM0"
+      "type": "command",
+      "command": "shellCommand.execute",
+      "args": {
+        "command": "ls -1 /dev/serial/by-id | sed 's|^|/dev/serial/by-id/|'",
+        "description": "Pick serial device (SEGGER J-Link = DK flash target)",
+        "useSingleResult": true
+      }
     }
   ]
 }
