@@ -142,6 +142,8 @@ flash: default
 	openocd -f interface/jlink.cfg $(OPENOCD_SERIAL) -c "transport select swd" -f target/nrf52.cfg \
 		-c "program $(abspath $(HEX)) verify reset exit"
 
+# nRF52832 build code G (rev 3): SystemInit locks debug access on every reset
+# unless UICR APPROTECT is 0x5A, and an erase leaves it 0xFFFFFFFF.
 erase:
 	openocd -f interface/jlink.cfg -c "transport select swd" -f target/nrf52.cfg \
-		-c "init; nrf52_recover; exit"
+		-c "init; nrf52_recover; reset halt; flash fillw 0x10001208 0x0000005A 1; exit"
