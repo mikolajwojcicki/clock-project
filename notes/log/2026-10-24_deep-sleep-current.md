@@ -97,7 +97,8 @@ Reading:
 
 Setup as run A, plus the Nucleo generator on `P0.25` for the boot sync, then
 unplugged after the first minute burst (about 207 s). PPK2 output switched on
-at about 13 s into the recording (cold power-on, not an OpenOCD reset).
+at about 13 s into the recording. Whether the nRF actually reset there is not
+known: see "Supply toggle does not reset the nRF" below.
 100 kS/s, 400 s. Raw CSV: `notes/measurements/ppk-20261024T132153.csv` (kept
 local). Plots: `notes/media/2026-10-24_deep-sleep_ppk2-A2_full.png`,
 `…_A2_boot.png`, `…_A2_3s.png`.
@@ -115,8 +116,27 @@ never reaches a real sleep, or the debug interface is powered `[INFERENCE]`.
 On top: 1 Hz spikes (generator edges, later clock ticks) and four 10 s
 minute bursts at about 6.3 mA. The time was set, so the boot sync worked.
 
-Difference to run A: cold power-on with the J-Link interface on USB and
-nRF Connect for Desktop running (its `nrfutil device list --hotplug` polls
-J-Link probes). A probe that attaches on power-up turns on the nRF debug
-interface, which keeps clocks on until the next power-on reset. Not yet
-proven; the next capture separates it.
+Suspects: the debug interface left on (nRF Connect for Desktop was running
+and its `nrfutil device list --hotplug` polls J-Link probes), or a busy loop
+on the time-set path, which run A never reached. Not yet separated.
+
+## Supply toggle does not reset the nRF
+
+Firmware `b31048a`: `CLOCK_SEC_MARK` (`P0.22`) stays low from reset until init
+ends, about 10 s on this bench because the boot refresh waits for the
+`EPD_BUSY` timeout. Watched on PPK2 logic `D0`:
+
+- PPK2 output off, then on: `P0.22` never goes low. The nRF does not reset.
+- DK RESET button: `P0.22` goes low, then high after init, as intended.
+
+So switching the PPK2 output off is not a power-on reset here. Two reasons can
+keep the chip alive `[INFERENCE]`: back-feed from DK `VDD` (task 4.0 measured
+~1.5 V on `VDD_nRF` with no supply), and the rail decoupling capacitors, which
+a chip sleeping at about 1 µA drains very slowly. Run A2's "power-on at 13 s"
+was therefore probably no reset at all, and its 3 mA state may have started
+earlier.
+
+Consequence: captures start from the RESET button with the PPK2 output on, and
+the `D0` rising edge marks the end of init. A pin reset restarts the firmware
+the same way as a power-on reset; it may not clear a debug-interface state,
+which only a real power-on clears `[INFERENCE]`.
