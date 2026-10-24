@@ -158,5 +158,8 @@ through SB26. The likely path `[INFERENCE]`: the nRF's RESET pull-up and other
 shared pins feed the interface MCU's unpowered rail through its ESD diodes,
 which holds RESET near 1.3 V. The firmware enables pin reset
 (`CONFIG_GPIO_AS_PINRESET`), so the chip stays in reset or resets at random,
-and the 700 µA is mostly back-feed into the interface MCU side. Not yet proven:
-pulling `P0.21` up hard should let init finish.
+and the 700 µA is mostly back-feed into the interface MCU side.
+
+Confirmed 2026-10-24: with `TP11` tied to 3.0 V (nRF side of `P22`), `P0.22`
+went from low to high about 10 s later, the normal init time. The nRF was held
+in pin reset by the unpowered interface MCU.
