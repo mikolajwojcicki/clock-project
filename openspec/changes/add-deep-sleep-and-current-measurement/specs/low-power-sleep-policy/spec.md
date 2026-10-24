@@ -52,6 +52,10 @@ The measurement SHALL cover: idle deep sleep, e-paper refresh, DCF window, and a
 - **WHEN** the idle state is measured
 - **THEN** the result is compared with the nRF52832 System ON sleep figure with RTC running, and any large gap is explained in the note
 
+#### Scenario: Supply paths separated
+- **WHEN** the states are measured
+- **THEN** idle is measured with the nRF alone (P22 only, no external line on its pins), and the four states are measured both on the peripheral rail alone and on one shared rail feeding the nRF and the peripherals, and the note compares the shared result with the sum of the separate results
+
 ### Requirement: Measurements are stored with conditions
 Each measurement SHALL be stored as raw CSV under `notes/measurements/` with instrument, temperature, supply voltage and firmware commit. A dated note in `notes/log/` SHALL describe the setup, results and failures. The measurement SHALL state what else is on the supply path, such as DK regulators or debug interface, that could add current.
 

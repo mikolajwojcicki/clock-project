@@ -24,12 +24,13 @@
 
 ## 4. Current measurement
 
-- [ ] 4.1 Prepare the DK for the PPK2 (Source Meter, 3.0 V on P22, interface MCU isolated). Flash first with OpenOCD, then switch the supply. Verify: the clock runs on the panel on PPK2 power. Photograph the wiring with the name `YYYY-MM-DD_deep-sleep_ppk2-wiring.jpg` under `notes/media/`.
-- [ ] 4.2 Measure idle for at least 60 s on `SLEEP_UART=0`. Verify: a CSV exists with the PPK2 serial, mode, supply, room temperature and `git rev-parse --short HEAD`; the note compares it with the nRF52832 System ON, RTC-running figure and explains the gap (DK parts on the rail).
-- [ ] 4.3 Measure e-paper refresh (align PPK2 with `EPD_BUSY` on the Saleae). Verify: a CSV, the refresh duration and average current are in the note.
-- [ ] 4.4 Measure the DCF window using the generator (align with `DCF_PON`). Verify: a CSV plus average current and window length are in the note.
-- [ ] 4.5 Measure the alarm with the buzzer on (align with `BUZZER_EN`). Verify: a CSV plus average current are in the note.
-- [ ] 4.6 Write the dated note `notes/log/2026-10-<day>_deep-sleep-current.md`: setup, a table with the four states (current, duration), what failed, and a daily energy estimate from the durations. Verify: each CSV is linked and the daily figure follows from the table.
+- [ ] 4.0 Leak check, no code. With the PPK2 disconnected and USB plugged in, measure the voltage on the nRF side of P22 and on DK P1 `VDD` with a multimeter. Verify: both values are in the note. A nonzero P22 value confirms back-feed. The P1 `VDD` value becomes the Source Meter voltage for A and C.
+- [ ] 4.1 Prepare the DK for the PPK2 (configurations A, B, C in design.md). Flash first with OpenOCD (`SLEEP_UART=0`), then switch the supply. Verify: in C the clock runs on the panel on PPK2 power. Photograph each wiring as `YYYY-MM-DD_deep-sleep_ppk2-<A|B|C>.jpg` under `notes/media/`.
+- [ ] 4.2 A, nRF alone: idle for at least 60 s between minute changes, all breadboard wires unplugged from the DK. Verify: a CSV exists with the configuration, PPK2 serial, mode, supply, room temperature and `git rev-parse --short HEAD`; the note compares it with the nRF52832 System ON, RTC-running figure and explains the gap.
+- [ ] 4.3 B and C: idle for at least 60 s, then e-paper refresh (align with `EPD_BUSY` on the Saleae). Verify: one CSV per configuration and state; the note gives refresh duration and average current, and compares C with A + B.
+- [ ] 4.4 B and C: DCF window using the generator (align with `DCF_PON`). Verify: CSVs plus average current and window length are in the note.
+- [ ] 4.5 B and C: alarm (align with `BUZZER_EN`), plus one Ampere Meter run in series with the buzzer `+` wire on `5V`. Verify: CSVs plus average currents are in the note.
+- [ ] 4.6 Write the dated note `notes/log/2026-10-<day>_deep-sleep-current.md`: setup, a table of the four states for A (idle only), B and C (current, duration), the C vs A + B comparison, what failed, and a daily energy estimate from C plus the buzzer. Verify: each CSV is linked and the daily figure follows from the table.
 - [ ] 4.7 Add the entries to `notes/ai-use.md` for any draft text kept. Commit measurements and the note together (`firmware:` or `thesis:` per the files touched).
 
 ## 5. Flowchart and close-out
