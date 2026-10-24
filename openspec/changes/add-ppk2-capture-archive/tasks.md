@@ -17,10 +17,10 @@
 
 ## 3. Pack and track today's captures
 
-- [ ] 3.1 Add `notes/measurements/ppk-*.csv` to `.gitignore`. Verify: `git status --short notes/measurements` no longer lists the four CSVs.
-- [ ] 3.2 Pack `ppk-20261024T114909.csv`, `ppk-20261024T132153.csv`, `ppk-20261024T142752.csv` and `ppk-20261024T143919.csv`. Verify: each pack exits 0, each `.ppkz` is under 50 MB, and `ppk-plot.sh --mean` on each `.ppkz` gives the same mean as the CSV (the note's numbers: 3.789 µA for 114909, 3306.370 µA for 132153).
-- [ ] 3.3 In `notes/log/2026-10-24_deep-sleep-current.md`, change each "Raw CSV: ... (kept local)" line to link the `.ppkz` and name the CSV it came from. Verify: every run section (A, A2, A3, A4) links an existing `.ppkz`.
-- [ ] 3.4 Commit `.gitignore`, the `.ppkz`/`.ppkz.json` files and the note together (`docs:` prefix). Verify: `git show --stat HEAD` lists no file over 50 MB.
+- [x] 3.1 Add `notes/measurements/ppk-*.csv` to `.gitignore`. Verify: `git status --short notes/measurements` no longer lists the four CSVs.
+- [x] 3.2 Pack `ppk-20261024T114909.csv`, `ppk-20261024T132153.csv`, `ppk-20261024T142752.csv` and `ppk-20261024T143919.csv`. Verify: each pack exits 0, each `.ppkz` is under 50 MB, and `ppk-plot.sh --mean` on each `.ppkz` gives the same mean as the CSV (the note's numbers: 3.789 µA for 114909, 3306.370 µA for 132153).
+- [x] 3.3 In `notes/log/2026-10-24_deep-sleep-current.md`, change each "Raw CSV: ... (kept local)" line to link the `.ppkz` and name the CSV it came from. Verify: every run section (A, A2, A3, A4) links an existing `.ppkz`.
+- [x] 3.4 Commit `.gitignore`, the `.ppkz`/`.ppkz.json` files and the note together (`docs:` prefix). Verify: `git show --stat HEAD` lists no file over 50 MB.
 
 ## 4. Evidence rules and the in-progress measurement change
 

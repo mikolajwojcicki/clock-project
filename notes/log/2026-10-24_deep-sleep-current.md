@@ -8,7 +8,7 @@
 - **Why this part or library:** the PPK2 on P22 supplies only `VDD_nRF`. The
   display, LIS3DH and DCF module run from the USB-fed DK `VDD`, so a P22-only
   run neither isolates the MCU nor counts the clock.
-- **Evidence:** this note; CSVs under `notes/measurements/` as the runs land.
+- **Evidence:** this note; packed PPK2 captures (`.ppkz` + `.ppkz.json`) under `notes/measurements/`.
 
 ## 4.0 Leak check
 
@@ -57,8 +57,9 @@ Setup: PPK2 Source Meter 3.0 V on the nRF side of P22, every breadboard wire
 unplugged from the DK, DK on USB for the interface MCU. Firmware: clock app
 `make SLEEP_UART=0 flash`, last firmware change `70b067b` (repo HEAD
 `296210a`). Sampling 100 kS/s, 300 s, recording started shortly after the
-flash. Raw CSV: `notes/measurements/ppk-20261024T114909.csv` (448 MB, kept
-local, not in git). Plots with `firmware/tools/ppk-plot/ppk-plot.sh`:
+flash. Raw capture: [`notes/measurements/ppk-20261024T114909.ppkz`](../measurements/ppk-20261024T114909.ppkz)
+(packed from `ppk-20261024T114909.csv`, 448 MB, kept local, not in git;
+`ppk-archive.sh unpack` gives the CSV back). Plots with `firmware/tools/ppk-plot/ppk-plot.sh`:
 
 - full run: `notes/media/2026-10-24_deep-sleep_ppk2-A_full.png`
 - one second inside the first phase: `notes/media/2026-10-24_deep-sleep_ppk2-A_dcf-window-1s.png`
@@ -99,8 +100,8 @@ Setup as run A, plus the Nucleo generator on `P0.25` for the boot sync, then
 unplugged after the first minute burst (about 207 s). PPK2 output switched on
 at about 13 s into the recording. Whether the nRF actually reset there is not
 known: see "Supply toggle does not reset the nRF" below.
-100 kS/s, 400 s. Raw CSV: `notes/measurements/ppk-20261024T132153.csv` (kept
-local). Plots: `notes/media/2026-10-24_deep-sleep_ppk2-A2_full.png`,
+100 kS/s, 400 s. Raw capture: [`notes/measurements/ppk-20261024T132153.ppkz`](../measurements/ppk-20261024T132153.ppkz)
+(packed from `ppk-20261024T132153.csv`, kept local). Plots: `notes/media/2026-10-24_deep-sleep_ppk2-A2_full.png`,
 `…_A2_boot.png`, `…_A2_3s.png`.
 
 | Interval | Mean | What runs |
@@ -170,8 +171,8 @@ Firmware: commit `575150c` (no `CONFIG_GPIO_AS_PINRESET`), `make erase` first
 (UICR `PSELRESET[0..1]` read back `0xffffffff`), then `make SLEEP_UART=0 flash`.
 DK USB unplugged after flashing, PPK2 Source Meter 3.0 V on `P22`, logic `D0` on
 `P0.22` with logic `VCC` on the nRF side of `P22`, breadboard unplugged.
-100 kS/s, 210 s. Raw CSV: `notes/measurements/ppk-20261024T142752.csv` (kept
-local).
+100 kS/s, 210 s. Raw capture: [`notes/measurements/ppk-20261024T142752.ppkz`](../measurements/ppk-20261024T142752.ppkz)
+(packed from `ppk-20261024T142752.csv`, kept local).
 
 | Interval | Mean | What runs |
 | --- | --- | --- |
@@ -194,8 +195,8 @@ pins such as SWDIO, which has an internal pull-up.
 ## Run A4, separating the 1.19 mA — interface MCU is the load
 
 Same firmware and wiring as A3. One capture, 96 s at 100 kS/s, steps done by
-hand during the recording. Raw CSV: `notes/measurements/ppk-20261024T143919.csv`
-(kept local). Step times read from the current trace.
+hand during the recording. Raw capture: [`notes/measurements/ppk-20261024T143919.ppkz`](../measurements/ppk-20261024T143919.ppkz)
+(packed from `ppk-20261024T143919.csv`, kept local). Step times read from the current trace.
 
 | Interval | Mean | State |
 | --- | --- | --- |
