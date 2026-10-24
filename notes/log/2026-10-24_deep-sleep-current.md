@@ -226,3 +226,47 @@ Not in debug mode: that draws milliamps.
 Procedure that follows: flash; unplug USB; PPK2 output off, then on (real
 power-on, debug interface off); wait for init; plug USB back in; record. The
 next capture must run past 300 s to get the window-closed floor.
+
+## Run A5, nRF alone with the clock ticking — 0.81 µA idle
+
+Pin reset is back on (`c7edb52`), so the A4 procedure would hang in reset
+again. DK USB stays connected, as in the PPK2 user guide quick start. Power-on
+sequence: PPK2 output off and DK USB unplugged for about 10 s, USB plugged back
+in, then PPK2 output on at 3.0 V. Firmware `c7edb52`, `make SLEEP_UART=0`.
+Breadboard unplugged; Nucleo generator into `P0.25` (1 kΩ) for the boot sync,
+then unplugged. PPK2 logic `D0` on `P0.22`, `VCC` on the nRF side of `P22`,
+removed at about 421 s. Only the Power Profiler app open. 100 kS/s, 500 s.
+Raw capture: [`notes/measurements/ppk-20261024T151738.ppkz`](../measurements/ppk-20261024T151738.ppkz)
+(packed by `ppk-archive.sh pack`, 1.25 GB CSV to 13.8 MB, CSV kept local).
+
+| Interval | Mean | What runs |
+| --- | --- | --- |
+| 7.2-7.7 s | 2.3 mA, peak 30 mA | PPK2 output on: power-on, LFXO start |
+| 17.69 s | | `D0` rises: init done (10.5 s after power-on) |
+| 20-140 s | 4.24 µA | DCF window open, generator driving `DCF_OUT`, time not set |
+| 147.8-157.0 s | 3.28 mA | time set by the sync, redraw: 9.2 s `EPD_BUSY` timeout (no panel) |
+| 157.8 s on | | `D0` toggles every 1.000 s: clock ticking |
+| 165-205, 225-265, 285-325, 345-385 s | 0.805-0.826 µA | idle between minutes, window closed, logic port on |
+| 465-500 s | 0.820 µA | idle, logic port removed |
+| every 60.0 s from 207.8 s | 3.28-3.29 mA for 9.1 s | minute redraw, `EPD_BUSY` timeout (no panel) |
+
+- **Clock-running idle: 0.81 µA**, the mean of the idle windows. The 1 Hz tick
+  costs 0.30 µC per tick (peak 5.5 mA, averaged over 20-35 ticks at 165-200 s),
+  so 0.30 µA of the 0.81 µA. The rest, about 0.5 µA, matches run A's 0.58 µA
+  floor without ticks.
+- **Logic port share: none measurable** with USB in (0.805-0.826 µA before
+  removal, 0.820 µA after). The 100-150 µA in A4 belonged to the unpowered
+  interface MCU setup.
+- **DCF window open: 4.24 µA**, close to run A's 3.98 µA. That is 3.4 µA for the
+  GPIOTE IN channel on `DCF_OUT` while the receiver pin is driven.
+- **Minute redraw without a panel: 3.28 mA for 9.1 s**, about 500 µA averaged
+  over a minute; it dominates the whole-capture mean (440 µA for 160-500 s).
+  With a panel, BUSY falls after about 3 s and the real refresh is measured in
+  runs B and C. Open item: `wait_idle()` in `src/epd.c` calls `board_sleep()`
+  until BUSY falls or the deadline passes, yet the chip draws a flat 3.28 mA,
+  which looks like the CPU staying awake, not System ON sleep `[INFERENCE]`.
+  To check before run B.
+
+Not recorded yet for task 4.2: room temperature and PPK2 serial. The datasheet
+comparison waits for the nRF52832 Product Specification System ON + RTC figure,
+which was not reachable on 2026-10-24 (403).
