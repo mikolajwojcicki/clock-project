@@ -41,3 +41,12 @@ Consequence for run A: the leak needs `VDD_nRF` below DK `VDD`. With the
 PPK2 sourcing 3.0 V on `VDD_nRF` and DK `VDD` at ~3.0 V, the LED path has no
 forward voltage and should stop. Check during run A: the DK LEDs go dark once
 the PPK2 is on, unless firmware drives them.
+
+Run A, PPK2 at 3.0 V on P22: LED1, LED3 and LED4 go dark; LED2 stays dimly
+lit. LED2 has been dim since the start of the project, under every firmware.
+No project firmware touches P0.18 (LED2); `board_safe_state` leaves it as a
+disconnected input. P0.18 is also the SWO trace pin, which the PCA10040 routes
+to the interface MCU. Working explanation `[INFERENCE, not checked on the DK
+schematic]`: the interface MCU's SWO input sinks a small current from DK `VDD`
+through LED2. That path is DK `VDD` to the interface MCU and does not pass
+through `VDD_nRF`, so it is outside the run A reading.
