@@ -479,3 +479,41 @@ Reading:
   `SDA`/`SDO` wires were also swapped on the board `[INFERENCE]`.
 - 2.07 mA is still unexplained and is not on the LIS3DH. Next: run C5
   (display and DCF signal wires).
+
+### C5: unplugging display and DCF, then their signal wires
+
+[`ppk-20261025T210658.ppkz`](../measurements/ppk-20261025T210658.ppkz), 543 s
+recorded; packed window 180-543 s (full pack was 55 MB, over the 50 MB
+limit), so pack-relative time = table time - 180 s.
+LIS3DH fully removed (power and signal wires). Display and DCF powered and
+wired at the start, generator on. Steps follow the planned order (user
+confirmed); times read from the 1 s means, one change per idle window.
+
+| Window | State | Idle current | Step |
+| --- | --- | --- | --- |
+| 15-180 s | DCF receiver on | 2.42 mA | |
+| 195-235 s | Idle after sync (`D0` toggling from about 190 s) | 2.06 mA | baseline = C4 end |
+| 369-433 s | Display `VCC` off at 368 s | 2.25 mA | +0.18 mA |
+| 435-446 s | DCF `VDD` off at 434 s | 2.245 mA | -0.008 mA |
+| 448-479 s | Display wires `P0.03`, `P0.04`, `P0.11`, `P0.12` off by 447 s | 2.23 mA | -0.02 mA |
+| 490-539 s | `P0.28` (`EPD_RST`) off at 489 s | 2.0 µA | -2.22 mA |
+
+Reading:
+
+- `EPD_RST` carries the whole 2.07 mA. With it off, the board idles at about
+  2 µA, the nRF-only figure from A8. `P0.29`, `P0.24` and `P0.25` were not
+  needed.
+- The firmware drove `EPD_RST` high from the first refresh onward and never
+  released it (`src/epd.c`), so 3.0 V sat on the HAT `RST` input through
+  every idle period.
+- The current rose when display `VCC` went off, so the path does not need
+  the display rail: `RST` feeds the unpowered HAT and pulls more `[INFERENCE]`.
+  The user measured 19.0 kΩ on the HAT `RST` pin unpowered, which accounts for
+  only about 0.16 mA at 3.0 V; the rest of the path was not found.
+- Refreshes in this run took about 8 s at 6.8 mA (C2: about 19 s at 6.0 mA).
+- Fix: firmware `07dd2de` returns `EPD_RST` to the reset default (input,
+  buffer off, no pull) after every refresh. Not flashed yet; SWD cable
+  pending. Expected idle with display wired: about 2 µA plus the LIS3DH
+  share.
+- Open: the LIS3DH 1.8 mA from C4 (level-shifter pull-ups against `SCK` and
+  `MOSI` held low) still needs a fix.
