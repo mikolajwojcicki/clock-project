@@ -3,3 +3,6 @@ temp-resources/sdk-nrf-bm-docs
 temp-resources/sdk-nrf-docs
 # PPK2 CSV exports stay local; the packed .ppkz + .ppkz.json are tracked
 notes/measurements/ppk-*.csv
+
+# Nested scratch repo for agent research (own git repo)
+/scratch/
