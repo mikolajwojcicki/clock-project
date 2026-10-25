@@ -164,7 +164,7 @@ bool epd_show_test_pattern(void)
     return epd_refresh(test_pixel, NULL);
 }
 
-bool epd_refresh(epd_pixel_fn pixel, void *ctx)
+static bool refresh_panel(epd_pixel_fn pixel, void *ctx)
 {
     nrf_gpio_pin_set(EPD_RST);
     nrf_gpio_cfg_output(EPD_RST);
@@ -224,4 +224,14 @@ bool epd_refresh(epd_pixel_fn pixel, void *ctx)
     data(0x01);
     board_wait_ms(100);
     return true;
+}
+
+bool epd_refresh(epd_pixel_fn pixel, void *ctx)
+{
+    bool ok = refresh_panel(pixel, ctx);
+    /* Run C5 (2026-10-25): RST held high idled at 2.07 mA through the HAT,
+     * 2 uA with the wire pulled. Release it (input buffer off, no pull): the
+     * controller leaves deep sleep only on the next reset pulse anyway. */
+    nrf_gpio_cfg_default(EPD_RST);
+    return ok;
 }
