@@ -406,3 +406,76 @@ Reading:
   separated from idle; the mean-median gap of about 1.3 µA is probably the
   redraws. Idle windows are only 50-55 s long, so few redraws are included.
 - Accepted as is for now; no longer idle run planned.
+
+## 2026-10-25 — runs C2-C4: whole board on one measured rail
+
+Setup: breadboard `3V3` rail fed from PPK2 `VOUT` (source meter, 3.0 V), so
+nRF, display, LIS3DH and DCF receiver sit on one measured rail. DK USB
+plugged in, DK `P1 VDD` not connected to the breadboard. SB20, SB21, SB26,
+SB27 cut (A8). `D0` on `P0.22` (low in init, high after init, 1 Hz toggle
+after DCF sync). DCF generator: Nucleo, antenna next to the receiver.
+LIS3DH powered through breakout `3Vo` (the wiring docs say `VIN`; the board
+has been wired this way since the start). Bench photo:
+[`notes/media/2026-10-25_deep-sleep_ppk2-C.jpg`](../media/2026-10-25_deep-sleep_ppk2-C.jpg).
+All captures 100 kS/s, CSVs kept local.
+
+### C2: baseline
+
+[`ppk-20261025T195017.ppkz`](../measurements/ppk-20261025T195017.ppkz), 300 s.
+
+| Phase | Window | Current |
+| --- | --- | --- |
+| Boot init | 0-12 s | about 7.2 mA |
+| DCF receiver on | 12-135 s | 4.21 mA |
+| Idle after sync | 150-190 s | 3.87 mA (p1-p99 3.78-3.97) |
+| Minute refresh | about 19 s | mean 6.0 mA, peak 20-21 mA |
+
+Receiver cost: 4.21 - 3.87 = 0.34 mA. Idle is about 2000 times the nRF-only
+figure from A8, so the peripherals hold almost all of it.
+
+### C3: unplugging peripheral power
+
+[`ppk-20261025T201314.ppkz`](../measurements/ppk-20261025T201314.ppkz), 436 s.
+Unplug times from recording start: LIS3DH power 3:10, DCF `VDD` 5:10, display
+`VCC` 6:05.
+
+- LIS3DH power off: 3.87 → 2.08 mA (-1.8 mA).
+- DCF `VDD` off: no change. Display `VCC` off: -0.015 mA. 2.06 mA left.
+- Glitch: 230-288 s at about 11.8 mA (one refresh lasting about 55 s), 35 s
+  after the LIS3DH unplug. Cause not found; refreshes in this run took about
+  10 s against 19 s in C2, also not explained.
+
+The breakout power LED was checked against the Adafruit schematic (product
+2809 rev B): green LED + 10 kΩ from 3.3 V, about 0.1 mA at 3.0 V. It cannot
+explain 1.8 mA. Rev B also has a BSS138 level shifter with 10 kΩ pull-ups on
+both sides of `SCL` and `SDA`.
+
+### C4: unplugging LIS3DH signal wires, power kept
+
+[`ppk-20261025T204608.ppkz`](../measurements/ppk-20261025T204608.ppkz), 440 s.
+Wires pulled at the breakout end, one at a time in idle windows. The user
+swapped the planned order of `SDA` and `SDO` by accident, so the second pull
+was `SDO` and the third `SDA`. The recording ended before `CS`, `INT1` and
+power were pulled. Step times read from the 1 s means.
+
+| Window | State | Idle current | Step |
+| --- | --- | --- | --- |
+| 20-185 s | DCF receiver on, all wired | 4.23 mA | |
+| 200-285 s | Idle after sync (`D0` toggling from about 193 s) | 3.87 mA | baseline, same as C2 |
+| 288-305 s | `SCL` (SPI clock) pulled at 286 s | 3.30 mA | -0.57 mA |
+| 331-365 s | `SDO` (MISO) pulled at 329 s | 2.73 mA | -0.57 mA |
+| 397-425 s | `SDA` (MOSI) pulled at 395 s | 2.07 mA | -0.66 mA |
+
+Reading:
+
+- Three signal wires account for the whole 1.8 mA that C3 put on the LIS3DH;
+  with them off, idle equals the C3 end value with LIS3DH power removed. The
+  breakout itself (sensor, regulator, LED) draws little at idle.
+- About 0.6 mA per line at 3.0 V is about 5 kΩ to the rail, which matches two
+  10 kΩ level-shifter pull-ups in parallel on a line the nRF holds low
+  (`SCK` and `MOSI` are driven low between transfers in `src/spi_bus.c`)
+  `[INFERENCE]`. The `SDO` step is not explained by this: `MISO` is an nRF
+  input with no pull, so that line is driven from the breakout side, or the
+  `SDA`/`SDO` wires were also swapped on the board `[INFERENCE]`.
+- 2.07 mA is still unexplained and is not on the LIS3DH. Next: run C5
+  (display and DCF signal wires).
