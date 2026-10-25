@@ -322,3 +322,51 @@ The DK guide v3.x.x solder-bridge table documents the isolation: SB20/SB21
 SB27 (`P0.18`, SWO) are "Cut to isolate ... from nRF52832 to the interface
 MCU". Check before cutting: sweep the Source Meter 3.0 → 3.1 → 3.2 → 3.3 V
 during one idle capture; a strong voltage dependence confirms the coupling.
+
+## Run A7, live voltage sweep — coupling confirmed, no valid plateau
+
+Date 2026-10-25. Same setup and sequence as A5/A6 (DK USB connected, SB9 cut,
+Source Meter on `P22`, firmware `c7edb52`, no UART, pin reset on). PPK2 S/N
+`FACEF4EE8A0A`. Recording started with the output at 3.3 V, DCF generator into
+`P0.25` until the sync, then unplugged. Voltage stepped by hand during the
+recording; step times from the PPK2 app log (UTC, sampling started 16:48:49.3):
+3.2 V at 243.8 s, 3.1 V at 305.0 s, 3.0 V at 364.4 s, 2.9 V at 424.0 s.
+100 kS/s, 484 s. Raw capture: [`notes/measurements/ppk-20261025T165720.ppkz`](../measurements/ppk-20261025T165720.ppkz)
+(packed from the 1.23 GB CSV, CSV kept local). `D0` rises at 11.99 s, ticks
+start at 183.4 s (sync done about 173 s).
+
+Idle between minute redraws, windows chosen after each step settled and clear
+of the 9 s redraw bursts (35 s each, 1 Hz ticks included in the mean):
+
+| Source Meter | Mean | Median | Samples at 0 µA |
+| --- | --- | --- | --- |
+| 3.3 V, DCF window open (20-165 s) | 22.8 µA | 20.0 µA | 0 % |
+| 3.3 V | 16.3 µA | 14.9 µA | 0 % |
+| 3.2 V | 8.5 µA | 7.0 µA | 0 % |
+| 3.1 V | 2.5 µA | 1.1 µA | 0.6 % |
+| 3.0 V | 0.66 µA | 0.00 µA | 93 % |
+| 2.9 V | 0.30 µA | 0.00 µA | 97 % |
+
+Reading:
+
+- The idle current falls by about 8 µA per 0.1 V near 3.3 V and reaches zero by
+  3.0 V. The datasheet figure for the chip itself is about 2 µA and does not
+  depend on VDD like this, so the curve is a leakage path between `VDD_nRF` and
+  the USB-fed DK side, as proposed after A6. Coupling confirmed.
+- From about 3.0 V down the PPK2 reads 0 µA most of the time. The net current
+  into `VDD_nRF` is then negative or zero: the DK side supplies the chip
+  `[INFERENCE]: the PPK2 reads no negative current, so a zero is a clamp`.
+- No voltage gives a trustworthy nRF figure. Above about 3.1 V the reading is
+  the chip plus leakage out of the nRF rail, below it the reading is the chip
+  minus current fed in. The crossover is near 3.1 V, where 2.5 µA mean is close
+  to the expected 2 µA by coincidence, not by isolation. A5 (0.81 µA) and A6
+  (14.7 µA) are the two sides of this curve.
+- DCF window open costs about 6.5 µA over idle at 3.3 V (22.8 vs 16.3 µA, means),
+  more than the 3.4 µA seen at 3.0 V (A5); the extra is part of the same leak
+  with a driven `DCF_OUT` `[INFERENCE]`. Not usable as a window cost either.
+
+Decision: the DK cannot give the idle current while the interface MCU is wired
+to the nRF. Next step is cutting SB20-SB27 (SWDIO/SWDCLK, UART `P0.05`-`P0.08`,
+RESET `P0.21`, SWO `P0.18`) and repeating the idle capture at 3.0 V. After the
+cut, flash and reset need a different path (external SWD on the DK debug-out
+header, or SB re-bridged); to be decided before cutting.
