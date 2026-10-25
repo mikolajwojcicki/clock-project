@@ -56,18 +56,22 @@ Repo `/home/wenigz/clock-project`, OpenSpec change
   `breadboard-prototype-guide.md` say `VIN`; fix docs (or rewire to `VIN` —
   decide with user). `hardware/docs/perfboard-shield.md` line 45 specifies
   `VIN` with `3Vo` open.
-- Breakout power LED lights from either pin → prime suspect for the 1.8 mA
-  `[INFERENCE]`, not verified against Adafruit schematic. Perfboard keeps the
-  breakout, so plan is to **desolder the LED** (or its resistor) and note it
-  in `perfboard-shield.md`.
+- Breakout power LED: checked against Adafruit schematic (2026-10-25).
+  Rev B (STEMMA QT, 2020): green LED + 10 kΩ `R1G$4` from 3.3 V to GND,
+  isolated branch → desolder safe, but draws only ≈ 0.1 mA at 3.0 V, so it
+  cannot explain 1.8 mA. Rev A (2015) has no LED. Better suspects on rev B:
+  BSS138 level shifter with 10 kΩ pull-ups on both sides of `SCL`/`SDA`
+  (`R3G$1..4`, ~0.3 mA each while nRF holds SCK/MOSI low) and the AP2112K
+  back-fed through `3Vo` `[INFERENCE]`. Perfboard still keeps the breakout.
 - **2.07 mA still unexplained** with all peripherals unpowered but signal
   wires still on nRF pins. Suspect back-feed via ESD diodes / breakout
   pull-ups `[INFERENCE]`.
 
 ## Next actions (in order)
 
-1. User desolders LIS3DH breakout LED, re-records idle at 3.0 V, C wiring.
-   Pass: ~1.8 mA ± 0.3 mA drop vs 3.87 mA.
+1. With LIS3DH powered and idle, pull breakout `SCL` then `SDA` wires
+   (30 s each), watch idle current. Drop ≈ 0.5 mA per line → pull-ups are
+   the cause. Then desolder LED (expect ≈ 0.1 mA drop).
 2. Signal-wire unplug run (~8 min): after idle, unplug LIS3DH power, then
    30 s each: SPI (`P0.02/03/04`), CS/control (`P0.11/12/28/29/30`), then
    `P0.23/24/25/31`; keep `D0` on `P0.22`. The group where current drops to
