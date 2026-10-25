@@ -370,3 +370,39 @@ to the nRF. Next step is cutting SB20-SB27 (SWDIO/SWDCLK, UART `P0.05`-`P0.08`,
 RESET `P0.21`, SWO `P0.18`) and repeating the idle capture at 3.0 V. After the
 cut, flash and reset need a different path (external SWD on the DK debug-out
 header, or SB re-bridged); to be decided before cutting.
+
+## 2026-10-25 — run A8: idle after cutting SB20, SB21, SB26, SB27
+
+Setup: SB20, SB21, SB26 and SB27 cut on the DK (PCA10040 v3.0.1), following
+`scratch/sb-isolation-research/PLAN.md` (research branch, not tracked here).
+After the cut the on-board J-Link reports `cannot read IDR` (expected, SWD
+path open); the nRF kept its clock firmware, so no flashing was needed. DCF
+generator disconnected, `D0` on `P0.22` connected. Raw capture:
+[`notes/measurements/ppk-20261025T184005.ppkz`](../measurements/ppk-20261025T184005.ppkz)
+(CSV kept local), 100 kS/s, 430 s, PPK2 log next to it.
+
+Supply steps from the PPK2 log (capture starts 18:32:49): 3.0 V until
+18:35:42 (about 173 s), 3.3 V until 18:38:59 (about 370 s), 3.0 V to the end.
+The DCF sync was still running at the start, so 3.0 V covers the first window
+as well, but sync ended at about 310 s, so the 3.3 V segment has a sync part
+and an idle part.
+
+| Window | Supply | Median | Mean | Samples at 0 µA |
+| --- | --- | --- | --- | --- |
+| 0-170 s, DCF sync running | 3.0 V | 7.2 µA | 9.5 µA | 0 % |
+| 175-305 s, DCF sync running | 3.3 V | 8.2 µA | 10.8 µA | 0 % |
+| 315-365 s, idle | 3.3 V | 2.2 µA | 3.5 µA | 0 % |
+| 375-430 s, idle | 3.0 V | 0.68 µA | 2.0 µA | 4 % |
+
+Reading:
+
+- The cut removed most of the leak: idle at 3.3 V was 16.3 µA in A7 and is
+  3.5 µA mean here.
+- Some voltage dependence remains (3.5 µA at 3.3 V, 2.0 µA at 3.0 V, means).
+  SB22-SB25 (UART) are still bridged and are the next suspect `[INFERENCE]`.
+- Quote means, not medians: the 0.68 µA median is below the datasheet sleep
+  figure and PPK2 resolution is poor at this level.
+- `D0` has one edge only (rise at 11.3 s), so redraw bursts cannot be
+  separated from idle; the mean-median gap of about 1.3 µA is probably the
+  redraws. Idle windows are only 50-55 s long, so few redraws are included.
+- Accepted as is for now; no longer idle run planned.

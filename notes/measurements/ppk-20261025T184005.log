@@ -1,0 +1,6 @@
+2026-10-25T18:32:49.815Z INFO DUT ON
+2026-10-25T18:32:59.051Z DEBUG Creating temporary ppk session file sessionFile /tmp/065d924a-e211-4e6c-9890-736bf9ff69d2/session.raw
+2026-10-25T18:35:42.359Z INFO Voltage regulator updated to 3300 mV
+2026-10-25T18:38:59.712Z INFO Voltage regulator updated to 3000 mV
+2026-10-25T18:39:59.266Z DEBUG Sending event "ppk: StopSampling"
+2026-10-25T18:40:00.958Z INFO DUT OFF
