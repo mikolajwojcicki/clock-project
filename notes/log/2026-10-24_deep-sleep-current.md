@@ -547,3 +547,31 @@ Reading:
 
 - 20 motion events in about 6 s silenced the alarm, so the LIS3DH answers
   over SPI with the bus idling high, and INT1 wakes the CPU.
+
+### C6: idle with both fixes
+
+[`ppk-20261027T171805.ppkz`](../measurements/ppk-20261027T171805.ppkz), 300 s,
+packed whole (23.4 MB, verified). Setup as C2: one 3.0 V PPK2 rail, display,
+DCF receiver and LIS3DH powered and wired, `D0` on `P0.22`, generator on.
+IDC ribbon unplugged, PPK2 cycled off and on before the run. Recording
+started inside the DCF window after boot.
+
+| Phase | Window | Current |
+| --- | --- | --- |
+| DCF receiver on | 1-86 s | 1.076 mA |
+| Sync, then refresh | 87-97 s | 6.42 mA over 11 s |
+| Idle (4 windows between refreshes) | 99-146, 159-206, 219-266, 279-300 s | 735.4 µA (1 s means 733.8-736.9) |
+| Minute refresh | 147, 207, 267 s | 6.40 mA over 11 s, every 60 s |
+
+Reading:
+
+- Idle fell from 3.87 mA (C2) to 0.735 mA: -3.13 mA, about the 2.07 mA of
+  `EPD_RST` plus the `SCK`/`MOSI` share from C4. Both fixes work.
+- Receiver cost 1.076 - 0.735 = 0.34 mA, same as C2.
+- Remainder against the standby terms (A8 nRF about 2 µA, DCF receiver in
+  power-down, panel deep sleep, LIS3DH power-down, breakout LED about 0.1
+  mA): about 0.6 mA is not explained, far over the 10 µA target.
+- Suspect: `SCK` and `MOSI` now sit high into the display HAT inputs, the
+  same way `EPD_RST` did (design risk 1). C5 reached 2 µA only after the
+  display wires `P0.03`/`P0.04` were pulled as well, so C5 does not rule
+  this out. Next: C6b, pull them one at a time (task 2.4).
