@@ -627,11 +627,21 @@ Reading:
   `SCL`, `SDA`, `SDO` pulled) ended at 2.07 mA, equal to C3 with LIS3DH power
   removed, so the breakout drew about 0 mA. C2-C4 ran after the SB cuts too
   (A8), so the DK side does not explain the difference.
-- What changed: C2-C4 fed the breakout on `3Vo` (regulator bypassed). When
-  it was rewired today after C5 it went on `VIN` (user, 2026-10-27), so the
-  breakout's 3.3 V regulator now sits in the path. Fed 3.0 V, it runs below
-  its output voltage (dropout), where regulators often draw far more than
-  their rated quiescent current. That plus the power LED (about 0.1 mA)
-  can give 0.73 mA `[INFERENCE: regulator part and its dropout current not
-  checked]`. Test: move the supply back to `3Vo` and repeat the idle window.
+- C2-C4 fed the breakout on `3Vo`; C6c fed it on `VIN` (user,
+  2026-10-27). C6d tests whether that matters.
 - The 281-282 s blip matches a wire being pulled.
+
+### C6d: breakout fed on `3Vo`
+
+[`ppk-20261027T183047.ppkz`](../measurements/ppk-20261027T183047.ppkz), 10 s
+idle, packed whole (0.7 MB, verified). Same as C6c with everything wired, but
+the 3.0 V rail on breakout `3Vo` instead of `VIN` (user).
+
+- Idle 736.4 µA (1 s means 735.4-737.0), the same as on `VIN`. The supply
+  pin does not matter, so the breakout regulator in dropout is ruled out.
+- What is left: with only power connected (C6c last window), the breakout
+  draws 0.73 mA; on 2026-10-25 (C4) it drew about 0 mA in nearly the same
+  state. Either the breakout now draws this from power-up (damage, or a
+  different board), or the system puts the LIS3DH into a state that only a
+  power cycle clears. A breakout powered on its own, with nothing else
+  wired, separates the two.
