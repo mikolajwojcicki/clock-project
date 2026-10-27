@@ -18,6 +18,7 @@
 #include "lis3dh.h"
 #include "nrf.h"
 #include "nrf_gpio.h"
+#include "nrfx_gpiote.h"
 #include "spi_bus.h"
 
 /* Test number == DK button number. */
@@ -40,9 +41,8 @@ static const uint32_t button_pins[] = {DK_BUTTON1, DK_BUTTON2, DK_BUTTON3, DK_BU
 #define BUZZER_STEP_MS     500u
 #define BUZZER_GAP_MS      300u
 
-/* GPIOTE channels 0 to 3 are buttons 1 to 4. */
-#define GPIOTE_CH_INT1 4
-#define GPIOTE_CH_DCF  5
+/* nrfx_gpiote owns GPIOTE_IRQHandler: epd.c sleeps on the EPD_BUSY edge through
+ * it, so the buttons, INT1 and DCF use it too (7 of 8 IN channels at most). */
 
 static volatile uint8_t s_running;
 static volatile bool s_int1;
@@ -65,23 +65,57 @@ static bool is_continuous(uint8_t t)
     return t == TEST_LIS3DH || t == TEST_DCF77;
 }
 
-static void gpiote_in(uint32_t ch, uint32_t pin, uint32_t polarity)
+static void on_button_edge(uint32_t i);
+static void on_dcf_edge(void);
+
+static void on_gpiote(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
-    NRF_GPIOTE->CONFIG[ch] = (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos) |
-                             (pin << GPIOTE_CONFIG_PSEL_Pos) |
-                             (polarity << GPIOTE_CONFIG_POLARITY_Pos);
-    NRF_GPIOTE->EVENTS_IN[ch] = 0;
-    NRF_GPIOTE->INTENSET = 1u << ch;
+    (void)action;
+    if (pin == SENSOR_INT1)
+    {
+        s_int1 = true;
+        return;
+    }
+    if (pin == DCF_OUT)
+    {
+        on_dcf_edge();
+        return;
+    }
+    for (uint32_t i = 0; i < 4; i++)
+    {
+        if (pin == button_pins[i])
+        {
+            on_button_edge(i);
+        }
+    }
+}
+
+static void gpiote_in(uint32_t pin, nrf_gpiote_polarity_t sense, nrf_gpio_pin_pull_t pull)
+{
+    nrfx_gpiote_in_config_t cfg = NRFX_GPIOTE_CONFIG_IN_SENSE_TOGGLE(true);
+    cfg.sense = sense;
+    cfg.pull = pull;
+    if (nrfx_gpiote_in_init(pin, &cfg, on_gpiote) != NRFX_SUCCESS)
+    {
+        con_printf("GPIOTE: no channel for P0.%02lu\n", (unsigned long)pin);
+        return;
+    }
+    nrfx_gpiote_in_event_enable(pin, true);
+}
+
+static void gpiote_off(uint32_t pin)
+{
+    nrfx_gpiote_in_event_disable(pin);
+    nrfx_gpiote_in_uninit(pin);
 }
 
 static void buttons_init(void)
 {
+    (void)nrfx_gpiote_init();
     for (uint32_t i = 0; i < 4; i++)
     {
-        nrf_gpio_cfg_input(button_pins[i], NRF_GPIO_PIN_PULLUP);
-        gpiote_in(i, button_pins[i], GPIOTE_CONFIG_POLARITY_Toggle);
+        gpiote_in(button_pins[i], NRF_GPIOTE_POLARITY_TOGGLE, NRF_GPIO_PIN_PULLUP);
     }
-    NVIC_EnableIRQ(GPIOTE_IRQn);
 }
 
 static void on_button_edge(uint32_t i)
@@ -127,35 +161,6 @@ static void on_dcf_edge(void)
         }
         s_dcf_width_ms = now - s_dcf_start_ms;
         s_dcf_pulse = true;
-    }
-}
-
-static void gpiote_off(uint32_t ch)
-{
-    NRF_GPIOTE->INTENCLR = 1u << ch;
-    NRF_GPIOTE->CONFIG[ch] = 0;
-    NRF_GPIOTE->EVENTS_IN[ch] = 0;
-}
-
-void GPIOTE_IRQHandler(void)
-{
-    for (uint32_t ch = 0; ch < 4; ch++)
-    {
-        if (NRF_GPIOTE->EVENTS_IN[ch])
-        {
-            NRF_GPIOTE->EVENTS_IN[ch] = 0;
-            on_button_edge(ch);
-        }
-    }
-    if (NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_INT1])
-    {
-        NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_INT1] = 0;
-        s_int1 = true;
-    }
-    if (NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_DCF])
-    {
-        NRF_GPIOTE->EVENTS_IN[GPIOTE_CH_DCF] = 0;
-        on_dcf_edge();
     }
 }
 
@@ -225,9 +230,8 @@ static void run_lis3dh(void)
     con_printf("identification passed; move the board (button 2 or 60 s stops)\n");
 
     /* Pull-down: a missing INT1 wire gives no events instead of noise. */
-    nrf_gpio_cfg_input(SENSOR_INT1, NRF_GPIO_PIN_PULLDOWN);
     s_int1 = false;
-    gpiote_in(GPIOTE_CH_INT1, SENSOR_INT1, GPIOTE_CONFIG_POLARITY_LoToHi);
+    gpiote_in(SENSOR_INT1, NRF_GPIOTE_POLARITY_LOTOHI, NRF_GPIO_PIN_PULLDOWN);
     lis3dh_motion_int1_enable();
 
     uint32_t events = 0;
@@ -249,7 +253,7 @@ static void run_lis3dh(void)
         }
     }
 
-    gpiote_off(GPIOTE_CH_INT1);
+    gpiote_off(SENSOR_INT1);
     lis3dh_power_down();
 
     snprintf(reason, sizeof reason, "%lu INT1 events (%s)", (unsigned long)events,
@@ -263,11 +267,10 @@ static void run_dcf77(void)
 
     con_printf("connect OUT to P0.25 only after its level was measured;\n"
                "with OUT unconnected, invalid pulses or none are expected\n");
-    nrf_gpio_cfg_input(DCF_OUT, DCF_OUT_PULL);
     s_dcf_pulse = false;
     s_dcf_have_start = false;
     s_dcf_overruns = 0;
-    gpiote_in(GPIOTE_CH_DCF, DCF_OUT, GPIOTE_CONFIG_POLARITY_Toggle);
+    gpiote_in(DCF_OUT, NRF_GPIOTE_POLARITY_TOGGLE, DCF_OUT_PULL);
 
     nrf_gpio_pin_clear(DCF_PON);
     con_printf("receiver enabled (PON low); button 3 or 10 min stops\n");
@@ -311,7 +314,7 @@ static void run_dcf77(void)
         }
     }
 
-    gpiote_off(GPIOTE_CH_DCF);
+    gpiote_off(DCF_OUT);
 
     char reason[112];
     snprintf(reason, sizeof reason,

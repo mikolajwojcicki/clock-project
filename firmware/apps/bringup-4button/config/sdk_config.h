@@ -23,6 +23,11 @@
 /* The old register code left MISO without a pull. */
 #define NRFX_SPIM_MISO_PULL_CFG 0
 
+/* nrfx_gpiote: buttons, LIS3DH INT1, DCF OUT and the EPD_BUSY wait in epd.c. */
+#define NRFX_GPIOTE_ENABLED 1
+#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 4
+#define NRFX_GPIOTE_CONFIG_IRQ_PRIORITY 6
+
 /* Console: app_uart on UARTE, same stack as the clock app. */
 #ifndef NRFX_PRS_ENABLED
 #define NRFX_PRS_ENABLED 1
