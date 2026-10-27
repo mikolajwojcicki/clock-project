@@ -575,3 +575,30 @@ Reading:
   same way `EPD_RST` did (design risk 1). C5 reached 2 µA only after the
   display wires `P0.03`/`P0.04` were pulled as well, so C5 does not rule
   this out. Next: C6b, pull them one at a time (task 2.4).
+
+### C6b: display wires pulled at the HAT end
+
+[`ppk-20261027T174256.ppkz`](../measurements/ppk-20261027T174256.ppkz),
+recording time 177-325 s packed (148 s, 11.2 MB, verified). Same setup as C6.
+The user pulled `CLK` (`P0.03`), `DIN` (`P0.04`) and `RST` (`P0.28`) at the
+HAT end, one per idle window, LIS3DH left wired.
+
+| Window | Idle current |
+| --- | --- |
+| 188-236 s | 735.8 µA |
+| 248-296 s | 735.1 µA |
+| 306-324 s | 734.9 µA |
+
+Reading:
+
+- No step at any pull: 1 s means stay within 733.8-737.5 µA. The display
+  inputs carry none of the remaining 0.73 mA.
+- The refresh at 297 s lost its 7.8 mA bump and ended about 2 s early, which
+  fits a panel with no clock or data: the pulls had taken effect by then.
+- Buzzer: its `+` sits on DK `5V` (USB), with `P0.31` holding the NPN off.
+  That path is off the PPK2 rail and leaks only nA through the off
+  transistor. Current fed from 5 V into the 3.0 V rail would lower the PPK2
+  reading, not raise it. It does not explain 0.73 mA `[INFERENCE]`.
+- Left: the LIS3DH. C5 reached 2 µA only with it removed, and in C4 the
+  third pull (the `MISO` wire, after the `SDA`/`SDO` swap) was worth
+  0.66 mA, close to what is left. Next: C6c, pull at the breakout end.
