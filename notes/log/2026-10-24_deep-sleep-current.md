@@ -645,3 +645,23 @@ the 3.0 V rail on breakout `3Vo` instead of `VIN` (user).
   different board), or the system puts the LIS3DH into a state that only a
   power cycle clears. A breakout powered on its own, with nothing else
   wired, separates the two.
+
+### Breakout check, open (2026-10-27)
+
+The user powered the breakout alone and confirmed it draws the current
+itself (no capture). Bound from the LIS3DH datasheet (`temp-resources/lis3dh.pdf`,
+Table 12 and the `IddPdn` row): 0.5 µA in power-down, 185 µA at most in any
+mode (1.344 kHz normal/HR, 5.376 kHz low-power). So at least about 0.55 mA
+flows through other parts of the breakout. To check against the Adafruit
+2809 schematic and part datasheets:
+
+- power LED and its resistor (about 0.1 mA at 3.0 V per the C3 reading);
+- the regulator, both fed on `VIN` (forward) and on `3Vo` (back-fed);
+- the BSS138 level shifter and its 10 kΩ pull-ups on both sides;
+- pull-ups on `SDO` and `CS`, and anything tied to `INT1`/`INT2`;
+- any part between the rails that can conduct when a pin floats.
+
+C4 (2026-10-25) saw about 0 mA for the powered breakout in nearly the same
+state, so something on the board changed since then: a damaged part
+(the board was moved for C5 and rewired today), or a solder bridge or
+debris across pins.
