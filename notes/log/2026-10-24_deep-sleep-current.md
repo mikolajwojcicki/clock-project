@@ -665,3 +665,17 @@ C4 (2026-10-25) saw about 0 mA for the powered breakout in nearly the same
 state, so something on the board changed since then: a damaged part
 (the board was moved for C5 and rewired today), or a solder bridge or
 debris across pins.
+
+#### Schematic and datasheet check (Adafruit LIS3DH rev B, 2020-01-06)
+
+Docs in `temp-resources/lis3dh-breakout/`. Expected standby draw of the
+breakout alone at 3.0 V: LIS3DH power-down 0.5 µA, AP2112K-3.3 `IQ` 55 µA
+typ / 80 µA max (only when fed on `VIN`), green "ON" LED with 10 kΩ from
+3.3 V at most 0.1 mA. Total at most about 0.18 mA, against 0.73 mA measured.
+`SDO` has a 10 kΩ pull-down (address 0x18, `SJ1` open), so it should read
+about 0 V.
+
+Multimeter, breakout powered alone: `SDO` about 1.12 V (user). That is
+about 0.11 mA into the pull-down, so something feeds `SDO` through
+roughly 17 kΩ, and the LIS3DH `SA0` input sits between its logic levels,
+where CMOS inputs can draw cross-conduction current `[INFERENCE]`.
