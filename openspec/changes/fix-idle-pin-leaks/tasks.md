@@ -3,7 +3,7 @@
 ## 1. Firmware
 
 - [x] 1.1 Release `EPD_RST` after every refresh in `firmware/src/epd.c` (`07dd2de`). Verify: `make` and `make SLEEP_UART=0` in `firmware/apps/clock/armgcc` build.
-- [x] 1.2 In `firmware/src/spi_bus.c` drive `SCK` and `MOSI` high in `spi_bus_init` and again after `nrfx_spim_uninit` in `spi_bus_transfer`; update the comments there. Verify: `make` and `make SLEEP_UART=0` build for `apps/clock`, and `make` builds for `apps/bringup` and `apps/bringup-4button`. Result 2026-10-27: clock builds both ways. Both bringup apps compile `spi_bus.c` but fail to link on `nrfx_gpiote_in_*` from `epd.c`. This break predates the change (`a0ad997` moved `wait_idle` to nrfx_gpiote; the bringup apps drive GPIOTE registers directly and own `GPIOTE_IRQHandler`). Out of scope here.
+- [x] 1.2 In `firmware/src/spi_bus.c` drive `SCK` and `MOSI` high in `spi_bus_init` and again after `nrfx_spim_uninit` in `spi_bus_transfer`; update the comments there. Verify: `make` and `make SLEEP_UART=0` in `firmware/apps/clock/armgcc` build, and `make` in both bringup apps builds. Note 2026-10-27: both bringup apps failed to link on `nrfx_gpiote_in_*` from `epd.c`, a break from `a0ad997`. Fixed in `f1d4d5d` (bringup apps ported to nrfx_gpiote); all four builds now pass.
 - [x] 1.3 Commit 1.2 on its own (`firmware:` prefix), body citing C4.
 
 ## 2. Bench check (needs the external SWD cable)
