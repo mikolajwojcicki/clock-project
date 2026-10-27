@@ -717,9 +717,18 @@ its power-up defaults.
   target. C6c showed that removing breakout power takes idle to 2.0 µA, so
   the remainder is the breakout's own standby: regulator `IQ` (55 µA typ)
   and the "ON" LED with its 10 kΩ resistor `[INFERENCE]`. Not yet split.
-- Split (user, multimeter, board idle): breakout fed on `VIN` at 3.0 V,
-  2.2 V across the "ON" LED. `3Vo` reads about 3.0 V (regulator in
-  dropout), so the 10 kΩ resistor sees about 0.8 V: LED about 80 µA. The
-  rest, about 68 µA, is the AP2112K `IQ` (55 µA typ, 80 µA max)
-  `[INFERENCE]`. The earlier guess that a green LED barely conducts at
-  3.0 V was wrong.
+- Split attempt (user, multimeter): the LED reading is not reliable, the
+  probe cannot reach the LED pads without touching the resistor next to
+  it. No LED/regulator split from it.
+- Breakout fed on `3Vo` instead of `VIN`, `VIN` open: idle still 150 µA.
+- With the breakout supply wire pulled and the signal wires still on, the
+  "ON" LED stays lit: the nRF drives `SCK`/`MOSI` high (fix-idle-pin-leaks
+  1.2) and powers the breakout through the 10 kΩ level-shifter pull-ups.
+  The same path feeds an open `VIN`, so the `3Vo` test does not bypass the
+  regulator `[INFERENCE]`. The back-feed does not cost extra current with
+  the breakout powered: both ends sit at 3.0 V.
+- So with signal wires on, neither pulling power nor moving it to `3Vo`
+  isolates a part. C6c (signal wires pulled first, then power: 2.0 µA)
+  remains the clean bound: the about 148 µA is breakout standby (regulator
+  `IQ` and "ON" LED). The custom PCB uses a bare LIS3DH, so neither part
+  is on it.
