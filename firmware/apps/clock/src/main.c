@@ -449,6 +449,7 @@ int main(void)
     con_init();
     board_time_init();
     spi_bus_init();
+    lis3dh_power_down();
     clock_set(&s_time, 2000, 1, 1, 0, 0, 0);
 
     con_printf("clock-project clock " BUILD_ID "\n");

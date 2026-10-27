@@ -679,3 +679,20 @@ Multimeter, breakout powered alone: `SDO` about 1.12 V (user). That is
 about 0.11 mA into the pull-down, so something feeds `SDO` through
 roughly 17 kΩ, and the LIS3DH `SA0` input sits between its logic levels,
 where CMOS inputs can draw cross-conduction current `[INFERENCE]`.
+
+Follow-up measurements, breakout powered alone (user):
+
+- `SDO` shorted to GND: 263 µA, down from 0.73 mA.
+- Unpowered: `SDO`-GND 10 kΩ, `SDO`-`VIN` and `SDO`-`3Vo` over 1 MΩ,
+  `SDO`-`INT1` over 10 MΩ. No leak path on the board; `SJ1` is open.
+- Powered: `SCL`, `SDA`, `CS` and `3Vo` 3 V, `INT1`/`INT2` 0 V.
+
+Cause: the LIS3DH has its own pull-up on `SDO/SA0`, connected by default
+(`CTRL_REG0` bit `SDO_PU_DISC` = 0, datasheet Table 26). Against the 10 kΩ
+pull-down it gives 1.12 V, which fits an internal pull-up of about 17 kΩ.
+The firmware never wrote `CTRL_REG0`, and the clock app did not touch the
+LIS3DH at boot, so after every power-up `SA0` sat between logic levels.
+Fix: `lis3dh_power_down` writes `CTRL_REG0 = 0x90`, and the clock app
+calls it at boot. Expected breakout idle with the fix: under about 0.1 mA
+(regulator `IQ` on `VIN` plus the LED). Still unexplained: why C4 did not
+see this current.

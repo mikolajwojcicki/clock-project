@@ -4,6 +4,7 @@
 #include "spi_bus.h"
 
 #define REG_WHO_AM_I   0x0F
+#define REG_CTRL0      0x1E
 #define REG_CTRL1      0x20
 #define REG_CTRL2      0x21
 #define REG_CTRL3      0x22
@@ -58,6 +59,10 @@ uint8_t lis3dh_int1_source(void)
 
 void lis3dh_power_down(void)
 {
+    /* SDO_PU_DISC: the internal SDO/SA0 pull-up (default on) fights the
+     * breakout's 10 kOhm pull-down; SDO then idles at ~1.1 V and the breakout
+     * draws ~0.7 mA (run C6c, 2026-10-27). Bits 0-6 must stay 0010000. */
+    wr(REG_CTRL0, 0x90);
     wr(REG_INT1_CFG, 0x00);
     wr(REG_CTRL3, 0x00);
     wr(REG_CTRL1, 0x00);

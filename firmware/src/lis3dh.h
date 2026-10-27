@@ -19,6 +19,7 @@ void lis3dh_motion_int1_enable(void);
 /** Read INT1_SRC; this also releases the latched INT1 line. */
 uint8_t lis3dh_int1_source(void);
 
+/** Power-down mode, INT1 off, internal SDO/SA0 pull-up disconnected. */
 void lis3dh_power_down(void);
 
 #endif
