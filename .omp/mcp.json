@@ -2,6 +2,33 @@
     "mcpServers": {
         "Saleae Logic 2": {
             "url": "http://127.0.0.1:10530"
+        },
+        "overleaf": {
+            "command": "uv",
+            "args": [
+                "--no-cache",
+                "--directory",
+                "/opt/repos/overleaf-mcp-server",
+                "run",
+                "python",
+                "-m",
+                "src.main"
+                ],
+            "env": {
+                "OVERLEAF_TOKEN": "",
+                "PROJECT_ID": "6a5d22821d4854c9755706fd"
+            }
+        },
+        "filesystem": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "--prefer-online",
+                "--cache",
+                "/tmp/empty-cache",
+                "@modelcontextprotocol/server-filesystem",
+                "./"
+            ]
         }
     }
 }
