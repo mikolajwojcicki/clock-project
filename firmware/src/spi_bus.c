@@ -6,13 +6,20 @@
 
 static const nrfx_spim_t s_spim = NRFX_SPIM_INSTANCE(0);
 
+/* Run C4 (2026-10-25): SCK and MOSI held low between transfers sank about
+ * 0.57 mA each into the LIS3DH breakout pull-ups (Adafruit 2809). Idle them
+ * high instead: never undefined, and no current with the peripherals powered. */
+static void bus_idle_high(void)
+{
+    nrf_gpio_pin_set(SPI_SCK);
+    nrf_gpio_cfg_output(SPI_SCK);
+    nrf_gpio_pin_set(SPI_MOSI);
+    nrf_gpio_cfg_output(SPI_MOSI);
+}
+
 void spi_bus_init(void)
 {
-    /* Idle levels between transfers. nrfx_spim_init sets them again per transfer. */
-    nrf_gpio_pin_clear(SPI_SCK);
-    nrf_gpio_cfg_output(SPI_SCK);
-    nrf_gpio_pin_clear(SPI_MOSI);
-    nrf_gpio_cfg_output(SPI_MOSI);
+    bus_idle_high();
     nrf_gpio_cfg_input(SPI_MISO, NRF_GPIO_PIN_NOPULL);
 }
 
@@ -20,9 +27,10 @@ void spi_bus_transfer(uint32_t cs_pin, uint8_t mode,
                       const uint8_t *tx, size_t tx_len,
                       uint8_t *rx, size_t rx_len)
 {
-    /* The SPIM is enabled only for one transfer, as before, and nrfx_spim_init
-     * drives SCK to the idle level of this mode before it enables the peripheral.
-     * CS is a plain GPIO: two devices with different CS pins share the bus. */
+    /* The SPIM is enabled only for one transfer. nrfx_spim_init drives SCK to
+     * the idle level of this mode while every CS is still high, so the mode 0
+     * falling edge clocks no device. CS is a plain GPIO: two devices with
+     * different CS pins share the bus. */
     const nrfx_spim_config_t cfg = {
         .sck_pin        = SPI_SCK,
         .mosi_pin       = SPI_MOSI,
@@ -47,4 +55,6 @@ void spi_bus_transfer(uint32_t cs_pin, uint8_t mode,
     (void)nrfx_spim_xfer(&s_spim, &xfer, 0);
     nrf_gpio_pin_set(cs_pin);
     nrfx_spim_uninit(&s_spim);
+    /* uninit resets only MISO; SCK and MOSI stay outputs at their last level. */
+    bus_idle_high();
 }
