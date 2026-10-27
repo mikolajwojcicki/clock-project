@@ -694,8 +694,8 @@ The firmware never wrote `CTRL_REG0`, and the clock app did not touch the
 LIS3DH at boot, so after every power-up `SA0` sat between logic levels.
 Fix: `lis3dh_power_down` writes `CTRL_REG0 = 0x90`, and the clock app
 calls it at boot. Expected breakout idle with the fix: under about 0.1 mA
-(regulator `IQ` on `VIN` plus the LED). Still unexplained: why C4 did not
-see this current.
+(regulator `IQ` on `VIN` plus the LED). Why C4 did not see this current
+is unknown (see C6f).
 
 ### C6e: SDO pull-up disconnected (`53ccb2c`)
 
@@ -730,8 +730,8 @@ its power-up defaults.
 - So with signal wires on, neither pulling power nor moving it to `3Vo`
   isolates a part. C6c (signal wires pulled first, then power: 2.0 µA)
   remains the clean bound: the about 148 µA is breakout standby (regulator
-  `IQ` and "ON" LED). The custom PCB uses a bare LIS3DH, so neither part
-  is on it.
+  `IQ` and "ON" LED). The protoboard build uses the same breakout, so both
+  parts are in its budget.
 
 ### C6f: breakout "ON" LED desoldered
 
@@ -748,6 +748,9 @@ LED removed by the user.
 - LED share: 150.2 - 74.7 = 75.5 µA.
 - Remainder over the nRF alone (A8, 2 µA): about 73 µA, within the AP2112K
   `IQ` range (55 µA typ, 80 µA max). Taken as the breakout regulator.
-- Accepted (user, 2026-10-27) as the floor for the breadboard build. The
-  custom PCB has no breakout regulator or LED, but has its own AP2112K-3.3
-  as the system regulator.
+- Accepted (user, 2026-10-27) as the idle floor. The project moved from a
+  custom PCB to a protoboard that uses the same breakout, so the breakout
+  regulator stays in the final budget; the LED is removed.
+- Unknown: why C4 (2026-10-25) saw about 0 mA for the powered breakout
+  while C6c-C6e saw the `SDO` pull-up current. Possibly a wire not seated
+  or a misaligned step; not reproducible now.
