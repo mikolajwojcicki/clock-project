@@ -717,3 +717,9 @@ its power-up defaults.
   target. C6c showed that removing breakout power takes idle to 2.0 µA, so
   the remainder is the breakout's own standby: regulator `IQ` (55 µA typ)
   and the "ON" LED with its 10 kΩ resistor `[INFERENCE]`. Not yet split.
+- Split (user, multimeter, board idle): breakout fed on `VIN` at 3.0 V,
+  2.2 V across the "ON" LED. `3Vo` reads about 3.0 V (regulator in
+  dropout), so the 10 kΩ resistor sees about 0.8 V: LED about 80 µA. The
+  rest, about 68 µA, is the AP2112K `IQ` (55 µA typ, 80 µA max)
+  `[INFERENCE]`. The earlier guess that a green LED barely conducts at
+  3.0 V was wrong.
