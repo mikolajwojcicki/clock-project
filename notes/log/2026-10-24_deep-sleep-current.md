@@ -517,3 +517,33 @@ Reading:
   share.
 - Open: the LIS3DH 1.8 mA from C4 (level-shifter pull-ups against `SCK` and
   `MOSI` held low) still needs a fix.
+
+## 2026-10-27 — run C6: fixed firmware, whole board
+
+### Before the run: flash and function check
+
+- External SWD: 10-pin IDC ribbon from DK `P19` (Debug out) to `P18`
+  (Debug in), PPK2 source meter on `VDD_nRF`. The first try read
+  `SWD DPIDR 0x00000000` with the PPK2 output off (target unpowered);
+  with it on, `0x2ba01477` and flashing worked. The ribbon pin 1 joins the
+  interface-MCU domain to `VDD_nRF`, so it comes off before any current run.
+- Firmware `a762be5` (adds the `SCK`/`MOSI` idle-high fix to `07dd2de`).
+  `SLEEP_UART=0` build: with the DCF generator next to the antenna, the
+  clock synced and the panel redrew every minute (task 2.1). Without a sync
+  the panel never changes, because the clock does not run until the time
+  is set.
+- UART build, LIS3DH rewired: the clock app does not read `WHO_AM_I`, so the
+  SPI path is checked through the motion dismiss. Alarm set over UART for
+  18:03, board shaken, no button pressed:
+
+```text
+[18:03:00] ALARM 18:03 wtorek
+[18:03:02] dcf: rejected pulse (time unchanged 2026-10-27 18:03:02)
+[18:03:04] MOTION event 1
+  ... (INT1 edges; the counter rises once per debounced event)
+[18:03:10] MOTION event 20 (stop)
+[18:03:10] ALARM stop (motion)
+```
+
+- 20 motion events in about 6 s silenced the alarm, so the LIS3DH answers
+  over SPI with the bus idling high, and INT1 wakes the CPU.

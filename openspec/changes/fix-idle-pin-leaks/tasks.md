@@ -9,7 +9,7 @@
 ## 2. Bench check (needs the external SWD cable)
 
 - [x] 2.1 Flash the `SLEEP_UART=0` clock build with OpenOCD through the external probe. Verify: the panel shows the time and changes at the next minute. Done 2026-10-27 with `a762be5`: IDC ribbon P19 to P18, PPK2 powering `VDD_nRF`; DCF generator synced the clock, panel redrew each minute.
-- [ ] 2.2 With a UART build, check the LIS3DH: the clock starts with no `WHO_AM_I` failure, and an alarm is silenced by motion. Verify: UART text saved in the C6 log entry.
+- [x] 2.2 With a UART build, check the LIS3DH: the clock starts with no `WHO_AM_I` failure, and an alarm is silenced by motion. Verify: UART text saved in the C6 log entry. Done 2026-10-27: the clock app has no `WHO_AM_I` read, so SPI is proven by the motion dismiss (20 events, `ALARM stop (motion)`), logged under C6.
 - [ ] 2.3 Run C6: one 3.0 V PPK2 rail, display, DCF receiver and LIS3DH powered and wired, `D0` on `P0.22`, at least 60 s idle between minute refreshes after the DCF window. Pack it with `firmware/tools/ppk-plot/ppk-archive.sh pack` (under 50 MB, use `--from/--to` if needed). Verify: the pack command reports `verified`.
 - [ ] 2.4 Add a C6 section to `notes/log/2026-10-24_deep-sleep-current.md`: setup, idle mean, the standby terms (A8 nRF figure, DCF receiver in power-down, panel deep sleep, LIS3DH power-down, breakout LED and regulator) and the remainder. If the remainder is over 10 µA, unplug `P0.03`, `P0.04`, `P0.28` one at a time and log the steps. Verify: the remainder is within 10 µA, or the open leak is named in the log.
 - [ ] 2.5 Commit the capture and the log entry (`thesis:` prefix).
