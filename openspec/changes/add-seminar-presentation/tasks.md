@@ -20,9 +20,9 @@
 
 ## 4. Verify
 
-- [ ] 4.1 Push the submodule; wait for the CI run (`gh run watch`), fix failures from `gh run view --log-failed`, repeat.
-- [ ] 4.2 Download both artifacts with `gh run download -R mikolajwojcicki/clock-project-latex -n presentation-pdf` and `-n thesis-pdf`; confirm `presentation.pdf` has 11 or fewer pages and `main.pdf` still builds.
-- [ ] 4.3 Render pages to PNG (pdf_render_pages) and check: Polish diacritics, photos visible, no overflow, readable at projector size.
+- [x] 4.1 Push the submodule; wait for the CI run (`gh run watch`), fix failures from `gh run view --log-failed`, repeat.
+- [x] 4.2 Download both artifacts with `gh run download -R mikolajwojcicki/clock-project-latex -n presentation-pdf` and `-n thesis-pdf`; confirm `presentation.pdf` has 11 or fewer pages and `main.pdf` still builds.
+- [x] 4.3 Render pages to PNG (pdf_render_pages) and check: Polish diacritics, photos visible, no overflow, readable at projector size.
 
 ## 5. Parent repo
 
