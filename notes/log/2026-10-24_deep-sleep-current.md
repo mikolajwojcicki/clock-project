@@ -625,12 +625,13 @@ Reading:
   enters through the breakout supply pin and does not depend on any wire.
 - This disagrees with C4. There the same state (power, `CS`, `INT1` wired;
   `SCL`, `SDA`, `SDO` pulled) ended at 2.07 mA, equal to C3 with LIS3DH power
-  removed, so the breakout drew about 0 mA. Something changed on the
-  breakout side since 2026-10-25: the LIS3DH was removed for C5 and
-  rewired today.
-- The LIS3DH chip itself draws at most about 0.2 mA in any mode (datasheet
-  table, highest data rate), and the power LED about 0.1 mA, so most of
-  0.73 mA sits elsewhere on the breakout `[INFERENCE]`. Since C2 the breakout
-  has been fed on `3Vo` (regulator output), against the `VIN` in the wiring
-  docs; a back-fed regulator is the next suspect `[INFERENCE]`.
+  removed, so the breakout drew about 0 mA. C2-C4 ran after the SB cuts too
+  (A8), so the DK side does not explain the difference.
+- What changed: C2-C4 fed the breakout on `3Vo` (regulator bypassed). When
+  it was rewired today after C5 it went on `VIN` (user, 2026-10-27), so the
+  breakout's 3.3 V regulator now sits in the path. Fed 3.0 V, it runs below
+  its output voltage (dropout), where regulators often draw far more than
+  their rated quiescent current. That plus the power LED (about 0.1 mA)
+  can give 0.73 mA `[INFERENCE: regulator part and its dropout current not
+  checked]`. Test: move the supply back to `3Vo` and repeat the idle window.
 - The 281-282 s blip matches a wire being pulled.
