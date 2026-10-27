@@ -28,4 +28,4 @@
 
 - [x] 5.1 Add `notes/log/2026-10-27_seminar-presentation.md` from `notes/TEMPLATE.md` (what was done, what failed, why Beamer stock theme, CI-only build).
 - [x] 5.2 Add a `notes/ai-use.md` entry for the AI-drafted slide text; remind the author to rewrite it in their own words before presenting.
-- [ ] 5.3 Commit the submodule pointer bump (`thesis:` prefix), then the notes as a separate commit.
+- [x] 5.3 Commit the submodule pointer bump (`thesis:` prefix), then the notes as a separate commit.
