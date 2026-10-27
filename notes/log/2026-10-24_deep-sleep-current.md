@@ -732,3 +732,22 @@ its power-up defaults.
   remains the clean bound: the about 148 µA is breakout standby (regulator
   `IQ` and "ON" LED). The custom PCB uses a bare LIS3DH, so neither part
   is on it.
+
+### C6f: breakout "ON" LED desoldered
+
+[`ppk-20261027T204538.ppkz`](../measurements/ppk-20261027T204538.ppkz),
+window 192-372 s packed (181 s, 15.6 MB, verified; pack-relative time =
+table time - 192 s). Same setup as C6e, breakout on `VIN`, with the "ON"
+LED removed by the user.
+
+| Phase | Window | Current |
+| --- | --- | --- |
+| Minute refresh | 11 s each at 192, 252, 312 s | 5.4-5.5 mA mean |
+| Idle between refreshes | 203-251, 263-311, 323-372 s | **74.7 µA** (1 s means 74.5-74.8) |
+
+- LED share: 150.2 - 74.7 = 75.5 µA.
+- Remainder over the nRF alone (A8, 2 µA): about 73 µA, within the AP2112K
+  `IQ` range (55 µA typ, 80 µA max). Taken as the breakout regulator.
+- Accepted (user, 2026-10-27) as the floor for the breadboard build. The
+  custom PCB has no breakout regulator or LED, but has its own AP2112K-3.3
+  as the system regulator.
