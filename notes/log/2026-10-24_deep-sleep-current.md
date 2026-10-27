@@ -696,3 +696,24 @@ Fix: `lis3dh_power_down` writes `CTRL_REG0 = 0x90`, and the clock app
 calls it at boot. Expected breakout idle with the fix: under about 0.1 mA
 (regulator `IQ` on `VIN` plus the LED). Still unexplained: why C4 did not
 see this current.
+
+### C6e: SDO pull-up disconnected (`53ccb2c`)
+
+[`ppk-20261027T193610.ppkz`](../measurements/ppk-20261027T193610.ppkz),
+361 s, packed whole (35.8 MB). Same setup as C6, ribbon unplugged, PPK2
+output cycled off for over 10 s before the run, so the LIS3DH started from
+its power-up defaults.
+
+| Phase | Window | Current |
+| --- | --- | --- |
+| Boot refresh | 0-11 s | about 5.8 mA |
+| DCF receiver on | 12-164 s | 496.4 µA (C6: 1076 µA) |
+| Idle between refreshes | 174-224, 234-284, 294-344 s | **150.2 µA** (±0.1 µA, peaks under 0.36 mA) |
+| Minute refresh | about 9 s every 60 s | 5.8-7.5 mA |
+
+- The fix removed 585 µA, in both the DCF window and idle.
+- DCF receiver cost is unchanged: 496.4 - 150.2 = 346 µA.
+- Remainder over the nRF alone (A8, 2 µA): about 148 µA, over the 10 µA
+  target. C6c showed that removing breakout power takes idle to 2.0 µA, so
+  the remainder is the breakout's own standby: regulator `IQ` (55 µA typ)
+  and the "ON" LED with its 10 kΩ resistor `[INFERENCE]`. Not yet split.
