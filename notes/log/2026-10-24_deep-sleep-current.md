@@ -602,3 +602,35 @@ Reading:
 - Left: the LIS3DH. C5 reached 2 µA only with it removed, and in C4 the
   third pull (the `MISO` wire, after the `SDA`/`SDO` swap) was worth
   0.66 mA, close to what is left. Next: C6c, pull at the breakout end.
+
+### C6c: LIS3DH wires pulled at the breakout end
+
+[`ppk-20261027T181215.ppkz`](../measurements/ppk-20261027T181215.ppkz),
+recording time 146-369 s packed (224 s, 17.4 MB, verified). Same setup as C6,
+display rewired. Pulls at the breakout end: `SDO`, `SCL`, `SDA` one per idle
+window, then `CS`, `INT1` and power all in the last window (user).
+
+| Window | Idle current |
+| --- | --- |
+| 157-205 s | 735.3 µA |
+| 217-265 s | 734.5 µA |
+| 277-325 s | 734.6 µA (2 s at about 1.0 mA at 281-282 s) |
+| 337-358 s | 734.9 µA |
+| 360-369 s, after the power pull at 359 s | 2.0 µA |
+
+Reading:
+
+- No signal pull moves the idle current. Only the power pull does, and it
+  takes the board to 2.0 µA, the A8 nRF-only figure. The whole 0.73 mA
+  enters through the breakout supply pin and does not depend on any wire.
+- This disagrees with C4. There the same state (power, `CS`, `INT1` wired;
+  `SCL`, `SDA`, `SDO` pulled) ended at 2.07 mA, equal to C3 with LIS3DH power
+  removed, so the breakout drew about 0 mA. Something changed on the
+  breakout side since 2026-10-25: the LIS3DH was removed for C5 and
+  rewired today.
+- The LIS3DH chip itself draws at most about 0.2 mA in any mode (datasheet
+  table, highest data rate), and the power LED about 0.1 mA, so most of
+  0.73 mA sits elsewhere on the breakout `[INFERENCE]`. Since C2 the breakout
+  has been fed on `3Vo` (regulator output), against the `VIN` in the wiring
+  docs; a back-fed regulator is the next suspect `[INFERENCE]`.
+- The 281-282 s blip matches a wire being pulled.
