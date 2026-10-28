@@ -33,8 +33,7 @@
 - [x] 4.4 B and C: DCF window using the generator (align with `DCF_PON`). Verify: CSVs or packed captures plus average current and window length are in the note. Done 2026-10-28: B1 129.7 µA, C8 425.8 µA over 150.5 s.
 - [x] 4.5 B and C: alarm (align with `BUZZER_EN`), plus one Ampere Meter run in series with the buzzer `+` wire on `5V`. Verify: CSVs or packed captures plus average currents are in the note. Done 2026-10-28, runs B2, C7 (UART build, the only way to set an alarm) and D: buzzer 7.08 mA mean over 59 s.
 - [x] 4.6 Write the dated note `notes/log/2026-10-<day>_deep-sleep-current.md`: setup, a table of the four states for A (idle only), B and C (current, duration), the C vs A + B comparison, what failed, and a daily energy estimate from C plus the buzzer. Verify: each CSV is linked and the daily figure follows from the table. Done: `notes/log/2026-10-28_deep-sleep-current.md`; C8 model ~23 mAh/day; revised ~4.8 mAh after `d0685ee` (needs C re-run to confirm refresh row).
-- [ ] 4.7 Add the entries to `notes/ai-use.md` for any draft text kept. Commit measurements and the note together (`firmware:` or `thesis:` per the files touched).
-  - Status 2026-10-28: A9b/A10 packs and log update pending commit; DK logic-leak item logged as open item 5, not researched here.
+- [x] 4.7 Add the entries to `notes/ai-use.md` for any draft text kept. Commit measurements and the note together (`firmware:` or `thesis:` per the files touched). Done in `4526200`.
 
 ## 5. Flowchart and close-out
 
