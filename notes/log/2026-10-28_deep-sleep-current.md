@@ -1,0 +1,165 @@
+# 2026-10-28 — deep-sleep current: configurations A, B, C and the four states
+
+Close-out runs for tasks 4.2-4.6 of `add-deep-sleep-and-current-measurement`.
+History, failed attempts and the pin-leak fixes that led here are in
+[`2026-10-24_deep-sleep-current.md`](2026-10-24_deep-sleep-current.md)
+(runs A-A8, C2-C6f).
+
+## Conditions (all runs)
+
+- Firmware: clock app at `53ccb2c` (last firmware change; same build as C6f).
+  `SLEEP_UART=0` for A9, B1, C8; UART build for B2, D, C7 (the only way to
+  set an alarm is the UART `alarm` command). Repo HEAD while packing:
+  `750b3a7`.
+- DK PCA10040 v3.0.1, SB20/SB21/SB26/SB27 cut (A8), LIS3DH breakout "ON" LED
+  removed (C6f), breakout fed on `VIN`.
+- PPK2 S/N `FACEF4EE8A0A` (the project's only PPK2), Data Logger,
+  100 kS/s. Room 23 °C.
+- Logic: `D0` `P0.22` (`CLOCK_SEC_MARK`), `D1` `P0.24` (`DCF_PON`, active
+  low), `D2` `P0.31` (`BUZZER_EN`), `D3` `P0.29` (`EPD_BUSY`). In A9 `D1` and
+  `D2` are swapped: `D2` falls with the window start and rises at its end,
+  `D1` falls at init and stays low like `BUZZER_EN` `[INFERENCE]`.
+- All windows below come from 10 ms bin means of the packed captures.
+  Margins of 1 s are left at each state edge for idle figures.
+
+| Run | Capture | Config | PPK2 mode, supply | Build | Length |
+| --- | --- | --- | --- | --- | --- |
+| A9 | [`ppk-20261028T174816`](../measurements/ppk-20261028T174816.ppkz) | A, nRF alone on `P22` | Source Meter 3.0 V | `SLEEP_UART=0` | 360 s |
+| B1 | [`ppk-20261028T183744`](../measurements/ppk-20261028T183744.ppkz) | B, peripheral rail only | Ampere Meter, DK `VDD` (~3.0 V) | `SLEEP_UART=0` | 360 s |
+| B2 | [`ppk-20261028T185453`](../measurements/ppk-20261028T185453.ppkz) | B | Ampere Meter, DK `VDD` | UART | 180 s |
+| D | [`ppk-20261028T191801`](../measurements/ppk-20261028T191801.ppkz) | buzzer `+` and flyback diode only | Ampere Meter, DK `5V` | UART | 180 s |
+| C7 | [`ppk-20261028T194655`](../measurements/ppk-20261028T194655.ppkz) | C, one rail for nRF and peripherals | Source Meter 3.0 V | UART | 180 s |
+| C8 | [`ppk-20261028T195828`](../measurements/ppk-20261028T195828.ppkz) | C | Source Meter 3.0 V | `SLEEP_UART=0` | 360 s |
+
+Wiring photos: C is
+[`2026-10-25_deep-sleep_ppk2-C.jpg`](../media/2026-10-25_deep-sleep_ppk2-C.jpg);
+A and B photos are not in `notes/media/` yet.
+
+## Results
+
+### A9, nRF alone
+
+| Phase | Window | Current |
+| --- | --- | --- |
+| DCF window (`D2` low) | 11.3-146.9 s | 291.0 µA (1 s means 290.5-291.9) |
+| Redraw, no panel: `EPD_BUSY` timeout | 9.0 s each, 4 times | 3.33 mA, 30.1-30.5 mC each |
+| Idle between minutes | 4 windows of 49 s | **2.07 µA** (1 s means 2.00-2.11) |
+
+Against the nRF52832 PS v1.9 (section 17.1.1, 3 V, 25 °C, DC/DC on): the
+expected figure for System ON, full RAM, RTC wake is about 1.9-2.2 µA
+(`ION_RAMOFF_RTC` 1.9 µA plus the 0.3 µA RAM-retention step). 2.07 µA is
+inside that range. The first A runs (A5 0.81 µA) were below the datasheet
+because the interface MCU back-fed `VDD_nRF`; with SB20/21/26/27 cut that
+path is gone and A is now a valid nRF figure.
+
+### B1, B2, peripherals alone
+
+| Phase | Run | Window | Current |
+| --- | --- | --- | --- |
+| Idle | B1 | 227.6-277.7, 289.7-337.7 s | **52.6 µA** (1 s means 47.5-57.7) |
+| Idle, UART build | B2 | 1-46, 116-166 s | 54.0 µA |
+| DCF window (`D1` low) | B1 | 18.7-218.8 s (200 s; 178 s used after the boot refresh) | 129.7 µA |
+| Minute refresh | B1 | 7.7, 10.0, 7.7 s | 0.70-0.86 mA mean, 6.6-7.0 mC each, 10 ms peaks 10.6 mA |
+| Alarm, buzzer phases (refresh excluded) | B2 | 58.4-106.4 s | 89.8 µA |
+
+- Receiver cost in the window: 129.7 - 52.6 = 77 µA.
+- Alarm cost on the peripheral rail: 89.8 - 54.0 = 36 µA (LIS3DH active
+  with INT1 armed).
+
+### C7, C8, shared rail
+
+| Phase | Run | Window | Current |
+| --- | --- | --- | --- |
+| Idle | C8 | 3 windows of 49-50 s | **74.6 µA** (1 s means 74.5-74.9) |
+| DCF window (`D1` low) | C8 | 21.5-172.1 s (150.5 s) | 425.8 µA |
+| Minute refresh | C8 | 8.7 and 7.7 s (one more at 8.0 s cut by the file end) | 6.87 and 6.15 mA, 59.7 and 47.5 mC |
+| Idle, UART build | C7 | 1-50, 122-170 s | 1.281 mA |
+| Alarm, start refresh plus 60 s buzzer | C7 | 50.9-109.9 s (59.0 s) | 2.859 mA |
+| Alarm, buzzer phases only | C7 | 62.0-109.9 s | 2.136 mA (1 s means 1.75 off, 2.52 on) |
+
+- C8 idle equals C6f (74.7 µA), so the setup reproduces.
+- The UART build costs 1.281 - 0.075 = 1.21 mA in idle. Alarm figures in C
+  are therefore taken as C7 minus 1.21 mA.
+- Alarm cost on the shared rail (buzzer phases): 2.136 - 1.281 = 0.85 mA.
+  B2 shows 0.04 mA of it on the peripheral rail, so about 0.82 mA is the
+  nRF. 1 s means are 1.75 mA off and 2.52 mA on, so the on phase adds about
+  0.8 mA: PWM0 at 2.7 kHz (which keeps HFCLK running) plus `BUZZER_EN`
+  driving the NPN base through 1 kΩ, about 2.3 mA while high, 50 % duty
+  `[INFERENCE]`.
+
+### D, buzzer on `5V`
+
+| Phase | Window | Current |
+| --- | --- | --- |
+| Off | 1-58, 119-180 s | 0.06 µA (meter floor) |
+| Alarm, 1 s on / 1 s off for 59.0 s | 59.4-118.4 s | **7.08 mA** mean, 418 mC per alarm |
+| First on phase | 59.4-60.4 s | 13.9 mA |
+
+The on phase draws about 14 mA, not the about 50 mA assumed in AGENTS.md:
+PWM0 drives `BUZZER_EN` with a 2.7 kHz square wave (`buzzer.c`, `TONE_TOP`
+370 at 1 MHz), so the coil sees about 50 % duty inside the on phase.
+
+## C against A + B
+
+| State | A | B | A + B | C | C - (A + B) |
+| --- | --- | --- | --- | --- | --- |
+| Idle | 2.07 µA | 52.6 µA | 54.7 µA | 74.6 µA | +19.9 µA (27 %) |
+| DCF window | 291.0 µA | 129.7 µA | 420.7 µA | 425.8 µA | +5.1 µA (1.2 %) |
+| Refresh | 3.33 mA (no panel, timeout) | 0.70-0.86 mA | about 4.1 mA | 6.15-6.87 mA | not comparable, see below |
+| Alarm | not measured | 36 µA over idle | | 0.85 mA over idle | nRF share about 0.82 mA |
+
+- DCF window: C matches A + B within 1.2 %.
+- Idle: C is 20 µA above A + B. In B the nRF sits on DK `VDD` and the
+  peripherals sit behind the PPK2 Ampere Meter, whose shunt drops the rail a
+  little below the nRF. The nRF drives `SCK`, `MOSI` and the chip selects
+  high into the breakout's 10 kΩ level-shifter pull-ups; C6e showed that
+  this path can power the breakout by itself. Part of the peripheral idle
+  current then flows from the nRF pins, past the meter, so B reads low
+  `[INFERENCE]`. C has one rail and no such path, so C is the figure to use.
+- Refresh: A has no panel, so `EPD_BUSY` never falls and A9 shows a 9 s
+  timeout instead of a real refresh. The two rows describe different
+  firmware paths and are not summed.
+
+## What failed or is open
+
+1. **The CPU does not sleep during an e-paper refresh.** A9 draws a flat
+   3.33 mA for the whole 9 s BUSY wait. That is from the first 100 ms on,
+   not only after 1 s. C8 draws 6.15-6.87 mA per refresh, of which B
+   accounts for 0.70-0.86 mA, so the nRF draws about 5.3 mA. Design task 2.2
+   expected WFE sleep on the `EPD_BUSY` GPIOTE event, with the PPK2 as the
+   proof. The PPK2 shows the opposite. One path that makes the wait spin:
+   `poll_clock()` returns early while `s_drawing`, so `s_last_ms` stops.
+   `arm_wake()` then asks for a deadline in the past, `board_wake_at()`
+   sets `s_wake_due`, and `board_sleep()` returns at once. This explains
+   the spin only after the first second, so another cause acts at the start
+   of the wait. Not fixed here.
+2. **The nRF draws about 290 µA while the DCF window is open**: 291 µA in
+   A9, and 296 µA as C8 minus B1. C2 and C6e showed the same window cost
+   (0.34 mA). The 2026-10-24 runs A and A5 had 4-10 µA in the window with
+   the same `NRFX_GPIOTE_CONFIG_IN_SENSE_TOGGLE(true)` configuration on
+   `DCF_OUT`, so the IN channel alone does not explain it. Cause open.
+3. The A and B wiring photos are missing.
+4. The buzzer current is about 14 mA in its on phase, not the about 50 mA
+   assumed in the design.
+
+## Daily energy estimate
+
+Model: C8 idle, 1440 minute refreshes, one DCF window, one 60 s alarm
+without motion (timeout), buzzer from D. The refresh charge is the mean of
+the two whole C8 minute refreshes (53.6 mC, 8.2 s; range 47.5-59.7 mC). The
+alarm on the shared rail is C7 minus the 1.21 mA UART share: 1.65 mA for
+59.0 s.
+
+| State | Time per day | Charge per day (3.0 V rail) | Share |
+| --- | --- | --- | --- |
+| Idle, 74.6 µA | 74 382 s | 5.55 C (1.54 mAh) | 6.7 % |
+| Refresh, 53.6 mC each | 1440 × 8.2 s | 77.15 C (21.43 mAh) | 93.1 % |
+| DCF window, 425.8 µA | 150.5 s | 0.064 C (0.018 mAh) | 0.1 % |
+| Alarm, nRF and peripherals | 59.0 s | 0.097 C (0.027 mAh) | 0.1 % |
+| **3.0 V rail total** | | **82.86 C = 23.0 mAh = 249 J** | |
+| Buzzer on `5V`, 7.08 mA | 59.0 s | 0.418 C = 2.1 J | |
+
+Total about 251 J (70 mWh) per day. Minute refreshes are 93 % of the
+3.0 V charge, and about 87 % of each refresh charge is the nRF that does not
+sleep (item 1). The idle floor (74.6 µA) is mostly the breakout regulator
+(C6f). The DCF window and the alarm do not matter for the daily budget.
