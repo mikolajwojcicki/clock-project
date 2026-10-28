@@ -70,6 +70,23 @@ rest of the BUSY wait (no panel on A).
 | DCF retry window | A10 | 204.24-214.25 s | 291.1 µA |
 | Idle | A10 | 214.25-240.00 s | 2.20 µA |
 
+
+### A11: DCF window on PORT/SENSE (`c6faefd`)
+
+`ppk-20261028T225102` ([`.ppkz`](../measurements/ppk-20261028T225102.ppkz)),
+configuration A, ribbon unplugged, only `D0` on logic, `SLEEP_UART=0`,
+240 s, generator on `P0.25`. The UART build had printed `dcf: window open`
+before this run.
+
+| Phase | Window | Current |
+| --- | --- | --- |
+| Boot refresh, then BUSY timeout | 0-20 s | 544 µA mean of first 10 s, 291.6 µA at 10-19 s |
+| DCF window open | 20-190 s | **2.1-2.7 µA** (10 s means) |
+| Sync accepted, refresh BUSY timeout | 190-200 s | 291.7 µA |
+| Idle, clock running | 200-240 s | 2.3-2.5 µA |
+
+`D0` first toggles at 197.09 s, then every 1.00 s: time was set from DCF.
+
 A9b (same wiring intent, firmware before `clock_face` fix): three refreshes at
 **4.07 mA** for 7.5-7.9 s each (flat plateau, CPU spin). Idle after sync was
 **369 µA**, not 2 µA, with extra PPK2 logic lines still connected; see item 5
@@ -156,11 +173,20 @@ PWM0 drives `BUZZER_EN` with a 2.7 kHz square wave (`buzzer.c`, `TONE_TOP`
    shows a **0.43 s** boot spike at 2.58 mA mean (1.11 mC) and then sleep
    during the rest of the wait. C8 was taken on older firmware; **re-run C
    with `d0685ee`** before updating the refresh row in the daily model below.
-2. **The nRF draws about 290 µA while the DCF window is open**: 291 µA in
-   A9, and 296 µA as C8 minus B1. C2 and C6e showed the same window cost
-   (0.34 mA). The 2026-10-24 runs A and A5 had 4-10 µA in the window with
-   the same `NRFX_GPIOTE_CONFIG_IN_SENSE_TOGGLE(true)` configuration on
-   `DCF_OUT`, so the IN channel alone does not explain it. Cause open.
+2. **DCF window drew about 290 µA (fixed in `c6faefd`).** A9 had 291 µA,
+   C8 minus B1 gave 296 µA, and C2 and C6e showed the same (0.34 mA). Cause:
+   `dcf77_sync.c` used `SENSE_TOGGLE(true)`, a GPIOTE IN channel (`CONFIG[0]`
+   active, SWD read 2026-10-28). With `false` (PORT/SENSE) the window drew
+   2.1-2.7 µA in A11. The 2026-10-24 runs A and A5 had 4-10 µA with `true`,
+   so the IN channel cost was not constant across runs; why is unexplained.
+   The first `false` build failed: the 4 buttons took all 4 low-power
+   (PORT) slots, so `dcf77_sync_open` returned `NO_MEM` ("dcf: open failed",
+   window never opened; run `ppk-20261028T223009` showed 291 µA only for the
+   10 s `epd.c` BUSY timeout, then 1.9 µA, and no sync). Fix:
+   `NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS` 4 to 6.
+   `epd.c:61` still uses `SENSE_HITOLO(true)`; with no panel, BUSY never
+   falls and costs 291 µA for 10 s per refresh. With a panel the wait is
+   about 0.75 s. Not changed.
 3. The A and B wiring photos are missing.
 4. The buzzer current is about 14 mA in its on phase, not the about 50 mA
    assumed in the design.
