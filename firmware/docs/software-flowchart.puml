@@ -1,7 +1,6 @@
 ' Source for firmware/docs/software-flowchart.svg and .pdf.
-' The server /pdf endpoint drops Polish letters (ł, ą, ę, ś, ć, ź, ż, ń).
-' Render SVG from the server, then PDF from that SVG:
-' curl -H "Content-Type: text/plain; charset=utf-8" --data-binary @software-flowchart.puml http://127.0.0.1:8080/svg -o software-flowchart.svg
+' Render SVG with PlantUML, then PDF from that SVG (keeps Polish letters):
+' plantuml -tsvg -charset UTF-8 software-flowchart.puml
 ' rsvg-convert -f pdf -o software-flowchart.pdf software-flowchart.svg
 @startuml
 skinparam monochrome true
@@ -10,6 +9,7 @@ skinparam backgroundColor white
 skinparam defaultFontName DejaVu Serif
 skinparam activityFontName DejaVu Serif
 skinparam activityDiamondFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
 skinparam dpi 160
 skinparam ActivityBorderColor black
 skinparam ActivityDiamondBorderColor black
@@ -18,44 +18,53 @@ skinparam ArrowColor black
 start
 :Inicjalizacja zegarów, GPIO i przerwań;
 repeat
-  :Sen (WFE).\nOdbiornik DCF wyłączony, e-paper bez zasilania;
-  :Przebudzenie przerwaniem;
+  :Sprawdź, co jest do zrobienia\n(procedury obsługi zegara, alarmu, DCF i UART);
 
-  switch (Źródło?)
-  case (RTC, nadeszła minuta)
-    if (Dla tego dnia tygodnia\nalarm jest włączony\ni godzina się zgadza?) then (tak)
-      :Włącz brzęczyk;
-      repeat
-        :Czekaj na przerwanie LIS3DH INT1\nalbo na przycisk;
-        if (Przycisk?) then (tak)
-          :Policz jako awaryjne wyciszenie;
-        else (ruch)
-          :Zwiększ licznik aktywności;
-        endif
-      repeat while (Licznik poniżej progu\ni brak przycisku?) is (tak)
-      :Wyłącz brzęczyk;
+  if (Upłynęła sekunda?) then (tak)
+    :Zwiększ czas o 1 s;
+    if (Zmieniła się minuta?) then (tak)
+      if (Dla tego dnia tygodnia\nalarm jest włączony\ni godzina się zgadza?) then (tak)
+        :Włącz brzęczyk i LIS3DH;
+      else (nie)
+      endif
     else (nie)
-      :Zostaw alarm wyłączony;
     endif
+  else (nie)
+  endif
 
-  case (Przycisk poza alarmem)
-    :Obsłuż przycisk\n(następne wskazanie albo ustawienie);
+  if (Alarm trwa?) then (tak)
+    if (Przycisk albo licznik ruchu\nosiągnął próg?) then (tak)
+      :Wyłącz brzęczyk i LIS3DH;
+    else (nie)
+      :Zmień fazę brzęczyka\nwedług terminu RTC1;
+    endif
+  else (nie)
+  endif
 
-  case (Okno synchronizacji DCF)
+  if (Okno synchronizacji DCF?) then (tak)
     :Włącz zasilanie odbiornika (PON);
-    :Zbieraj impulsy i złóż ramkę minutową;
+    :Zbieraj zbocza DCF_OUT i złóż ramkę minutową;
     if (Parzystość i znaczniki minuty\nsą poprawne?) then (tak)
       :Skoryguj RTC o różnicę ramki;
     else (nie)
       :Zostaw RTC bez zmian.\nZapisz przyczynę odrzucenia;
     endif
-    :Wyłącz odbiornik (PON);
-
-  endswitch
-
-  if (Zmienił się czas\nalbo stan alarmu?) then (tak)
-    :Odśwież e-paper, potem odetnij jego zasilanie;
+    :Po zakończeniu okna wyłącz odbiornik (PON);
   else (nie)
+  endif
+
+  if (Zmienił się czas lub alarm\ni okno DCF jest zamknięte?) then (tak)
+    :Odśwież e-paper.\nCzekanie na BUSY w WFE, potem głęboki sen panelu;
+  else (nie)
+    :Ustaw najbliższy termin RTC1\n(sekunda, brzęczyk, koniec okna DCF);
+    :Sen (WFE).\nDCF wyłączony, e-paper i LIS3DH bez zasilania;
+    note right
+      Przerwania budzące CPU:
+      RTC1 COMPARE (termin),
+      GPIOTE PORT (przyciski),
+      GPIOTE IN (INT1, DCF_OUT, EPD_BUSY),
+      UARTE RX (tylko wersja z konsolą)
+    end note
   endif
 repeat while (Zasilanie jest) is (tak)
 stop
