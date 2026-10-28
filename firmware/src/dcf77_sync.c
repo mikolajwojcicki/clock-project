@@ -91,7 +91,7 @@ bool dcf77_sync_open(uint32_t now_ms)
     {
         return true;
     }
-    nrfx_gpiote_in_config_t cfg = NRFX_GPIOTE_CONFIG_IN_SENSE_TOGGLE(true);
+    nrfx_gpiote_in_config_t cfg = NRFX_GPIOTE_CONFIG_IN_SENSE_TOGGLE(false);
     cfg.pull = DCF_OUT_PULL;
     if (nrfx_gpiote_in_init(DCF_OUT, &cfg, on_edge) != NRFX_SUCCESS)
     {
