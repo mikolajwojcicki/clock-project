@@ -36,8 +36,8 @@
 
 ## 5. Flowchart and close-out
 
-- [ ] 5.1 Redraw `firmware/docs/software-flowchart.puml` as event driven (event bits, ISR sources, WFE) and regenerate the svg and pdf the same way as before. Verify: the new svg renders and shows the sleep loop.
-- [ ] 5.2 Run `openspec validate add-deep-sleep-and-current-measurement --strict`. Verify: passes.
+- [x] 5.1 Redraw `firmware/docs/software-flowchart.puml` as event driven (event bits, ISR sources, WFE) and regenerate the svg and pdf the same way as before. Verify: the new svg renders and shows the sleep loop. Done 2026-10-28 with PlantUML and `rsvg-convert` from nix-shell; the code has no `s_events` bits (handlers run each pass and `arm_wake` sets the RTC1 deadline), so the chart shows that model.
+- [x] 5.2 Run `openspec validate add-deep-sleep-and-current-measurement --strict`. Verify: passes.
 
 ## Workflow follow-up
 
