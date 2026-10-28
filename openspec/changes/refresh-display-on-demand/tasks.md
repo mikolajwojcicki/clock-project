@@ -3,7 +3,7 @@
 ## 1. Firmware policy
 
 - [ ] 1.1 In `firmware/apps/clock/src/main.c`, remove the minute-change draw request and add a press-edge request that is skipped while an alarm is sounding; verify the UART build prints no `display ok` over 10 idle minutes and one per press
-- [ ] 1.2 Request a refresh when the alarm stops (button, motion, timeout) and keep the one at start; verify one `display ok` per start and per stop, and the buzzer still shows 1 s on / 1 s off on `D2`
+- [ ] 1.2 Keep the refresh at alarm start and add none at stop (button, motion, timeout); verify one `display ok` per start, none per stop, and the buzzer still shows 1 s on / 1 s off on `D2`
 - [ ] 1.3 Verify held button gives one refresh, a press during a refresh gives none queued, and a press inside a DCF window refreshes after it closes (UART log)
 - [ ] 1.4 Build both variants (`make` and `make SLEEP_UART=0`) and verify both link
 

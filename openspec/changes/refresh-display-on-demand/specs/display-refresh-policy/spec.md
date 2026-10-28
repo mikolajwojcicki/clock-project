@@ -27,8 +27,8 @@ When no alarm is sounding, a button press SHALL start one refresh that shows the
 - **WHEN** a button is pressed while a refresh is running
 - **THEN** no further refresh starts after it
 
-### Requirement: Alarm start and stop refresh the face
-The firmware SHALL refresh the face when an alarm starts and when it stops, whether by button, motion or timeout. A button press that silences an alarm SHALL NOT also start a button refresh.
+### Requirement: Alarm start refreshes the face
+The firmware SHALL refresh the face when an alarm starts. It SHALL NOT refresh when the alarm stops, whether by button, motion or timeout, and a button press that silences an alarm SHALL NOT start a button refresh.
 
 #### Scenario: Alarm starts
 - **WHEN** an enabled alarm slot matches the clock minute
@@ -36,7 +36,7 @@ The firmware SHALL refresh the face when an alarm starts and when it stops, whet
 
 #### Scenario: Alarm silenced by button
 - **WHEN** a button silences the alarm
-- **THEN** exactly one refresh follows, showing the current time
+- **THEN** no refresh follows
 
 ### Requirement: Time changes refresh the face
 The firmware SHALL refresh the face after the time is set over UART and after a DCF-77 sync is accepted.

@@ -29,10 +29,13 @@ alarm. Motivation and numbers: see proposal.md.
   press, so a held button and a press during a refresh do not repeat.
   Alternative: use the GPIOTE handler `on_button`. Rejected: it runs in
   interrupt context and gives no release information without extra pin reads.
-- **A press that silences the alarm does not request a button refresh.** The
-  alarm-stop refresh covers it, so one stop gives one refresh.
-- **Refresh on alarm stop as well as start.** The face would otherwise show the
-  alarm minute for hours. Cost: one more refresh per alarm.
+- **A press that silences the alarm does not request a refresh, and an alarm
+  stop does not either.** The author chose to save the refresh; the user
+  presses again to see the time. Alternative: refresh on stop. Rejected: one
+  more 16.7 mC refresh per alarm for a face nobody reads right away.
+- **Button silence is a prototype feature.** The final firmware is expected to
+  stop the alarm by motion only, so button handling stays minimal here and no
+  requirement depends on it. Removing it is a separate change.
 - **Stale face is accepted.** The face shows the time of its last refresh.
   The seconds counter and RTC keep running; only the panel image is old.
 

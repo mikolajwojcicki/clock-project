@@ -7,7 +7,7 @@ After the rewrite, the clock app, alarm, e-paper face, buzzer tone and button si
 
 #### Scenario: Clock app regression
 - **WHEN** the clock is set over UART and an alarm two minutes ahead is set
-- **THEN** the face refreshes when the time is set and when the alarm starts and stops, the alarm sounds with the same tone and pattern, and a button silences it
+- **THEN** the face refreshes when the time is set and when the alarm starts, the alarm sounds with the same tone and pattern, and a button silences it
 
 #### Scenario: Bring-up regression
 - **WHEN** the bring-up app is built and run

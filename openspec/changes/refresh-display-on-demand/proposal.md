@@ -11,8 +11,7 @@ only 1.8 mAh/day. Refreshing on demand removes most of the energy cost.
 
 - Stop the automatic refresh on every minute change.
 - Refresh the face when the user presses a button and no alarm is sounding.
-- Refresh the face when an alarm starts, and when it stops, so the face is
-  correct after the alarm.
+- Refresh the face when an alarm starts. No refresh when it stops.
 - Keep refreshing after the time is set (UART) or corrected by DCF-77, so the
   face never shows a time the device has just replaced.
 - The face shows the time of its last refresh. Between refreshes it can be
@@ -26,7 +25,7 @@ only 1.8 mAh/day. Refreshing on demand removes most of the energy cost.
 ### New Capabilities
 
 - `display-refresh-policy`: when the firmware refreshes the e-paper face
-  (button, alarm start and stop, time set), and when it does not.
+  (button, alarm start, time set), and when it does not.
 
 ### Modified Capabilities
 
