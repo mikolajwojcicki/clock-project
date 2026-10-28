@@ -1,0 +1,26 @@
+{
+  "format": "ppkz",
+  "format_version": 1,
+  "sample_rate_hz": 100000.0,
+  "t0_ms": 0.0,
+  "timestamp_decimals": 2,
+  "n_samples": 24000001,
+  "current": {
+    "dtype": "<f4",
+    "unit": "uA",
+    "decimals": 3
+  },
+  "digital": {
+    "channels": 8,
+    "bit_order": "bit n = Dn"
+  },
+  "source": {
+    "name": "ppk-20261028T205549.csv",
+    "bytes": 638402911,
+    "sha256": "0734ded638f14150f1dc3f97165a61f0b9a29f014f0871dec12ef5791e1b968b",
+    "header": "Timestamp(ms),Current(uA),D0-D7"
+  },
+  "window_s": null,
+  "packed_bytes": 24128646,
+  "tool": "ppk-pack 3f63d1c-dirty"
+}

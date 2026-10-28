@@ -30,10 +30,13 @@ History, failed attempts and the pin-leak fixes that led here are in
 | D | [`ppk-20261028T191801`](../measurements/ppk-20261028T191801.ppkz) | buzzer `+` and flyback diode only | Ampere Meter, DK `5V` | UART | 180 s |
 | C7 | [`ppk-20261028T194655`](../measurements/ppk-20261028T194655.ppkz) | C, one rail for nRF and peripherals | Source Meter 3.0 V | UART | 180 s |
 | C8 | [`ppk-20261028T195828`](../measurements/ppk-20261028T195828.ppkz) | C | Source Meter 3.0 V | `SLEEP_UART=0` | 360 s |
+| A10 | [`ppk-20261028T212701`](../measurements/ppk-20261028T212701.ppkz) | A | Source Meter 3.0 V | `SLEEP_UART=0`, firmware `d0685ee` | 240 s |
+| A9b | [`ppk-20261028T205549`](../measurements/ppk-20261028T205549.ppkz) | A | Source Meter 3.0 V | `SLEEP_UART=0`, pre-`d0685ee` spin fix | 240 s |
 
 Wiring photos: C is
 [`2026-10-25_deep-sleep_ppk2-C.jpg`](../media/2026-10-25_deep-sleep_ppk2-C.jpg);
-A and B photos are not in `notes/media/` yet.
+A and B are [`2026-10-28_measurement_A.jpeg`](../media/2026-10-28_measurement_A.jpeg) and
+[`2026-10-28_measurement_B.jpeg`](../media/2026-10-28_measurement_B.jpeg).
 
 ## Results
 
@@ -51,6 +54,31 @@ expected figure for System ON, full RAM, RTC wake is about 1.9-2.2 µA
 inside that range. The first A runs (A5 0.81 µA) were below the datasheet
 because the interface MCU back-fed `VDD_nRF`; with SB20/21/26/27 cut that
 path is gone and A is now a valid nRF figure.
+
+### A10 and A9b, nRF alone after the refresh spin fix (`d0685ee`)
+
+Firmware `d0685ee` removes `snprintf` from the per-pixel face path and skips
+the 1 s clock wake deadline while `s_drawing`. SWD PC samples during the boot
+refresh then show about 0.75 s of drawing and SPI, then `board_sleep` for the
+rest of the BUSY wait (no panel on A).
+
+| Phase | Run | Window | Current |
+| --- | --- | --- | --- |
+| Boot draw plus BUSY wait, no panel | A10 | 3.30-3.73 s | **2.58 mA** mean, 1.11 mC (not a 9 s plateau) |
+| DCF window (`D1` low; only `D0` on logic) | A10 | 3.73-154.34 s | **291.3 µA** (1 s means 290.9-292.3) |
+| Idle after sync | A10 | 154.34-204.22 s | **2.15 µA** (1 s means 1.9-2.5) |
+| DCF retry window | A10 | 204.24-214.25 s | 291.1 µA |
+| Idle | A10 | 214.25-240.00 s | 2.20 µA |
+
+A9b (same wiring intent, firmware before `clock_face` fix): three refreshes at
+**4.07 mA** for 7.5-7.9 s each (flat plateau, CPU spin). Idle after sync was
+**369 µA**, not 2 µA, with extra PPK2 logic lines still connected; see item 5
+below.
+
+**PPK2 logic on configuration A:** for A10 the author removed all PPK2 logic
+leads except **`D0`** (`CLOCK_SEC_MARK`). With `D1`-`D3` attached, the nRF
+stayed powered when the PPK2 source was off (leak from the DK side). That
+fight is **not analysed here**; solder-bridge research is tracked separately.
 
 ### B1, B2, peripherals alone
 
@@ -122,17 +150,12 @@ PWM0 drives `BUZZER_EN` with a 2.7 kHz square wave (`buzzer.c`, `TONE_TOP`
 
 ## What failed or is open
 
-1. **The CPU does not sleep during an e-paper refresh.** A9 draws a flat
-   3.33 mA for the whole 9 s BUSY wait. That is from the first 100 ms on,
-   not only after 1 s. C8 draws 6.15-6.87 mA per refresh, of which B
-   accounts for 0.70-0.86 mA, so the nRF draws about 5.3 mA. Design task 2.2
-   expected WFE sleep on the `EPD_BUSY` GPIOTE event, with the PPK2 as the
-   proof. The PPK2 shows the opposite. One path that makes the wait spin:
-   `poll_clock()` returns early while `s_drawing`, so `s_last_ms` stops.
-   `arm_wake()` then asks for a deadline in the past, `board_wake_at()`
-   sets `s_wake_due`, and `board_sleep()` returns at once. This explains
-   the spin only after the first second, so another cause acts at the start
-   of the wait. Not fixed here.
+1. **E-paper refresh CPU spin (fixed in `d0685ee`).** A9 and A9b showed a flat
+   3.33-4.07 mA for the full BUSY wait because `clock_face_black()` called
+   `snprintf` twice per pixel (~250k calls per refresh). After the fix, A10
+   shows a **0.43 s** boot spike at 2.58 mA mean (1.11 mC) and then sleep
+   during the rest of the wait. C8 was taken on older firmware; **re-run C
+   with `d0685ee`** before updating the refresh row in the daily model below.
 2. **The nRF draws about 290 µA while the DCF window is open**: 291 µA in
    A9, and 296 µA as C8 minus B1. C2 and C6e showed the same window cost
    (0.34 mA). The 2026-10-24 runs A and A5 had 4-10 µA in the window with
@@ -141,14 +164,20 @@ PWM0 drives `BUZZER_EN` with a 2.7 kHz square wave (`buzzer.c`, `TONE_TOP`
 3. The A and B wiring photos are missing.
 4. The buzzer current is about 14 mA in its on phase, not the about 50 mA
    assumed in the design.
+5. **DK back-feed with PPK2 logic attached (configuration A).** With several
+   PPK2 digital inputs on DK pins, the nRF could stay biased when the PPK2
+   source was off; only **`D0`** remained for A10. Which solder bridges or
+   header paths cause this is **out of scope for this note** (separate
+   autoresearch on SB cuts).
 
 ## Daily energy estimate
 
+### As measured on C8 firmware `53ccb2c` (refresh spin still present)
+
 Model: C8 idle, 1440 minute refreshes, one DCF window, one 60 s alarm
-without motion (timeout), buzzer from D. The refresh charge is the mean of
-the two whole C8 minute refreshes (53.6 mC, 8.2 s; range 47.5-59.7 mC). The
-alarm on the shared rail is C7 minus the 1.21 mA UART share: 1.65 mA for
-59.0 s.
+without motion (timeout), buzzer from D. Refresh charge: mean of two C8
+minute refreshes (53.6 mC, 8.2 s). Alarm on the shared rail: C7 minus 1.21
+mA UART share.
 
 | State | Time per day | Charge per day (3.0 V rail) | Share |
 | --- | --- | --- | --- |
@@ -159,7 +188,24 @@ alarm on the shared rail is C7 minus the 1.21 mA UART share: 1.65 mA for
 | **3.0 V rail total** | | **82.86 C = 23.0 mAh = 249 J** | |
 | Buzzer on `5V`, 7.08 mA | 59.0 s | 0.418 C = 2.1 J | |
 
-Total about 251 J (70 mWh) per day. Minute refreshes are 93 % of the
-3.0 V charge, and about 87 % of each refresh charge is the nRF that does not
-sleep (item 1). The idle floor (74.6 µA) is mostly the breakout regulator
-(C6f). The DCF window and the alarm do not matter for the daily budget.
+That total is **obsolete** after `d0685ee`; most of the refresh charge was
+the spinning nRF.
+
+### Revised model after `d0685ee` (panel charge from B1, nRF from A10; C not re-run)
+
+Assume each minute refresh adds **B1** panel charge (~6.8 mC mean) plus a
+short nRF active phase like A10 boot (**1.1 mC**), and the nRF sleeps at
+**2 µA** for the rest of an ~8 s refresh window. Idle, DCF and alarm rows
+stay on the C8/B1/C7 numbers until C is re-measured.
+
+| State | Charge per day (3.0 V rail) | Share |
+| --- | --- | --- |
+| Idle, 74.6 µA | 1.54 mAh | 32 % |
+| Refresh, ~7.9 mC each × 1440 | **3.16 mAh** | 66 % |
+| DCF + alarm | ~0.05 mAh | 1 % |
+| **3.0 V rail (estimate)** | **~4.8 mAh ≈ 52 J** | |
+| Buzzer on `5V` | 2.1 J | |
+
+Minute refreshes drop from **93 %** to about **66 %** of the 3.0 V budget;
+the dominant term is now the panel and regulator idle, not the nRF spin.
+**Confirm with a new C8 run on `d0685ee`.**
