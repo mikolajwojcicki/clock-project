@@ -393,7 +393,10 @@ static void arm_wake(void)
     uint32_t now = board_ms();
     uint32_t next = now;
     bool have = false;
-    if (s_set)
+    /* poll_clock skips while drawing, so its past deadline would make every
+     * board_sleep return at once and spin through the refresh. The seconds
+     * catch up after the draw (poll_clock adds whole elapsed steps). */
+    if (s_set && !s_drawing)
     {
         want_wake(&have, &next, s_last_ms + 1000u);
     }

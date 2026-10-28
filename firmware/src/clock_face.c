@@ -1,7 +1,5 @@
 #include "clock_face.h"
 
-#include <stdio.h>
-
 #define FACE_W 122
 #define FACE_H 250
 
@@ -122,10 +120,13 @@ bool clock_face_black(uint32_t x, uint32_t y, const clock_time *t)
     /* Uppercase only: letter() has no lowercase, so "Wt" drew as "W:". */
     static const char *abbr[] = {"PN", "WT", "SR", "CZ", "PT", "SO", "ND"};
     const char *day = (t->wday >= 0 && t->wday <= 6) ? abbr[t->wday] : "??";
-    char hm[6];
-    char sec[3];
-    snprintf(hm, sizeof hm, "%02d:%02d", t->hour, t->min);
-    snprintf(sec, sizeof sec, "%02d", t->sec);
+    /* Called for every pixel of every RAM write: snprintf here kept the CPU
+     * busy for about 8 s per refresh (2026-10-28 PC samples). Fields are 0-59. */
+    char hm[6] = {
+        (char)('0' + t->hour / 10), (char)('0' + t->hour % 10), ':',
+        (char)('0' + t->min / 10), (char)('0' + t->min % 10), '\0',
+    };
+    char sec[3] = {(char)('0' + t->sec / 10), (char)('0' + t->sec % 10), '\0'};
 
     uint32_t day_w = text_width(day, 3);
     uint32_t hm_w = text_width(hm, 4);
