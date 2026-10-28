@@ -69,7 +69,7 @@ Root holds shared docs (`AGENTS.md`, README), Nix flakes/shells, and CI. Keep co
 | Motion | ST `LIS3DH` (`LIS3DHTR`) | INT1/INT2 wake; no polling while sleeping |
 | Charger | Microchip `MCP73831` | USB-C input |
 | LDO | Diodes `AP2112K-3.3` | 3.3 V rail |
-| Buzzer | `AP-1205V-P1` electromagnetic | **Option A** (loud); NPN driver (`MMBT3904` / equiv.) + flyback diode; accept ~50 mA while sounding |
+| Buzzer | `AP-1205V-P1` electromagnetic | **Option A** (loud); NPN driver (`MMBT3904` / equiv.) + flyback diode; measured ~14 mA on `5V` while sounding (2.7 kHz PWM, ~7 mA mean at 1 s on / 1 s off; run D, `notes/log/2026-10-28_deep-sleep-current.md`) |
 | Debug | SWD header | 1×4 |
 | Firmware stack | **Bare-metal** on nRF52832 | **No Zephyr**, no RTOS — see below |
 
