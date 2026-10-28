@@ -32,6 +32,7 @@ History, failed attempts and the pin-leak fixes that led here are in
 | C8 | [`ppk-20261028T195828`](../measurements/ppk-20261028T195828.ppkz) | C | Source Meter 3.0 V | `SLEEP_UART=0` | 360 s |
 | A10 | [`ppk-20261028T212701`](../measurements/ppk-20261028T212701.ppkz) | A | Source Meter 3.0 V | `SLEEP_UART=0`, firmware `d0685ee` | 240 s |
 | A9b | [`ppk-20261028T205549`](../measurements/ppk-20261028T205549.ppkz) | A | Source Meter 3.0 V | `SLEEP_UART=0`, pre-`d0685ee` spin fix | 240 s |
+| C9 | [`ppk-20261028T232632`](../measurements/ppk-20261028T232632.ppkz) | C, panel on | Source Meter 3.0 V | `SLEEP_UART=0`, firmware `c6faefd`, DCF generator on `P0.25` | 360 s |
 
 Wiring photos: C is
 [`2026-10-25_deep-sleep_ppk2-C.jpg`](../media/2026-10-25_deep-sleep_ppk2-C.jpg);
@@ -132,6 +133,24 @@ fight is **not analysed here**; solder-bridge research is tracked separately.
   driving the NPN base through 1 kΩ, about 2.3 mA while high, 50 % duty
   `[INFERENCE]`.
 
+### C9, shared rail on `c6faefd` (first whole-device run after both fixes)
+
+| Phase | Window | Current |
+| --- | --- | --- |
+| Boot refresh | 0.59-4.72 s | 4.37 mA mean, 18.1 mC |
+| DCF window open | 10-160 s | **138.3 µA** (1 s means 138.2-138.4) |
+| Refresh (first after sync, then at 60 s spacing) | 169.4, 229.3, 289.3, 349.3 s | 4.50 mA mean, **16.73-16.75 mC each**, 3.7 s |
+| Idle, clock running | between refreshes | **74.7 µA** |
+
+- The refresh is not a CPU spin: the shape is about 5.7 mA for 0.8 s, 4.2 mA
+  for 1.6 s, 3.9 mA for 0.2 s, 5.7 mA for 0.7 s, then 75 µA. Four refreshes
+  repeat within 0.1 mC.
+- DCF window: 138.3 - 74.7 = 63.6 µA above idle (B1 receiver cost: 77 µA).
+  The 425.8 µA of C8 was the GPIOTE IN channel (`c6faefd`).
+- **Refresh charge is 16.7 mC, about twice the 7.9 mC of the revised model.**
+  B1 panel charge (6.8 mC) plus the A10 nRF spike (1.1 mC) does not add up
+  to it. Cause open.
+
 ### D, buzzer on `5V`
 
 | Phase | Window | Current |
@@ -171,8 +190,10 @@ PWM0 drives `BUZZER_EN` with a 2.7 kHz square wave (`buzzer.c`, `TONE_TOP`
    3.33-4.07 mA for the full BUSY wait because `clock_face_black()` called
    `snprintf` twice per pixel (~250k calls per refresh). After the fix, A10
    shows a **0.43 s** boot spike at 2.58 mA mean (1.11 mC) and then sleep
-   during the rest of the wait. C8 was taken on older firmware; **re-run C
-   with `d0685ee`** before updating the refresh row in the daily model below.
+   during the rest of the wait. C9 re-measured the whole device: refresh is
+   3.7 s and 16.7 mC. The B1 + A10 sum (about 8 mC) does not explain it;
+   candidates are the regulator, LIS3DH breakout and DCF module on the same
+   rail during the refresh. To check: read the B1 refresh charge from its pack.
 2. **DCF window drew about 290 µA (fixed in `c6faefd`).** A9 had 291 µA,
    C8 minus B1 gave 296 µA, and C2 and C6e showed the same (0.34 mA). Cause:
    `dcf77_sync.c` used `SENSE_TOGGLE(true)`, a GPIOTE IN channel (`CONFIG[0]`
@@ -234,4 +255,19 @@ stay on the C8/B1/C7 numbers until C is re-measured.
 
 Minute refreshes drop from **93 %** to about **66 %** of the 3.0 V budget;
 the dominant term is now the panel and regulator idle, not the nRF spin.
-**Confirm with a new C8 run on `d0685ee`.**
+Re-measured as C9 (below): the refresh is 16.75 mC, so this model is superseded.
+
+### C9 measured, minute refreshes (`c6faefd`)
+
+Supersedes the revised model above (its 7.9 mC refresh was a B1 + A10
+composite, not a C measurement). Idle 74.7 µA, refresh 16.75 mC.
+
+| State | Charge per day (3.0 V rail) | Share |
+| --- | --- | --- |
+| Idle, 74.7 µA | 1.79 mAh | 21 % |
+| Refresh, 16.75 mC × 1440 | **6.70 mAh** | 79 % |
+| **3.0 V rail (estimate, DCF and alarm omitted)** | **~8.5 mAh ≈ 92 J** | |
+
+Refresh on button press and alarm only (about 20 a day, `[INFERENCE]`):
+0.093 mAh, so the budget is idle, 1.79 mAh. Idle is 37 times the 2 µA of the
+nRF alone (A10, A11); the 72 µA gap is the peripherals on the rail.
