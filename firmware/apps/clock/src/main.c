@@ -56,11 +56,11 @@ static void announce_alarm(bool started)
     }
 }
 
-static void print_slot(int wday)
+static void print_slot(int wday, int slot)
 {
     alarm_slot a;
-    alarm_get(wday, &a);
-    con_printf("alarm %d %02d:%02d %s\n", wday + 1, a.hour, a.min, a.enabled ? "on" : "off");
+    alarm_get(wday, slot, &a);
+    con_printf("alarm %d %d %02d:%02d %s\n", wday + 1, slot + 1, a.hour, a.min, a.enabled ? "on" : "off");
 }
 
 static void accept_line(void)
@@ -68,19 +68,28 @@ static void accept_line(void)
     s_line[s_line_len] = '\0';
     s_line_len = 0;
     int wday = 0;
-    switch (alarm_parse(s_line, &wday))
+    int slot = 0;
+    switch (alarm_parse(s_line, &wday, &slot))
     {
     case ALARM_PARSE_SET:
-        print_slot(wday);
+        print_slot(wday, slot);
         return;
     case ALARM_PARSE_LIST:
         for (int d = 0; d < ALARM_DAYS; d++)
         {
-            print_slot(d);
+            for (int s = 0; s < ALARM_SLOTS; s++)
+            {
+                alarm_slot a;
+                alarm_get(d, s, &a);
+                if (a.enabled)
+                {
+                    print_slot(d, s);
+                }
+            }
         }
         return;
     case ALARM_PARSE_BAD:
-        con_printf("usage: alarm <1-7> HH:MM on|off, alarm?\n");
+        con_printf("usage: alarm <1-7> [1-8] HH:MM on|off, alarm?\n");
         return;
     case ALARM_PARSE_NOT_ALARM:
         break;
@@ -456,7 +465,7 @@ int main(void)
     clock_set(&s_time, 2000, 1, 1, 0, 0, 0);
 
     con_printf("clock-project clock " BUILD_ID "\n");
-    con_printf("LFXO RTC1. Send YYYY-MM-DD HH:MM:SS or alarm <1-7> HH:MM on|off, alarm?\n");
+    con_printf("LFXO RTC1. Send YYYY-MM-DD HH:MM:SS or alarm <1-7> [1-8] HH:MM on|off, alarm?\n");
     draw();
     s_dcf_retries_left = DCF_RETRIES;
     s_dcf_pending = true;

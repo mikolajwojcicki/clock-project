@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-static alarm_slot s_slots[ALARM_DAYS];
+static alarm_slot s_slots[ALARM_DAYS][ALARM_SLOTS];
 static bool s_active;
 static bool s_start_pending; /* start time is latched on the next alarm_step */
 static uint32_t s_start_ms;
@@ -19,26 +19,71 @@ void alarm_init(void)
     s_fired_valid = false;
 }
 
-bool alarm_set(int wday, int hour, int min, bool enabled)
+bool alarm_day_valid(const alarm_slot day[ALARM_SLOTS])
 {
-    if (wday < 0 || wday >= ALARM_DAYS || hour < 0 || hour > 23 || min < 0 || min > 59)
+    for (int i = 0; i < ALARM_SLOTS; i++)
     {
-        return false;
+        if (day[i].hour > 23 || day[i].min > 59)
+        {
+            return false;
+        }
+        for (int j = i + 1; j < ALARM_SLOTS; j++)
+        {
+            if (day[i].enabled && day[j].enabled && day[i].hour == day[j].hour && day[i].min == day[j].min)
+            {
+                return false;
+            }
+        }
     }
-    s_slots[wday].hour = (uint8_t)hour;
-    s_slots[wday].min = (uint8_t)min;
-    s_slots[wday].enabled = enabled;
     return true;
 }
 
-bool alarm_get(int wday, alarm_slot *out)
+bool alarm_set(int wday, int slot, int hour, int min, bool enabled)
 {
-    if (wday < 0 || wday >= ALARM_DAYS)
+    if (wday < 0 || wday >= ALARM_DAYS || slot < 0 || slot >= ALARM_SLOTS ||
+        hour < 0 || hour > 23 || min < 0 || min > 59)
     {
         return false;
     }
-    *out = s_slots[wday];
+    alarm_slot day[ALARM_SLOTS];
+    memcpy(day, s_slots[wday], sizeof day);
+    day[slot].hour = (uint8_t)hour;
+    day[slot].min = (uint8_t)min;
+    day[slot].enabled = enabled;
+    if (!alarm_day_valid(day))
+    {
+        return false;
+    }
+    s_slots[wday][slot] = day[slot];
     return true;
+}
+
+bool alarm_get(int wday, int slot, alarm_slot *out)
+{
+    if (wday < 0 || wday >= ALARM_DAYS || slot < 0 || slot >= ALARM_SLOTS)
+    {
+        return false;
+    }
+    *out = s_slots[wday][slot];
+    return true;
+}
+
+bool alarm_table_replace(const alarm_slot t[ALARM_DAYS][ALARM_SLOTS])
+{
+    for (int d = 0; d < ALARM_DAYS; d++)
+    {
+        if (!alarm_day_valid(t[d]))
+        {
+            return false;
+        }
+    }
+    memcpy(s_slots, t, sizeof s_slots);
+    return true;
+}
+
+void alarm_table_get(alarm_slot out[ALARM_DAYS][ALARM_SLOTS])
+{
+    memcpy(out, s_slots, sizeof s_slots);
 }
 
 /* Two digits at p, or -1. */
@@ -51,7 +96,7 @@ static int two_digits(const char *p)
     return (p[0] - '0') * 10 + (p[1] - '0');
 }
 
-alarm_parse_result alarm_parse(const char *line, int *wday)
+alarm_parse_result alarm_parse(const char *line, int *wday, int *slot)
 {
     if (strncmp(line, "alarm", 5) != 0)
     {
@@ -62,20 +107,36 @@ alarm_parse_result alarm_parse(const char *line, int *wday)
     {
         return ALARM_PARSE_LIST;
     }
-    /* " <1-7> HH:MM on|off" */
-    if (p[0] != ' ' || p[1] < '1' || p[1] > '7' || p[2] != ' ' || p[5] != ':' || p[8] != ' ')
+    /* " <1-7> <1-8> HH:MM on|off" or the slot-1 alias " <1-7> HH:MM on|off"; 11 is the shortest. */
+    if (strlen(p) < 11 || p[0] != ' ' || p[1] < '1' || p[1] > '7' || p[2] != ' ')
     {
         return ALARM_PARSE_BAD;
     }
     int day = p[1] - '1';
-    int hour = two_digits(p + 3);
-    int min = two_digits(p + 6);
+    int sl = 0;
+    const char *r = p + 3;
+    if (p[4] == ' ') /* slot form: p[3] is the slot */
+    {
+        if (p[3] < '1' || p[3] > '8')
+        {
+            return ALARM_PARSE_BAD;
+        }
+        sl = p[3] - '1';
+        r = p + 5;
+    }
+    /* "HH:MM on|off" */
+    if (r[2] != ':' || r[5] != ' ')
+    {
+        return ALARM_PARSE_BAD;
+    }
+    int hour = two_digits(r);
+    int min = two_digits(r + 3);
     bool on;
-    if (strcmp(p + 9, "on") == 0)
+    if (strcmp(r + 6, "on") == 0)
     {
         on = true;
     }
-    else if (strcmp(p + 9, "off") == 0)
+    else if (strcmp(r + 6, "off") == 0)
     {
         on = false;
     }
@@ -83,18 +144,27 @@ alarm_parse_result alarm_parse(const char *line, int *wday)
     {
         return ALARM_PARSE_BAD;
     }
-    if (!alarm_set(day, hour, min, on))
+    if (!alarm_set(day, sl, hour, min, on))
     {
         return ALARM_PARSE_BAD;
     }
     *wday = day;
+    *slot = sl;
     return ALARM_PARSE_SET;
 }
 
 bool alarm_on_minute(const clock_time *t)
 {
-    const alarm_slot *s = &s_slots[t->wday];
-    if (!s->enabled || s->hour != t->hour || s->min != t->min)
+    bool match = false;
+    for (int i = 0; i < ALARM_SLOTS; i++)
+    {
+        const alarm_slot *s = &s_slots[t->wday][i];
+        if (s->enabled && s->hour == t->hour && s->min == t->min)
+        {
+            match = true;
+        }
+    }
+    if (!match)
     {
         return false;
     }
