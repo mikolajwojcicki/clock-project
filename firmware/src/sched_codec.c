@@ -60,3 +60,41 @@ sched_status sched_decode(const uint8_t *buf, size_t len, alarm_slot out[ALARM_D
     memcpy(out, tmp, sizeof tmp);
     return SCHED_OK;
 }
+
+static uint16_t crc16(const uint8_t *d, size_t n)
+{
+    uint16_t c = 0xFFFF;
+    while (n--)
+    {
+        c ^= (uint16_t)(*d++) << 8;
+        for (int i = 0; i < 8; i++)
+        {
+            c = (c & 0x8000) ? (uint16_t)((c << 1) ^ 0x1021) : (uint16_t)(c << 1);
+        }
+    }
+    return c;
+}
+
+void sched_record_pack(const alarm_slot t[ALARM_DAYS][ALARM_SLOTS], uint8_t out[SCHED_RECORD_LEN])
+{
+    memset(out, 0, SCHED_RECORD_LEN);
+    for (int i = 0; i < 4; i++)
+    {
+        out[i] = (uint8_t)(SCHED_MAGIC >> (8 * i));
+    }
+    sched_encode(t, out + 4);
+    uint16_t c = crc16(out + 4, SCHED_LEN);
+    out[4 + SCHED_LEN] = (uint8_t)c;
+    out[5 + SCHED_LEN] = (uint8_t)(c >> 8);
+}
+
+sched_status sched_record_unpack(const uint8_t *rec, alarm_slot out[ALARM_DAYS][ALARM_SLOTS])
+{
+    uint32_t m = (uint32_t)rec[0] | (uint32_t)rec[1] << 8 | (uint32_t)rec[2] << 16 | (uint32_t)rec[3] << 24;
+    uint16_t c = (uint16_t)(rec[4 + SCHED_LEN] | rec[5 + SCHED_LEN] << 8);
+    if (m != SCHED_MAGIC || c != crc16(rec + 4, SCHED_LEN))
+    {
+        return SCHED_ERR_VERSION;
+    }
+    return sched_decode(rec + 4, SCHED_LEN, out);
+}

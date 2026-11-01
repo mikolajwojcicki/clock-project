@@ -58,6 +58,17 @@ int main(void)
     bad[3] = buf[1]; bad[4] = buf[2];
     assert(sched_decode(bad, SCHED_LEN, u) == SCHED_ERR_DUPLICATE);
     assert(memcmp(ref, u, sizeof u) == 0);
+    /* flash record */
+    uint8_t rec[SCHED_RECORD_LEN];
+    alarm_slot good[ALARM_DAYS][ALARM_SLOTS], r2[ALARM_DAYS][ALARM_SLOTS];
+    assert(sched_decode(buf, SCHED_LEN, good) == SCHED_OK);
+    sched_record_pack((const alarm_slot(*)[ALARM_SLOTS])good, rec);
+    memset(r2, 0, sizeof r2);
+    assert(sched_record_unpack(rec, r2) == SCHED_OK && memcmp(good, r2, sizeof r2) == 0);
+    rec[10] ^= 1; /* corrupt payload */
+    assert(sched_record_unpack(rec, r2) != SCHED_OK);
+    memset(rec, 0xFF, sizeof rec); /* erased flash */
+    assert(sched_record_unpack(rec, r2) != SCHED_OK);
     puts("alarm_sched_test ok");
 
     return 0;

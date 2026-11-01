@@ -27,4 +27,16 @@ void sched_encode(const alarm_slot t[ALARM_DAYS][ALARM_SLOTS], uint8_t out[SCHED
 /** Validates buf and fills out. On any error out is left untouched. */
 sched_status sched_decode(const uint8_t *buf, size_t len, alarm_slot out[ALARM_DAYS][ALARM_SLOTS]);
 
+/**
+ * Flash record: magic u32 LE, SCHED_LEN payload bytes, CRC16-CCITT (init 0xFFFF) u16 LE over
+ * the payload, zero padding to a 4-byte multiple (nrf_fstorage writes whole words).
+ */
+#define SCHED_MAGIC 0x53434845u
+#define SCHED_RECORD_LEN ((4u + SCHED_LEN + 2u + 3u) & ~3u)
+
+void sched_record_pack(const alarm_slot t[ALARM_DAYS][ALARM_SLOTS], uint8_t out[SCHED_RECORD_LEN]);
+
+/** Checks magic and CRC, then decodes. On any error out is left untouched. */
+sched_status sched_record_unpack(const uint8_t *rec, alarm_slot out[ALARM_DAYS][ALARM_SLOTS]);
+
 #endif

@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "lis3dh.h"
+#include "sched_store.h"
 #include "motion_count.h"
 #include "nrfx_gpiote.h"
 
@@ -73,6 +74,7 @@ static void accept_line(void)
     {
     case ALARM_PARSE_SET:
         print_slot(wday, slot);
+        con_printf(sched_store_save() ? "saved\n" : "save FAIL\n");
         return;
     case ALARM_PARSE_LIST:
         for (int d = 0; d < ALARM_DAYS; d++)
@@ -460,6 +462,7 @@ int main(void)
     board_button_wake_enable();
     con_init();
     board_time_init();
+    con_printf("sched load %s\n", sched_store_init() ? "ok" : "none");
     spi_bus_init();
     lis3dh_power_down();
     clock_set(&s_time, 2000, 1, 1, 0, 0, 0);
