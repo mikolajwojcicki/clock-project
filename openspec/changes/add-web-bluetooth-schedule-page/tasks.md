@@ -17,10 +17,10 @@
 
 ## 3. Verify on the DK
 
-- [ ] 3.1 Serve `web/` with `nix-shell -p python3 --run "python3 -m http.server 8000 --directory web"` and open it in Chromium on `localhost`; record any browser flag needed
-- [ ] 3.2 Start a UART console capture first, confirm it runs, then hold a DK button 2 s and connect from the page; the page shows connected and the table read from the clock
-- [ ] 3.3 Set Monday slot 1 to a time a few minutes ahead, Upload; the page shows success and the console prints `ble: write ok`
-- [ ] 3.4 Let the alarm fire at that time; the buzzer starts and the console prints `ALARM`
-- [ ] 3.5 Create a same-day duplicate; the page marks both slots and Upload is disabled
-- [ ] 3.6 Connect, wait for the idle drop, confirm the page shows disconnected and keeps the edits
-- [ ] 3.7 Write `notes/log/2026-11-01_web-bluetooth-page.md` with the evidence (console excerpts, browser version, flags) and commit (`web:`)
+- [x] 3.1 Serve `web/` with `nix-shell -p python3 --run "python3 -m http.server 8000 --directory web"` and open it in Chromium on `localhost`; record any browser flag needed
+- [x] 3.2 Start a UART console capture first, confirm it runs, then hold a DK button 2 s and connect from the page; the page shows connected and the table read from the clock
+- [x] 3.3 Set Monday slot 1 to a time a few minutes ahead, Upload; the page shows success and the console prints `ble: write ok`
+- [x] 3.4 Let the alarm fire at that time; the buzzer starts and the console prints `ALARM`
+- [x] 3.5 Create a same-day duplicate; the page marks both slots and Upload is disabled
+- [x] 3.6 Connect, wait for the idle drop, confirm the page shows disconnected and keeps the edits
+- [x] 3.7 Write `notes/log/2026-11-01_web-bluetooth-page.md` with the evidence (console excerpts, browser version, flags) and commit (`web:`)
