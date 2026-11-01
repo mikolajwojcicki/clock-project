@@ -156,6 +156,10 @@ The final thesis prototype is **not USB-powered** (battery / PPK2 on the nRF rai
 
 Notes for agents:
 - Flash after UART cuts via temporary **P19→P18** ribbon; **unplug the ribbon** before every current measurement (pin 1 VTG re-ties domains).
+- **P19→P18 does not carry UART.** It is SWD only (VTG, SWDIO, SELECT, SWDCLK, GND, SWO, RESET — UG Table 6). USB VCOM is a separate IMCU path through SB22–SB25.
+- There is **no dedicated UART header** on the DK. After SB22–SB25 are cut, USB CDC console to the nRF is gone.
+- **Console workaround (on hand):** use the user's **external USB–UART adapter** on the Arduino / GPIO headers (**P13–P17** / Arduino footprints). `P0.05`–`P0.08` remain available there through **SB13–SB16** (connector path — distinct from IMCU VCOM). Leave SB13–SB16 closed. Typical wiring: adapter RX←`P0.06` (TXD), TX→`P0.08` (RXD), GND common; RTS/CTS optional on `P0.05`/`P0.07`.
+- **TP5–TP8** are VCOM test points on the **IMCU side** of SB22–SB25 — useful to confirm the leak; not a post-cut console to the nRF.
 - SW7 OFF only drops RTS/CTS (`P0.05`/`P0.07`); it does **not** fix TX/RX leak (`SB23`/`SB25`).
 - Detail / evidence: [`scratch/sb-isolation-research/`](scratch/sb-isolation-research/) (`PLAN.md`, `QUESTIONS.md`, `catalog.json`).
 
