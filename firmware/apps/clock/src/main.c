@@ -1,6 +1,7 @@
 #include "board.h"
 #include "dcf77_sync.h"
 #include "alarm.h"
+#include "ble_sched.h"
 #include "buzzer.h"
 #include "clock.h"
 #include "clock_face.h"
@@ -294,6 +295,49 @@ static void poll_alarm(void)
     }
 }
 
+#define BLE_HOLD_MS 2000u
+#define BLE_HOLD_POLL_MS 100u
+
+static bool s_hold_wait; /* a button is down and the window has not opened for this hold */
+static uint32_t s_hold_next_ms;
+
+static void poll_ble(void)
+{
+    uint32_t now = board_ms();
+    if (alarm_active())
+    {
+        /* Alarm priority: no window, no link. A hold only silences the alarm. */
+        ble_sched_stop();
+        s_hold_wait = false;
+    }
+    else
+    {
+        uint32_t held = board_button_held_ms();
+        s_hold_wait = held > 0 && held < BLE_HOLD_MS;
+        if (held >= BLE_HOLD_MS && !ble_sched_busy())
+        {
+            (void)ble_sched_adv_start();
+            s_hold_wait = false;
+        }
+        s_hold_next_ms = now + BLE_HOLD_POLL_MS;
+    }
+    if (ble_sched_poll(now))
+    {
+        alarm_slot a;
+        for (int d = 0; d < ALARM_DAYS; d++)
+        {
+            for (int sl = 0; sl < ALARM_SLOTS; sl++)
+            {
+                alarm_get(d, sl, &a);
+                if (a.enabled)
+                {
+                    print_slot(d, sl);
+                }
+            }
+        }
+    }
+}
+
 static void print_time(const clock_time *t)
 {
     con_printf("%04d-%02d-%02d %02d:%02d:%02d", t->year, t->month, t->day,
@@ -427,6 +471,15 @@ static void arm_wake(void)
     {
         want_wake(&have, &next, s_dcf_retry_ms);
     }
+    uint32_t ble_ms;
+    if (ble_sched_next_ms(&ble_ms))
+    {
+        want_wake(&have, &next, ble_ms);
+    }
+    if (s_hold_wait)
+    {
+        want_wake(&have, &next, s_hold_next_ms);
+    }
     if (have)
     {
         board_wake_at(BOARD_WAKE_APP, next);
@@ -443,6 +496,7 @@ void app_poll(void)
     poll_clock();
     poll_alarm();
     poll_dcf();
+    poll_ble();
     /* Also reached from driver waits (e-paper refresh), so the buzzer keeps its phase. */
     arm_wake();
 }
@@ -463,6 +517,7 @@ int main(void)
     con_init();
     board_time_init();
     con_printf("sched load %s\n", sched_store_init() ? "ok" : "none");
+    (void)ble_sched_init();
     spi_bus_init();
     lis3dh_power_down();
     clock_set(&s_time, 2000, 1, 1, 0, 0, 0);

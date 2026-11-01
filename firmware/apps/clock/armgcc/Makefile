@@ -51,6 +51,7 @@ SRC_FILES += \
   $(FW_DIR)/src/alarm.c \
   $(FW_DIR)/src/sched_codec.c \
   $(FW_DIR)/src/sched_store.c \
+  $(FW_DIR)/src/ble_sched.c \
   $(FW_DIR)/src/motion_count.c \
   $(FW_DIR)/src/lis3dh.c \
   $(FW_DIR)/src/clock.c \

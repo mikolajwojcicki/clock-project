@@ -10,6 +10,13 @@ void board_safe_state(void);
 /** True while any DK button (P0.13-16, active low) is held. Stage 10 remaps this. */
 bool board_any_button_pressed(void);
 
+/** Ms the DK buttons have been held without a release, 0 if none. Call from the main loop; the
+ *  hold starts at the first call that sees a press. */
+uint32_t board_button_held_ms(void);
+
+/** SoftDevice connection config tag used by board_time_init; pass to sd_ble_gap_adv_start. */
+#define BOARD_BLE_CONN_CFG_TAG 1
+
 /** Wake the CPU on any DK button press (GPIOTE PORT, low-power SENSE). Needs nrfx_gpiote_init. */
 void board_button_wake_enable(void);
 

@@ -48,6 +48,24 @@ bool board_any_button_pressed(void)
            !nrf_gpio_pin_read(DK_BUTTON3) || !nrf_gpio_pin_read(DK_BUTTON4);
 }
 
+uint32_t board_button_held_ms(void)
+{
+    static bool held;
+    static uint32_t start;
+    uint32_t now = board_ms();
+    if (!board_any_button_pressed())
+    {
+        held = false;
+        return 0;
+    }
+    if (!held)
+    {
+        held = true;
+        start = now;
+    }
+    return now - start;
+}
+
 static void on_button(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     /* The interrupt is the wake; app_poll reads the pin levels. */
@@ -84,7 +102,6 @@ static void rtc_evt(nrfx_rtc_int_type_t type)
 }
 
 #define BOARD_APP_RAM_START 0x200022c8u /* keep equal to RAM ORIGIN in clock_gcc_nrf52.ld */
-#define BLE_CONN_CFG_TAG 1
 
 void board_time_init(void)
 {
@@ -100,7 +117,7 @@ void board_time_init(void)
     (void)sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
     /* ram_start in: app RAM origin from the linker script; out: the minimum the stack needs. */
     uint32_t ram_start = BOARD_APP_RAM_START;
-    uint32_t e = nrf_sdh_ble_default_cfg_set(BLE_CONN_CFG_TAG, &ram_start);
+    uint32_t e = nrf_sdh_ble_default_cfg_set(BOARD_BLE_CONN_CFG_TAG, &ram_start);
     if (e == NRF_SUCCESS)
     {
         e = nrf_sdh_ble_enable(&ram_start);
