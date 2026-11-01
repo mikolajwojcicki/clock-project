@@ -143,6 +143,22 @@ Note: `nrf-bm` may ship sibling `zephyr/` trees for Nordic packaging; ignore tho
 
 Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **The thesis prototype is a soldered perfboard** (no jumper wires). A custom PCB is not required. **Production PCB BOM,** if a PCB is started later: [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; the in-tree bare-metal blinky is [`firmware/apps/blinky/`](firmware/apps/blinky/) (nRF5 SDK).
 
+#### nRF52 DK solder-bridge isolation (PCA10040) — required for battery/no-USB prototype
+
+The final thesis prototype is **not USB-powered** (battery / PPK2 on the nRF rail). On the DK, the interface MCU (IMCU) ↔ nRF **UART** path leaks **both ways** through ESD/GPIO coupling: USB-powered IMCU can hold `VDD_nRF` up with PPK2 off (~1.5–2.7 V observed; TP6/TP8 live), and with USB unplugged an unpowered IMCU loads a live nRF rail. For trustworthy sleep-current work and a battery-only bring-up, cut the isolation bridges — do not rely on “no terminal attached.”
+
+| Set | Bridges | Status / action | Why |
+| --- | --- | --- | --- |
+| Supply series | **SB9** | Already cut | Puts P22 in series for PPK2 |
+| SWD / RESET / SWO | **SB20, SB21, SB26, SB27** | Already cut | Isolates on-board debugger SWDIO/SWDCLK/RESET/SWO |
+| UART / VCOM | **SB22, SB23, SB24, SB25** | **Cut these** (bench confirmed residual on **SB23**/TP6 and **SB25**/TP8; cut all four) | Bidirectional IMCU↔nRF leak on `P0.05`–`P0.08`; critical when IMCU has no USB power |
+| Do **not** cut | **SB29** | Leave closed | Cutting IMCU power makes back-feed worse while USB is used for flash/debug |
+
+Notes for agents:
+- Flash after UART cuts via temporary **P19→P18** ribbon; **unplug the ribbon** before every current measurement (pin 1 VTG re-ties domains).
+- SW7 OFF only drops RTS/CTS (`P0.05`/`P0.07`); it does **not** fix TX/RX leak (`SB23`/`SB25`).
+- Detail / evidence: [`scratch/sb-isolation-research/`](scratch/sb-isolation-research/) (`PLAN.md`, `QUESTIONS.md`, `catalog.json`).
+
 ### Thesis scope (expected chapters / work)
 
 - Theory: embedded low-power methods, interrupt vs polling, DCF-77 coding, BLE overview
