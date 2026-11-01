@@ -8,8 +8,12 @@
 #include "dk_breadboard_pins.h"
 #include "nrf.h"
 #include "nrf_gpio.h"
+#ifdef SOFTDEVICE_PRESENT
 #include "nrf_sdh.h"
 #include "nrf_sdh_ble.h"
+#else
+#include "nrfx_clock.h"
+#endif
 #include "nrfx_gpiote.h"
 #include "nrfx_rtc.h"
 
@@ -101,9 +105,10 @@ static void rtc_evt(nrfx_rtc_int_type_t type)
     }
 }
 
+#ifdef SOFTDEVICE_PRESENT
 #define BOARD_APP_RAM_START 0x200022c8u /* keep equal to RAM ORIGIN in clock_gcc_nrf52.ld */
 
-void board_time_init(void)
+static void clocks_start(void)
 {
     /* The SoftDevice owns POWER/CLOCK: it starts LFCLK from the crystal and brings up RTC0.
      * Bounded so a missing crystal cannot hang boot. */
@@ -123,6 +128,29 @@ void board_time_init(void)
         e = nrf_sdh_ble_enable(&ram_start);
     }
     con_printf("sdh ble: err %lu, app RAM start needed 0x%08lx\n", (unsigned long)e, (unsigned long)ram_start);
+}
+#else
+static void clock_evt(nrfx_clock_evt_type_t evt)
+{
+    (void)evt;
+}
+
+static void clocks_start(void)
+{
+    nrfx_clock_init(clock_evt);
+    nrfx_clock_enable();
+    nrfx_clock_lfclk_start();
+    /* LFXO starts in ~0.3 s. Bounded so a missing crystal cannot hang boot;
+     * the RTC then runs from the RC fallback. */
+    for (uint32_t i = 0; i < 8000000 && !nrfx_clock_lfclk_is_running(); i++)
+    {
+    }
+}
+#endif
+
+void board_time_init(void)
+{
+    clocks_start();
 
     const nrfx_rtc_config_t cfg = {
         .prescaler          = 0,
