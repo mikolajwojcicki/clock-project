@@ -113,6 +113,12 @@ static void accept_line(void)
         }
         return;
     }
+    if (strcmp(s_line, "ble adv") == 0)
+    {
+        /* Debug: same as the 2 s button hold, so bench scripts need no hands. */
+        con_printf(!alarm_active() && ble_sched_adv_start() ? "ble: adv cmd\n" : "ble: adv refused\n");
+        return;
+    }
     clock_time next;
     if (!clock_parse(s_line, &next))
     {
