@@ -141,7 +141,7 @@ Note: `nrf-bm` may ship sibling `zephyr/` trees for Nordic packaging; ignore tho
 
 ### Prototyping path (before / beside custom PCB)
 
-Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, optional TP4056 + Li-Po for power experiments. **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **The thesis prototype is a soldered perfboard** (no jumper wires). A custom PCB is not required. **Production PCB BOM,** if a PCB is started later: [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; the in-tree bare-metal blinky is [`firmware/apps/blinky/`](firmware/apps/blinky/) (nRF5 SDK).
+Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, Li-Po + Pimoroni LiPo Amigo (`MCP73831`, USB-C) for battery/charge experiments (see battery power path below). **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **The thesis prototype is a soldered perfboard** (no jumper wires). A custom PCB is not required. **Production PCB BOM,** if a PCB is started later: [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; the in-tree bare-metal blinky is [`firmware/apps/blinky/`](firmware/apps/blinky/) (nRF5 SDK).
 
 #### nRF52 DK solder-bridge isolation (PCA10040) — required for battery/no-USB prototype
 
@@ -162,6 +162,24 @@ Notes for agents:
 - **TP5–TP8** are VCOM test points on the **IMCU side** of SB22–SB25 — useful to confirm the leak; not a post-cut console to the nRF.
 - SW7 OFF only drops RTS/CTS (`P0.05`/`P0.07`); it does **not** fix TX/RX leak (`SB23`/`SB25`).
 - Detail / evidence: [`scratch/sb-isolation-research/`](scratch/sb-isolation-research/) (`PLAN.md`, `QUESTIONS.md`, `catalog.json`).
+
+#### nRF52 DK battery power via `P1` `5V` (locked prototype path)
+
+When the DK USB cable is **unplugged**, the pin silk-screened **`5V` on header `P1`** may be used as a **battery input**. A single-cell Li-Po (~3.0–4.2 V) into that pin feeds the DK onboard `AP7333` LDO and produces the board `3.3 V` rail. This is a known Nordic DK workaround (also used in Nordic’s hexapod blog); it is **not** one of the three official UG power options (USB / `P21` 1.7–3.6 V / coin cell).
+
+| Do | Do not |
+| --- | --- |
+| Battery → slide switch → **`P1` `5V`** + buzzer `+`; GND → **`P1` `GND`** | Put Li-Po on **`P21`** or on **`P1` `VDD`/`3V3`** (max 3.6 V, unregulated / logic rail) |
+| Keep **DK USB unplugged** while BAT feeds `P1` `5V` | Dual-feed USB 5 V and battery onto the same `5V` net |
+| Charge on **Amigo USB-C** with the load switch **OFF** | Treat Amigo’s silk `5V` pad as a battery-boosted 5 V output (it is USB VBUS input only) |
+| Prefer Pimoroni LiPo Amigo / Amigo Pro (`MCP73831`, JST-PH) + ~500 mAh JST-PH cell | Leave Fast Charge bridged on Amigo with a ~500 mAh cell |
+
+Operating modes:
+1. **Flash / USB bring-up:** DK USB on; battery switch **OFF** (no BAT on `P1` `5V`).
+2. **Battery demo / sleep current:** DK USB out; switch **ON**; keep SB UART isolation rules above.
+3. **Charge:** USB-C into Amigo only; switch preferably **OFF**.
+
+Full wiring / buzzer / escape-hatch notes: [`scratch/battery-and-charger/power-architecture.md`](scratch/battery-and-charger/power-architecture.md). Parts pick: [`scratch/battery-and-charger/recommendation.md`](scratch/battery-and-charger/recommendation.md).
 
 ### Thesis scope (expected chapters / work)
 
