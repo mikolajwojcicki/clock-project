@@ -4,9 +4,9 @@
 
 ## 2. SoftDevice and memory layout
 
-- [ ] 2.1 Add S112 7.2.0 (`$NRF5_SDK_DIR/components/softdevice/s112`) to `firmware/apps/clock/armgcc/Makefile`: hex merge or flash step, include paths, `nrf_sdh`, `nrf_sdh_ble`, `nrf_sdh_soc`, `nrf_ble_gatt`, `nrf_ble_qwr` sources, `-DS112 -DSOFTDEVICE_PRESENT -DNRF_SD_BLE_API_VERSION=7`.
-- [ ] 2.2 Update `sdk_config.h`: enable `NRF_SDH`, `NRF_SDH_BLE` (peripheral 1, central 0, one GATT service, MTU 247), `NRF_SDH_SOC`, `NRF_SDH_CLOCK_LF_SRC` = XTAL, `NRF_FSTORAGE` with the SoftDevice backend.
-- [ ] 2.3 Boot-enable the SoftDevice in `board_time_init`; remove the `nrfx_clock_*` calls; keep RTC1. Read the required RAM start from the `nrf_sdh_ble_default_cfg_set` log and set flash and RAM origins in `clock_gcc_nrf52.ld`. Reserve the last 4 KB page.
+- [x] 2.1 Add S112 7.2.0 (`$NRF5_SDK_DIR/components/softdevice/s112`) to `firmware/apps/clock/armgcc/Makefile`: hex merge or flash step, include paths, `nrf_sdh`, `nrf_sdh_ble`, `nrf_sdh_soc`, `nrf_ble_gatt`, `nrf_ble_qwr` sources, `-DS112 -DSOFTDEVICE_PRESENT -DNRF_SD_BLE_API_VERSION=7`.
+- [x] 2.2 Update `sdk_config.h`: enable `NRF_SDH`, `NRF_SDH_BLE` (peripheral 1, central 0, one GATT service, MTU 247), `NRF_SDH_SOC`, `NRF_SDH_CLOCK_LF_SRC` = XTAL, `NRF_FSTORAGE` with the SoftDevice backend.
+- [x] 2.3 Boot-enable the SoftDevice in `board_time_init`; remove the `nrfx_clock_*` calls; keep RTC1. Read the required RAM start from the `nrf_sdh_ble_default_cfg_set` log and set flash and RAM origins in `clock_gcc_nrf52.ld`. Reserve the last 4 KB page.
 - [ ] 2.4 Flash SoftDevice and app with OpenOCD (add a Makefile target). Verify on the DK: clock, e-paper, DCF sync, motion dismiss and buzzer still work with no BLE window open. Record the flash and RAM sizes in a note under `notes/log/`.
 
 ## 3. Alarm table and codec

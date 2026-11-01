@@ -7,8 +7,8 @@ MEMORY
 {
   /* S112 7.2.0 owns flash below 0x19000. The last 4 KB page (0x7F000) holds the schedule record. */
   FLASH (rx) : ORIGIN = 0x19000, LENGTH = 0x66000
-  /* Provisional: SoftDevice RAM start is set from the nrf_sdh_ble_enable log (task 2.3). */
-  RAM (rwx) :  ORIGIN = 0x20002000, LENGTH = 0xE000
+  /* SoftDevice RAM end read from the nrf_sdh_ble_enable log (S112, 1 link, MTU 247). */
+  RAM (rwx) :  ORIGIN = 0x200022c8, LENGTH = 0xdd38
 }
 
 SECTIONS

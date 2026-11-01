@@ -9,6 +9,7 @@
 #include "nrf.h"
 #include "nrf_gpio.h"
 #include "nrf_sdh.h"
+#include "nrf_sdh_ble.h"
 #include "nrfx_gpiote.h"
 #include "nrfx_rtc.h"
 
@@ -82,6 +83,9 @@ static void rtc_evt(nrfx_rtc_int_type_t type)
     }
 }
 
+#define BOARD_APP_RAM_START 0x200022c8u /* keep equal to RAM ORIGIN in clock_gcc_nrf52.ld */
+#define BLE_CONN_CFG_TAG 1
+
 void board_time_init(void)
 {
     /* The SoftDevice owns POWER/CLOCK: it starts LFCLK from the crystal and brings up RTC0.
@@ -94,6 +98,14 @@ void board_time_init(void)
     }
     /* POWER is SoftDevice-owned: DC/DC must go through the SoftDevice API. */
     (void)sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
+    /* ram_start in: app RAM origin from the linker script; out: the minimum the stack needs. */
+    uint32_t ram_start = BOARD_APP_RAM_START;
+    uint32_t e = nrf_sdh_ble_default_cfg_set(BLE_CONN_CFG_TAG, &ram_start);
+    if (e == NRF_SUCCESS)
+    {
+        e = nrf_sdh_ble_enable(&ram_start);
+    }
+    con_printf("sdh ble: err %lu, app RAM start needed 0x%08lx\n", (unsigned long)e, (unsigned long)ram_start);
 
     const nrfx_rtc_config_t cfg = {
         .prescaler          = 0,
