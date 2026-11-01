@@ -13,9 +13,9 @@
 
 - [x] 3.1 Change `alarm.c/.h` to 7 x 8 slots addressed by (day, slot). Reject duplicate enabled HH:MM on one day. Keep the trigger on minute change only.
 - [x] 3.2 Add `sched_codec.c/.h`: encode and decode the 113 B format, return an error code, never touch the live table on failure.
-- [ ] 3.3 Add `sched_store.c/.h`: `nrf_fstorage` record (magic, version, table, CRC16) in the last page; load at boot, bad record means all slots disabled; save after each accepted change.
+- [x] 3.3 Add `sched_store.c/.h`: `nrf_fstorage` record (magic, version, table, CRC16) in the last page; load at boot, bad record means all slots disabled; save after each accepted change.
 - [x] 3.4 Update the UART parser in `main.c`: `alarm <d> <s> HH:MM on|off`, short form as slot 1 alias, `alarm?` lists used slots. Update the boot banner text.
-- [ ] 3.5 Verify on the DK: set slots over UART, reset, `alarm?` shows them. Corrupt the page and confirm all slots are disabled. Reset while the buzzer sounds and confirm it stays off.
+- [x] 3.5 Verify on the DK: set slots over UART, reset, `alarm?` shows them. Corrupt the page and confirm all slots are disabled. Reset while the buzzer sounds and confirm it stays off.
 
 ## 4. BLE service
 
