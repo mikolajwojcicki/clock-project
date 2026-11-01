@@ -2,6 +2,18 @@
   "mcpServers": {
     "Saleae Logic 2": {
       "url": "http://127.0.0.1:10530"
+    },
+    "overleaf": {
+      "command": "uv",
+      "args": [
+        "--no-cache",
+        "--directory",
+        "/opt/repos/overleaf-mcp-server",
+        "run",
+        "python",
+        "-m",
+        "src.main"
+      ]
     }
   }
 }

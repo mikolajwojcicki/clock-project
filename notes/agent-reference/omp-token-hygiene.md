@@ -46,18 +46,19 @@ Tracked [`.omp/mcp.json`](../../.omp/mcp.json) stays lean. Recipes:
 "Saleae Logic 2": { "url": "http://127.0.0.1:10530" }
 ```
 
-**Overleaf** — put the token in the environment / a **gitignored** local overlay, never in a committed file:
+**Overleaf** — project [`.omp/mcp.json`](../../.omp/mcp.json) starts the server **without** embedding a token.
+Paste the new Git token only into the server’s local env file (gitignored):
 
-```json
-"overleaf": {
-  "command": "uv",
-  "args": ["--no-cache", "--directory", "/opt/repos/overleaf-mcp-server", "run", "python", "-m", "src.main"],
-  "env": {
-    "OVERLEAF_TOKEN": "",
-    "PROJECT_ID": "6a5d22821d4854c9755706fd"
-  }
-}
+```text
+/opt/repos/overleaf-mcp-server/.env
 ```
+
+```env
+OVERLEAF_TOKEN=paste_new_token_here
+PROJECT_ID=6a5d22821d4854c9755706fd
+```
+
+Then restart OMP. Do **not** put `olp_…` into tracked `.omp/mcp.json`.
 
 **filesystem** — avoid scoping to `./` on this monorepo (`notes/measurements` alone is hundreds of MB). If required, point at a narrow subdirectory.
 
