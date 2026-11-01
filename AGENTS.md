@@ -4,6 +4,8 @@ Bachelor's thesis monorepo (*praca inżynierska*) for an ultra-low-power alarm c
 
 Canonical product/architecture decisions live **here**. `previous-compressed-conversation.md` is an archived handoff from an earlier LLM session; prefer this file if anything conflicts. Do not resurrect superseded choices (STM32L0, SSD1306 OLED, external DS3231, fully offline/no-BLE) unless the user explicitly rolls back.
 
+**Token hygiene:** keep this file short. Deep host/tooling, DK isolation/power, and NixOS primers live under [`notes/agent-reference/`](notes/agent-reference/) — read those **only when the task needs them**. Prefer fresh sessions after long OpenSpec/apply loops; watch prompt-cache thrash (stuck ~18k `cache_read` + huge `cache_write`).
+
 ## Project purpose
 
 Official APD thesis topic (approved):
@@ -23,23 +25,19 @@ Goal: battery-powered bedside alarm clock that avoids keeping a phone in the bed
 | Firmware | Embedded C/C++, build/flash, drivers | `firmware/` |
 | Companion UI | Web Bluetooth alarm-schedule app | `web/` (scaffold only for now) |
 | University reference materials | Editorial rules, title form, codes, memoir docs | `temp-resources/` |
+| Agent on-demand refs | Host tooling, DK power, NixOS primer, OMP tuning | `notes/agent-reference/` |
 
-Root holds shared docs (`AGENTS.md`, README), Nix flakes/shells, and CI. Keep concerns separated; split unrelated edits across commits. Commit prefixes: `thesis:` changes belong in the `clock-project-latex` repo (bump the submodule pointer in the parent when needed).
+Root holds shared docs (`AGENTS.md`), Nix flakes/shells, and CI. Keep concerns separated; split unrelated edits across commits. Commit prefixes: `thesis:` changes belong in the `clock-project-latex` repo (bump the submodule pointer in the parent when needed). Nested `/scratch/` is its own git repo (ignored here).
 
 ### Thesis LaTeX (finalized)
 
-- **Working template:** official WIT `szablonwitpd` seeded into `clock-project-latex/` (`pdflatex` + `biber` / `biblatex`, UTF-8). Set `\stCzyMgr` to `0` for *inżynierska*.
-- **Writing rules (mandatory for agents):** before drafting or editing thesis prose, read and follow [`clock-project-latex/thesis-writing-rules.yaml`](clock-project-latex/thesis-writing-rules.yaml) (machine-readable extract of Greber *Zasady pisania prac dyplomowych*, wyd. VI). Use it for structure, wstęp/zakończenie, figures/tables, citations, and typography pitfalls. Chapter layout follows the promotor (2026-10-13): chapters 3 and 4, then 5, then 2, then 1 and 6. Promotor overrides win on conflict with the YAML. Source PDF remains in `temp-resources/Zasady-pisania-prac-dyplomowych.pdf`.
-- **Draft, then rewrite:** agents may draft chapter prose. A paragraph stays in the thesis only after the author rewrites it in their own words. Log every kept draft in [`notes/ai-use.md`](notes/ai-use.md). The author must be able to explain every sentence at the defence and must check sources an agent proposes.
-- **AI disclosure is author-only.** Agents must not draft or fill "Informacja o wykorzystaniu narzędzi AI". They only keep `notes/ai-use.md`.
-- **Evidence log:** during bring-up, add a dated note under [`notes/`](notes/) (what was done, what failed, the fix, why). Screenshots use a light theme and the name `YYYY-MM-DD_topic_detail.ext`. Measurements are CSV with instrument, temperature, supply, and firmware commit. A PPK2 capture MAY be committed as a verified packed capture instead (`firmware/tools/ppk-plot/ppk-archive.sh pack <csv>` writes `.ppkz` + `.ppkz.json` and reads every sample back against the CSV); a tracked `.ppkz` MUST be under 50 MB (pack longer runs as `--from/--to` windows). PPK2 CSV exports stay local (`notes/measurements/ppk-*.csv` is ignored).
-- **People as test subjects:** do not start tests with volunteers until the promotor has filed the ethics-commission request. Instrument measurements and a self-test do not need that.
-- **Typography:** WIT deanery rules (`temp-resources/wymogi_edytorskie.docx.md`) are already in `clock-project-latex/settings.tex` (Times/`newtx`, sizes 14/13/12, single spacing). Prefer those over Greber’s 1.5 spacing / 35 mm left margin when they disagree — the YAML documents both.
-- **CI PDF:** every push/PR in `clock-project-latex` runs `.github/workflows/build-thesis.yml` and uploads artifact `thesis-pdf` (`main.pdf`). Prefer this over local TeX when agents need the built PDF. Retrieve with:
-  `gh run download -R mikolajwojcicki/clock-project-latex -n thesis-pdf` (optionally `-R` / `--dir` / run id from `gh run list`).
-- **Documentation only:** Kubik memoir v0.9 kept under `temp-resources/docs/memoir-v09/` (+ original `temp-resources/dyplomszablonmemoir-v09.zip`). CP1250 / Overleaf-hostile; do not compile as the thesis tree. Steal typography ideas into WIT `settings.tex` if needed.
-- **Removed:** English-first `szablon_pracy_dyplomowej_w_latex` (deleted from `temp-resources/`).
-- Also in `temp-resources/`: approved APD topic PDF `my-thesis.pdf`, `Zasady-pisania-prac-dyplomowych.pdf`, `wymogi_edytorskie.docx.md`, `pd_inz_pl.doc.pdf`, `skroty_kier_pd.xls`, upstream `szablonwitpd.zip`.
+- **Working template:** official WIT `szablonwitpd` in `clock-project-latex/` (`pdflatex` + `biber` / `biblatex`, UTF-8). `\stCzyMgr` = `0` for *inżynierska*.
+- **Writing rules:** before drafting/editing thesis prose, read [`clock-project-latex/thesis-writing-rules.yaml`](clock-project-latex/thesis-writing-rules.yaml). Chapter order (promotor 2026-10-13): 3→4→5→2→1→6. Promotor overrides win on conflict.
+- **Draft, then rewrite:** agents may draft; author must rewrite kept prose and log it in [`notes/ai-use.md`](notes/ai-use.md). Agents must **not** draft "Informacja o wykorzystaniu narzędzi AI".
+- **Evidence log:** dated notes under [`notes/`](notes/). Screenshots: light theme, `YYYY-MM-DD_topic_detail.ext`. PPK2: pack via `firmware/tools/ppk-plot/ppk-archive.sh`; tracked `.ppkz` &lt; 50 MB; CSV stays local (`notes/measurements/ppk-*.csv` ignored).
+- **People as test subjects:** wait for promotor ethics filing (self-test / instruments OK).
+- **CI PDF:** `gh run download -R mikolajwojcicki/clock-project-latex -n thesis-pdf`.
+- Detail paths: `temp-resources/` (APD PDF, Greber rules, deanery typography, memoir archive). Prefer WIT `settings.tex` over Greber spacing/margins when they disagree.
 
 ## Product requirements (current)
 
@@ -69,236 +67,73 @@ Root holds shared docs (`AGENTS.md`, README), Nix flakes/shells, and CI. Keep co
 | Motion | ST `LIS3DH` (`LIS3DHTR`) | INT1/INT2 wake; no polling while sleeping |
 | Charger | Microchip `MCP73831` | USB-C input |
 | LDO | Diodes `AP2112K-3.3` | 3.3 V rail |
-| Buzzer | `AP-1205V-P1` electromagnetic | **Option A** (loud); NPN driver (`MMBT3904` / equiv.) + flyback diode; measured ~14 mA on `5V` while sounding (2.7 kHz PWM, ~7 mA mean at 1 s on / 1 s off; run D, `notes/log/2026-10-28_deep-sleep-current.md`) |
+| Buzzer | `AP-1205V-P1` electromagnetic | **Option A** (loud); NPN driver + flyback; ~14 mA on `5V` while sounding (see deep-sleep notes) |
 | Debug | SWD header | 1×4 |
 | Firmware stack | **Bare-metal** on nRF52832 | **No Zephyr**, no RTOS — see below |
 
 ### Firmware stack (locked)
 
-- **Bare-metal only** (C/C++ on the Nordic nRF52832 / SoftDevice or SoftDevice-free as decided later).
-- **Do not** introduce Zephyr RTOS application builds, FreeRTOS, or another RTOS unless the user explicitly changes this decision.
-- Rationale: the thesis prioritizes measurable ultra-low-power behavior (sleep currents, peripheral power-gating, interrupt-driven wakes). A thin bare-metal control loop gives direct ownership of clock trees, POWER/CLOCK peripherals, and sleep entry/exit without RTOS scheduling or subsystem abstractions obscuring the energy story.
-- **For nRF52832 / nRF52 DK / MDBT42Q:** use **nRF5 SDK 17.1.0** (`NRF5_SDK_DIR`) + `arm-none-eabi-gcc` + **OpenOCD** flash. First in-tree app: [`firmware/apps/blinky/`](firmware/apps/blinky/) (SoftDevice-free / blank).
-- **Do not** use VS Code nRF Connect → Create application → Copy sample from **`nrf-bm`** for this hardware. Nordic’s **nRF Connect SDK Bare Metal** (`~/ncs/nrf-bm`) targets **nRF54L only** — incompatible with PCA10040 / nRF52832.
-- Prefer Nordic NRFx / CMSIS / nRF5 SDK examples — not Zephyr `west build` app samples.
-- BLE (later): Nordic SoftDevice via nRF5 SDK; keep application power policy in project-owned code.
-- When suggesting tooling, prefer what is **already installed** on this machine (see below) before proposing new Nix packages or downloads.
-
-### Installed nRF / embedded tooling (this NixOS host)
-
-Do **not** tell the user to `apt install` toolchains or re-download SDKs that are already present. Prefer these paths and packages.
-
-#### System packages (via `~/thinkpad-nixos`, on PATH / session env)
-
-| Tool | Status | Notes |
-| --- | --- | --- |
-| `gcc-arm-embedded` (`arm-none-eabi-gcc` …) | Installed | Arm GNU Toolchain **15.2.Rel1**; `GNU_INSTALL_ROOT` points at its `bin/` |
-| `nrf5-sdk` | Installed | Nordic **nRF5 SDK 17.1.0**; `NRF5_SDK_DIR` → store `…/share/nRF5_SDK` |
-| `segger-jlink-headless` | Installed | J-Link libs + udev (`99-jlink.rules`); license accepted in nixpkgs config |
-| `nrf-udev` | Installed | USB perms for Nordic DKs / probes |
-| `openocd` | Installed | **0.12.0** — primary flash/debug path noted in system config (alongside J-Link) |
-| `gdb` | Installed | Host debugger |
-| `nrfconnect` | Installed | nRF Connect for Desktop (GUI) |
-| `nrfconnect-bluetooth-low-energy` | Installed | BLE app for nRF Connect for Desktop |
-| `gnumake`, `cmake`, `python3`, `picocom` | Installed | Build + UART console |
-| `nrfutil` (nixpkgs) | **Not** packaged system-wide | Omitted in configuration due to a nixpkgs packaging quirk; flash via OpenOCD / nRF Connect / extension tooling instead |
-| `nrfjprog` / `JLinkExe` on PATH | Not exposed as plain CLI wrappers | Use OpenOCD, nRF Connect for Desktop, or tools bundled with the VS Code / `~/ncs` toolchain |
-
-Session variables (already set system-wide):
-
-- `NRF5_SDK_DIR` — nRF5 SDK 17.1.0 root (Makefile-friendly)
-- `GNU_INSTALL_ROOT` — trailing-slash path to `arm-none-eabi-*` binaries (nRF5 SDK Makefile convention)
-
-VS Code is installed as **`vscode.fhsWithPackages`**, with `gcc-arm-embedded`, `gdb`, `openocd`, `python3`, `gnumake`, `cmake`, and `picocom` visible inside the FHS bubble (needed for Marketplace extension native binaries / Cortex-Debug-style workflows).
-
-#### User VS Code + nRF Connect (Marketplace)
-
-The user develops in **VS Code** with the Nordic **nRF Connect** extension ecosystem installed under `~/.vscode/extensions/`:
-
-- `nordic-semiconductor.nrf-connect` (2026.7.x)
-- `nordic-semiconductor.nrf-connect-extension-pack`
-- `nordic-semiconductor.nrf-terminal`
-- `nordic-semiconductor.nrf-devicetree`
-- `nordic-semiconductor.nrf-kconfig`
-
-Associated SDK / toolchain installs managed via nRF Connect (under `~/ncs/`):
-
-| Path | What it is |
-| --- | --- |
-| `~/ncs/nrf-bm/v2.0.0` | **nRF Connect SDK Bare Metal** (**nrf-bm 2.0.0**) — **nRF54L only**; installed but **not** used for this nRF52832 thesis |
-| `~/ncs/toolchains/911f4c5c26` | nRF Connect toolchain bundle (nrfutil-managed; linked for NCS **v3.3.0** in `toolchains.json`) |
-| `~/.nrfconnect-apps/` | nRF Connect for Desktop app manifests (Programmer, Toolchain Manager, BLE, PPK, etc.) |
-
-Note: `nrf-bm` may ship sibling `zephyr/` trees for Nordic packaging; ignore those for application builds. For this monorepo, stay on **nRF5 SDK** under `firmware/apps/` (see blinky). The nRF Connect extension remains useful for **Connected Devices** / Programmer UI; build and flash the in-tree apps with Make + OpenOCD (`.vscode/tasks.json`).
+- **Bare-metal only** (C/C++ on nRF52832; SoftDevice or SoftDevice-free as decided per feature).
+- **Do not** introduce Zephyr/FreeRTOS/other RTOS unless the user explicitly changes this.
+- **For nRF52832 / DK / MDBT42Q:** **nRF5 SDK 17.1.0** (`NRF5_SDK_DIR`) + `arm-none-eabi-gcc` + **OpenOCD**. First in-tree app: [`firmware/apps/blinky/`](firmware/apps/blinky/).
+- **Do not** use nRF Connect SDK Bare Metal (`nrf-bm`) — it is **nRF54L only**.
+- BLE: Nordic SoftDevice via nRF5 SDK; keep power policy in project-owned code.
+- Host paths / VS Code / `~/ncs` layout: [`notes/agent-reference/host-tooling.md`](notes/agent-reference/host-tooling.md) (on-demand).
 
 ### nRF52 / module layout constraints (do not ignore)
 
-- Pins `P0.22`–`P0.30` (module pins near radio): low-drive, low-frequency only (&lt;10 kHz) — buttons OK; **not** SPI/PWM
-- Map SPI (e-paper) to safer GPIOs in `P0.11`–`P0.20` range (exact pinout TBD in schematic)
-- Antenna keep-out ~3.8 mm on all layers under chip antenna; module at PCB edge; via stitching
-- Enable internal DC-DC: external `L2` 10 µH, `L3` 15 nH, `C14` 1 µF per Raytac/nRF guidance
+- Pins `P0.22`–`P0.30`: low-drive, low-frequency only (&lt;10 kHz) — buttons OK; **not** SPI/PWM
+- Map SPI (e-paper) to safer GPIOs in `P0.11`–`P0.20` range (exact pinout TBD)
+- Antenna keep-out ~3.8 mm; module at PCB edge; via stitching
+- Enable internal DC-DC: external `L2` 10 µH, `L3` 15 nH, `C14` 1 µF
 - External 32.768 kHz crystal + 12 pF load caps
 
-### Prototyping path (before / beside custom PCB)
+### Prototyping path (short)
 
-Use breadboard bring-up with: nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, Adafruit LIS3DH breakout, DCF-77 module, THT buzzer + `2N3904`/`BC547` + `1N4148`, Li-Po + Pimoroni LiPo Amigo (`MCP73831`, USB-C) for battery/charge experiments (see battery power path below). **Proto kit is on hand** — checklist in [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). **The thesis prototype is a soldered perfboard** (no jumper wires). A custom PCB is not required. **Production PCB BOM,** if a PCB is started later: [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md). A Zephyr blink on the DK was exploratory only; the in-tree bare-metal blinky is [`firmware/apps/blinky/`](firmware/apps/blinky/) (nRF5 SDK).
+Breadboard/perfboard bring-up with nRF52 DK (`PCA10040`), Waveshare 2.13" e-Paper, LIS3DH, DCF-77 module, THT buzzer + NPN + diode, Li-Po + Pimoroni LiPo Amigo. Proto checklist: [`hardware/bom/proto-bom.md`](hardware/bom/proto-bom.md). Thesis prototype is **soldered perfboard** (no jumper wires). Custom PCB optional later: [`hardware/bom/pcb-bom.md`](hardware/bom/pcb-bom.md).
 
-#### nRF52 DK solder-bridge isolation (PCA10040) — required for battery/no-USB prototype
-
-The final thesis prototype is **not USB-powered** (battery / PPK2 on the nRF rail). On the DK, the interface MCU (IMCU) ↔ nRF **UART** path leaks **both ways** through ESD/GPIO coupling: USB-powered IMCU can hold `VDD_nRF` up with PPK2 off (~1.5–2.7 V observed; TP6/TP8 live), and with USB unplugged an unpowered IMCU loads a live nRF rail. For trustworthy sleep-current work and a battery-only bring-up, cut the isolation bridges — do not rely on “no terminal attached.”
-
-| Set | Bridges | Status / action | Why |
-| --- | --- | --- | --- |
-| Supply series | **SB9** | Already cut | Puts P22 in series for PPK2 |
-| SWD / RESET / SWO | **SB20, SB21, SB26, SB27** | Already cut | Isolates on-board debugger SWDIO/SWDCLK/RESET/SWO |
-| UART / VCOM | **SB22, SB23, SB24, SB25** | **Cut these** (bench confirmed residual on **SB23**/TP6 and **SB25**/TP8; cut all four) | Bidirectional IMCU↔nRF leak on `P0.05`–`P0.08`; critical when IMCU has no USB power |
-| Do **not** cut | **SB29** | Leave closed | Cutting IMCU power makes back-feed worse while USB is used for flash/debug |
-
-Notes for agents:
-- Flash after UART cuts via temporary **P19→P18** ribbon; **unplug the ribbon** before every current measurement (pin 1 VTG re-ties domains).
-- **P19→P18 does not carry UART.** It is SWD only (VTG, SWDIO, SELECT, SWDCLK, GND, SWO, RESET — UG Table 6). USB VCOM is a separate IMCU path through SB22–SB25.
-- There is **no dedicated UART header** on the DK. After SB22–SB25 are cut, USB CDC console to the nRF is gone.
-- **Console workaround (on hand):** use the user's **external USB–UART adapter** on the Arduino / GPIO headers (**P13–P17** / Arduino footprints). `P0.05`–`P0.08` remain available there through **SB13–SB16** (connector path — distinct from IMCU VCOM). Leave SB13–SB16 closed. Typical wiring: adapter RX←`P0.06` (TXD), TX→`P0.08` (RXD), GND common; RTS/CTS optional on `P0.05`/`P0.07`.
-- **TP5–TP8** are VCOM test points on the **IMCU side** of SB22–SB25 — useful to confirm the leak; not a post-cut console to the nRF.
-- SW7 OFF only drops RTS/CTS (`P0.05`/`P0.07`); it does **not** fix TX/RX leak (`SB23`/`SB25`).
-- Detail / evidence: [`scratch/sb-isolation-research/`](scratch/sb-isolation-research/) (`PLAN.md`, `QUESTIONS.md`, `catalog.json`).
-
-#### nRF52 DK battery power via `P1` `5V` (locked prototype path)
-
-When the DK USB cable is **unplugged**, the pin silk-screened **`5V` on header `P1`** may be used as a **battery input**. A single-cell Li-Po (~3.0–4.2 V) into that pin feeds the DK onboard `AP7333` LDO and produces the board `3.3 V` rail. This is a known Nordic DK workaround (also used in Nordic’s hexapod blog); it is **not** one of the three official UG power options (USB / `P21` 1.7–3.6 V / coin cell).
-
-| Do | Do not |
-| --- | --- |
-| Battery → slide switch → **`P1` `5V`** + buzzer `+`; GND → **`P1` `GND`** | Put Li-Po on **`P21`** or on **`P1` `VDD`/`3V3`** (max 3.6 V, unregulated / logic rail) |
-| Keep **DK USB unplugged** while BAT feeds `P1` `5V` | Dual-feed USB 5 V and battery onto the same `5V` net |
-| Charge on **Amigo USB-C** with the load switch **OFF** | Treat Amigo’s silk `5V` pad as a battery-boosted 5 V output (it is USB VBUS input only) |
-| Prefer Pimoroni LiPo Amigo / Amigo Pro (`MCP73831`, JST-PH) + ~500 mAh JST-PH cell | Leave Fast Charge bridged on Amigo with a ~500 mAh cell |
-
-Operating modes:
-1. **Flash / USB bring-up:** DK USB on; battery switch **OFF** (no BAT on `P1` `5V`).
-2. **Battery demo / sleep current:** DK USB out; switch **ON**; keep SB UART isolation rules above.
-3. **Charge:** USB-C into Amigo only; switch preferably **OFF**.
-
-Full wiring / buzzer / escape-hatch notes: [`scratch/battery-and-charger/power-architecture.md`](scratch/battery-and-charger/power-architecture.md). Parts pick: [`scratch/battery-and-charger/recommendation.md`](scratch/battery-and-charger/recommendation.md).
+**Sleep-current / battery work:** cut DK UART isolation bridges and use `P1` `5V` battery feed per [`notes/agent-reference/dk-prototype-power.md`](notes/agent-reference/dk-prototype-power.md). Evidence also under `scratch/sb-isolation-research/` and `scratch/battery-and-charger/` (scratch is a nested repo).
 
 ### Thesis scope (expected chapters / work)
 
-- Theory: embedded low-power methods, interrupt vs polling, DCF-77 coding, BLE overview
-- Hardware: schematic, component selection, energy budget, PCB with EMC care (RF + DCF analog)
-- Firmware: C/C++, DCF decode, e-paper driver, sleep/wake, alarm + motion dismiss
+- Theory: low-power methods, interrupt vs polling, DCF-77, BLE overview
+- Hardware: schematic, selection, energy budget, EMC care (RF + DCF analog)
+- Firmware: DCF decode, e-paper, sleep/wake, alarm + motion dismiss
 - Web: Web Bluetooth schedule upload
-- Research: measure current in sleep / BLE / DCF / alarm vs theoretical budget
+- Research: measure current in sleep / BLE / DCF / alarm vs budget
 
 ## Asking the user (mandatory for agents)
 
-Every question to the user MUST go through the interactive `ask` tool, never as plain chat text. This includes grilling rounds: one `ask` call per round, one entry per question, recommended option first. Keep the question text complete (context, options, tradeoff) so it reads on its own in the dialog.
+Every question to the user MUST go through the interactive `ask` tool, never as plain chat text. Grill rounds: one `ask` call per round, one entry per question, recommended option first.
 
 ## Git workflow (mandatory for agents)
 
-Commit **often** and with **descriptive** messages. Prefer many small, reviewable commits over one large dump at the end of a session.
-
-**Thesis rationale (promotor guidance):** a dense, well-described commit history makes the *praca inżynierska* easier to write later — you can reconstruct what was tried, when architecture changed, and what to put in the firmware/hardware chronology chapters. Sparse or squash-style history is a liability for the paper. Bias hard toward **more commits**, not fewer.
-
-### When to commit
-
-- After a coherent unit of work is complete and working (or intentionally checkpointed)
-- After finishing one concern: e.g. a LaTeX section, a PCB net fix, a firmware driver stub — not all three in one commit if they are unrelated
-- After a successful build/flash milestone (e.g. blinky on DK) — commit the app *before* unrelated docs if both are dirty
-- Before switching tasks or ending a substantial agent turn that changed tracked files
-- When the user asks to commit (always honor that immediately)
-- Prefer splitting a session’s work into **several** commits (app → build/flash → editor tasks → AGENTS/docs) rather than one catch-all
-
-Do **not** wait until the entire feature/thesis chapter is "done" before the first commit. Do **not** batch a whole evening of unrelated progress into a single commit to “keep the log clean.”
-
-### How to commit
-
-- In this repo, agents **should create commits** as work lands — that is intentional for the thesis history and for later chapter drafting from `git log`. Do not wait to be asked for each small unit once work is underway in a session; still honor an explicit “don’t commit yet” from the user.
-- Never update git config. Never force-push to shared branches. Never amend unless the user explicitly requests it and amend safety conditions hold (commit is yours, not pushed, etc.).
-- Never update git config. Never force-push to shared branches. Never amend unless the user explicitly requests it and amend safety conditions hold (commit is yours, not pushed, etc.).
-- Do not commit secrets, private keys, `.env`, KiCad autosave/backup junk, LaTeX build outputs, or large generated binaries unless the user explicitly wants those artifacts tracked.
-- Stage only relevant files for the commit (avoid `git add .` when unrelated changes exist).
-- Pass the message via a HEREDOC. Subject focuses on **why**, not a file list. Prefer imperative mood.
-
-### Message style
-
-```text
-Good:
-  thesis: outline low-power interrupt architecture section
-  hardware: reserve antenna keep-out for MDBT42Q module
-  firmware: wake on LIS3DH INT1 for alarm dismiss
-
-Bad:
-  Update files
-  WIP
-  changes
-  Fix stuff
-```
-
-- Subject ≈ 50–72 characters when practical; add a body when the why is non-obvious
-- Prefer prefixes: `thesis:`, `hardware:`, `firmware:`, `web:`
-- One logical change per commit; split mixed LaTeX + PCB + firmware edits when independent
-
-### Suggested cadence
-
-| Kind of work | Commit when… |
-| --- | --- |
-| LaTeX | A section/subsection, figure set, or bib change is complete |
-| KiCad | A schematic/PCB decision is saved and consistent (e.g. net rename + matching PCB update) |
-| Firmware | A module builds (or a failing test is an intentional checkpoint) and behavior is describable — then a separate commit for flash/docs/tasks if those follow |
-| Docs / AGENTS.md | Decision locks and workflow rules change — own commit, not folded into unrelated code |
-
-If unsure whether to commit: **commit**. A slightly granular history beats a missing one when writing the thesis.
+Commit **often** with descriptive messages. Project rule [`.omp/rules/thesis-commit-history.mdc`](.omp/rules/thesis-commit-history.mdc) is authoritative (overrides “only commit when asked”). Prefixes: `thesis:`, `hardware:`, `firmware:`, `web:`. No force-push; no secrets; stage related files only; HEREDOC messages. If unsure: **commit**.
 
 ## Host facts (NixOS)
 
-- OS: NixOS (declarative, immutable system model)
-- System config flake: `~/thinkpad-nixos` (`nixosConfigurations.thinkpad`)
-- Apply system changes with: `sudo nixos-rebuild switch --flake ~/thinkpad-nixos#thinkpad`
-- Do **not** assume a traditional FHS layout or a mutable package database
-
-## What NixOS is (for agents)
-
-NixOS is not “Linux with a different package manager.” The running system is a build product of Nix expressions. Packages live in the Nix store (`/nix/store/...`) and are wired into profiles via symlinks. There is no `apt`, `dnf`, `pacman`, or `brew`-style install that permanently mutates the OS.
-
-| Traditional distro habit | NixOS reality |
-| --- | --- |
-| `apt install foo` / `dnf install foo` | Add to `environment.systemPackages` (or Home Manager / a flake), then rebuild |
-| Edit files under `/usr` or `/etc` permanently | Prefer declarative config in the flake; many `/etc` files are generated and overwritten on rebuild |
-| “Put it in `/usr/local/bin`” | Put it in a Nix derivation, `environment.systemPackages`, or a user profile |
-| Assume `/bin/bash`, `/usr/bin/env`, and FHS paths everywhere | Paths often resolve through `/run/current-system/sw` or nix-shell/devShell; use `#!/usr/bin/env` carefully and prefer Nix-provided interpreters |
-| Install build deps globally to “just compile” | Use `nix-shell`, `nix develop`, or a project `flake.nix` / `shell.nix` |
-| Enable a service by writing a unit and `systemctl enable` | Prefer `services.*.enable = true;` (or a custom systemd module) in NixOS config, then rebuild |
+- OS: NixOS; system flake `~/thinkpad-nixos` (`nixosConfigurations.thinkpad`)
+- Apply: `sudo nixos-rebuild switch --flake ~/thinkpad-nixos#thinkpad`
+- Do **not** assume traditional FHS or `apt`/`dnf`. Primer: [`notes/agent-reference/nixos-for-agents.md`](notes/agent-reference/nixos-for-agents.md)
 
 ## Hard rules for this machine
 
-1. **Never suggest imperative package managers** (`apt`, `yum`, `dnf`, `pacman`, `snap`, flatpak-as-default-install path) for system software.
-2. **Never tell the user to hand-edit generated system files** as the durable fix. If a change must survive reboot/rebuild, it belongs in `~/thinkpad-nixos` (or a project flake).
-3. **Prefer flakes and nix-shell/devShells** for project tooling. Do not pollute the global system with one-off compile dependencies when a shell can provide them.
-4. **Rebuild is the activation step.** After changing NixOS modules/packages, the change is not live until `nixos-rebuild switch` (or equivalent) succeeds.
-5. **Check what Nix already provides** before inventing wrappers, vendoring binaries, or downloading install scripts meant for other distros.
-6. **Secrets and Wi-Fi credentials** under `~/thinkpad-nixos/secrets/` are sensitive — do not commit, print, or paste them into chat logs casually.
+1. Never suggest imperative package managers for system software.
+2. Never treat hand-edits under `/etc` as the durable fix — use `~/thinkpad-nixos`.
+3. Prefer flakes / `nix-shell` / `nix develop` for project tooling.
+4. Rebuild activates system changes.
+5. Check what Nix already provides before curl-bash installs.
+6. Secrets under `~/thinkpad-nixos/secrets/` stay out of chat/commits.
 
 ## Working in this monorepo
 
-- Keep the project **Nix-friendly**: prefer the already-installed system `gcc-arm-embedded` + `nrf5-sdk` (`NRF5_SDK_DIR` / `GNU_INSTALL_ROOT`) and OpenOCD — not Zephyr app workflows, not `nrf-bm` for nRF52832, and not fresh distro-wide reinstalls.
-- If a dependency must be system-wide (udev for J-Link/nRF DK, etc.), propose the change in `~/thinkpad-nixos`.
-- Prefer NixOS-native commands (`nix`, `nix-shell`, `nix develop`, `nixos-rebuild`) over distro install guides.
-- Do not mix unrelated thesis/hardware/firmware edits in one commit when they can be split cleanly.
-- When adding BOMs or pin maps, put them under `hardware/` (and reference from the thesis) rather than only in chat.
-
-## Quick decision guide
-
-- **Need a CLI tool once for development?** → `nix-shell -p <pkg>` or a project devShell.
-- **Need a tool always on PATH for the user/system?** → add to Home Manager / `environment.systemPackages`, rebuild.
-- **Need a background service / hardware integration?** → NixOS module in `~/thinkpad-nixos`, rebuild.
-- **Need to debug “command not found”?** → check `which`, `type`, and whether you are inside a nix-shell/devShell; do not assume Ubuntu package names map 1:1.
+- Prefer installed `gcc-arm-embedded` + `nRF5 SDK` + OpenOCD — not Zephyr/`nrf-bm` for this MCU.
+- System-wide needs (udev, etc.): propose in `~/thinkpad-nixos`.
+- Put BOMs/pin maps under `hardware/`; dated bring-up notes under `notes/`.
+- Optional MCP recipes / OMP global tuning: [`notes/agent-reference/omp-token-hygiene.md`](notes/agent-reference/omp-token-hygiene.md).
 
 ## Anti-patterns to avoid
 
-- Curl-bashing install scripts that assume glibc FHS layouts or write into `/usr`.
-- Instructing `chmod +x` fixes for missing dynamic loaders without considering Nix packaging.
-- Assuming toolchains from the OS image are complete; pin them in the project flake/shell instead.
-- Treating `/etc/nixos` as the only config location — durable system config is `~/thinkpad-nixos`.
-- Giant catch-all commits that bury PCB, firmware, and LaTeX changes together without need.
-- Reintroducing deleted architecture (OLED-only offline STM32 clock) without an explicit user decision.
-- Pulling in Zephyr/west or an RTOS “for convenience” — conflicts with the bare-metal power-efficiency thesis focus.
+- Curl-bash FHS install scripts; Zephyr/RTOS “for convenience”; resurrecting deleted architecture without an explicit user decision.
+- Giant catch-all commits; reading huge dumps (`notes/measurements/`, multi-MB datasheet `.txt`) into context when a search/slice will do.
+- Leaving Overleaf/API tokens in tracked `.omp/mcp.json`.
