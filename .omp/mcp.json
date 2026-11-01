@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json",
   "mcpServers": {
     "Saleae Logic 2": {
       "url": "http://127.0.0.1:10530"
@@ -13,6 +14,18 @@
         "python",
         "-m",
         "src.main"
+      ]
+    },
+    "filesystem": {
+      "enabled": false,
+      "command": "npx",
+      "args": [
+        "-y",
+        "--prefer-online",
+        "--cache",
+        "/tmp/empty-cache",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/wenigz/clock-project/clock-project-latex"
       ]
     }
   }

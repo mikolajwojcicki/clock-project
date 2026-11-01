@@ -20,8 +20,8 @@ Secondary same-day burn: `scratch/battery-and-charger` (~6.2M) from fat `web_fet
 - Slimmer always-on [`AGENTS.md`](../../AGENTS.md); deep material under `notes/agent-reference/`
 - `handoff` rule no longer `alwaysApply` (invoke when needed)
 - Short always-on [`.omp/rules/token-hygiene.mdc`](../../.omp/rules/token-hygiene.mdc)
-- Project MCP trimmed: no whole-repo `filesystem` server by default; no secrets in tracked `mcp.json`
-- `.gitignore` hardened against dump landmines
+- Project MCP keeps optional servers with `"enabled": false` (OMP does not connect them → no tool-schema baseline cost)
+- No secrets in tracked `mcp.json`; `.gitignore` hardened against dump landmines
 
 ## Global OMP tweaks (live under `~/.omp`, not this git repo)
 
@@ -32,22 +32,25 @@ Documented here so thesis/history still records them. Re-apply after machine reb
 | ADHD rule | `~/.omp/agent/rules/adhd.mdc` | `alwaysApply: false` | Invoke with `/i-have-adhd`; restating state every turn grows context |
 | Headroom archive | `~/.omp/agent/headroom.yml` | `session_archive: false` | Prefix rewriting is the same failure class as cache thrash; keep tool compression on |
 | Thinking | session `/thinking` | prefer low/off for long apply loops | Medium thinking was ~8× visible text in the killer session |
-| Global MCP | `~/.omp/agent/mcp.json` | keep `git` / `context-mode`; enable `pdf-mcp` only when needed | Tool schemas inflate the ~18k baseline |
+| Global MCP | `~/.omp/agent/mcp.json` | `git` + `context-mode` on; `pdf-mcp` present with `enabled: false` | Opt-in PDF tools without deleting the recipe |
 
-Reload after edits: restart OMP, or `/reload-plugins` then `/headroom config` as appropriate.
+Reload after edits: `/mcp reload`, or restart OMP. Headroom: `/reload-plugins` then `/headroom config` as needed.
 
-## Optional project MCP (enable only when needed)
+## MCP on/off workflow (official OMP pattern)
 
-Tracked [`.omp/mcp.json`](../../.omp/mcp.json) stays lean. Recipes:
+Per [omp MCP docs](https://omp.sh/docs/mcp): `"enabled": false` means **do not connect**; `/mcp enable` / `/mcp disable` flip that without deleting config.
 
-**Saleae Logic 2** (URL; harmless if server down):
+| Default | Scope | Server | How to use when needed |
+| --- | --- | --- | --- |
+| on | project | Saleae Logic 2 | needs Logic 2 listening on `:10530` |
+| on | project | overleaf | token only in `/opt/repos/overleaf-mcp-server/.env` |
+| **off** | project | filesystem | `/mcp enable filesystem` → work → `/mcp disable filesystem` (scoped to `clock-project-latex/`, not repo root) |
+| on | user | git, context-mode | always-on lean tools |
+| **off** | user | pdf-mcp | `/mcp enable pdf-mcp` → work → `/mcp disable pdf-mcp` |
 
-```json
-"Saleae Logic 2": { "url": "http://127.0.0.1:10530" }
-```
+Check state: `/mcp list`. After editing JSON by hand: `/mcp reload`. Prefer a **fresh session** when enabling fat servers.
 
-**Overleaf** — project [`.omp/mcp.json`](../../.omp/mcp.json) starts the server **without** embedding a token.
-Paste the new Git token only into the server’s local env file (gitignored):
+**Overleaf token** (never in tracked `mcp.json`):
 
 ```text
 /opt/repos/overleaf-mcp-server/.env
@@ -58,9 +61,7 @@ OVERLEAF_TOKEN=paste_new_token_here
 PROJECT_ID=6a5d22821d4854c9755706fd
 ```
 
-Then restart OMP. Do **not** put `olp_…` into tracked `.omp/mcp.json`.
-
-**filesystem** — avoid scoping to `./` on this monorepo (`notes/measurements` alone is hundreds of MB). If required, point at a narrow subdirectory.
+If you need filesystem on another subtree, edit the abs path under `filesystem.args` in [`.omp/mcp.json`](../../.omp/mcp.json), keep it narrow, then `/mcp reload`.
 
 ## Operator habits that matter more than config
 
