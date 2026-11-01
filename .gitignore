@@ -6,3 +6,16 @@ notes/measurements/ppk-*.csv
 
 # Nested scratch repo for agent research (own git repo)
 /scratch/
+
+# Agent / dump landmines (do not let these become ambient context fodder)
+tmp.md
+teams-dump.html
+teams-dump.md
+teams-dump-images/
+.omp/mcp.local.json
+.omp/mcp.secrets.json
+
+# Local Overleaf / MCP secret overlays (never commit tokens)
+**/.env
+**/.env.*
+!**/.env.example
