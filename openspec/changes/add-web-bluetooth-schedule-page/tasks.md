@@ -8,12 +8,12 @@
 
 ## 2. Page
 
-- [ ] 2.1 Write `web/index.html` and `web/app.js`: 7 days by 8 slots, enable toggle and time input per slot, modified marker, duplicate marking, Upload disabled on duplicates
-- [ ] 2.2 Add Connect with the `ShakeClock` + service filter, connection state, hint to hold a button for 2 s when no device, unsupported-browser message that disables Connect
-- [ ] 2.3 On connect read and decode the table; keep local edits when the local table is modified and ask which to keep
-- [ ] 2.4 Upload with write-with-response, read back, compare bytewise, show success or error; keep the edited table on error; handle `gattserverdisconnected` without auto-reconnect
-- [ ] 2.5 Update `web/README.md`: how to serve on localhost, supported browsers, how to open the advertising window
-- [ ] 2.6 Commit the page (`web:`)
+- [x] 2.1 Write `web/index.html` and `web/app.js`: 7 days by 8 slots, enable toggle and time input per slot, modified marker, duplicate marking, Upload disabled on duplicates
+- [x] 2.2 Add Connect with the `ShakeClock` + service filter, connection state, hint to hold a button for 2 s when no device, unsupported-browser message that disables Connect
+- [x] 2.3 On connect read and decode the table; keep local edits when the local table is modified and ask which to keep
+- [x] 2.4 Upload with write-with-response, read back, compare bytewise, show success or error; keep the edited table on error; handle `gattserverdisconnected` without auto-reconnect
+- [x] 2.5 Update `web/README.md`: how to serve on localhost, supported browsers, how to open the advertising window
+- [x] 2.6 Commit the page (`web:`)
 
 ## 3. Verify on the DK
 
