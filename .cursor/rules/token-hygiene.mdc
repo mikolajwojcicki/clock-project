@@ -1,0 +1,12 @@
+---
+description: Keep Claude/OMP sessions from burning the rate window via prompt-cache thrash
+alwaysApply: true
+---
+
+# Token hygiene (short)
+
+- Prefer a **fresh session** after long OpenSpec continue/apply/archive chains or when the context is already huge.
+- If provider stats show **stuck ~18k cache_read** and **large cache_write every turn**, stop and compact/restart — history mutation is thrashing the prompt cache.
+- For long implement/apply loops, prefer **low/off thinking** unless the user asks otherwise.
+- Read [`notes/agent-reference/`](../../notes/agent-reference/) and huge measurement/datasheet dumps **only when needed**; do not preload them.
+- Do not put API tokens into tracked `.omp/mcp.json`.

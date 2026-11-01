@@ -1,0 +1,14 @@
+---
+description: Read and manage notes/handoff/ session handoff notes (invoke when starting from a handoff or ending a session)
+alwaysApply: false
+---
+
+# Handoff notes
+
+When the user mentions a handoff, starts from a prior session, or asks to wrap up:
+
+1. Look under `notes/handoff/` (and only recurse further if that directory is missing or empty).
+2. Use the interactive question tool to ask whether notes are outdated.
+3. If outdated, ask permission before removing. If still valid, read them and summarise your understanding.
+
+Never save handoff notes in `/tmp` (or `$TMPDIR`): it is cleared on reboot. Save under `notes/handoff/`, and move anything still needed out of `/tmp` into the repo before ending the session.
