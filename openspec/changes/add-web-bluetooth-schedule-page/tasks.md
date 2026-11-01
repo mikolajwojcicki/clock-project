@@ -4,7 +4,7 @@
 - [x] 1.2 Write `encode`, `decode` and `findDuplicates` in `web/schedule.js` (no DOM, no Bluetooth); `decode` rejects wrong length, version not 1 and minute above 1439
 - [x] 1.3 Write `web/schedule.test.mjs` with asserts: Monday slot 1 07:00 enabled gives `01 A4 81`, unused slot is `00 00`, encode/decode round trip including a disabled slot that keeps a time, same-day duplicate found, same time on two days not flagged, bad length/version/minute rejected
 - [x] 1.4 Run the test with `nix-shell -p nodejs --run "node web/schedule.test.mjs"` and see it pass
-- [ ] 1.5 Commit codec and test (`web:`)
+- [x] 1.5 Commit codec and test (`web:`)
 
 ## 2. Page
 
