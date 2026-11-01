@@ -19,16 +19,16 @@
 
 ## 4. BLE service
 
-- [ ] 4.1 Add `ble_sched.c/.h`: GAP name `ShakeClock`, vendor UUID base `e1430d6d-6e9b-4b29-ba99-6f30cbe203d0`, service 0x0001, characteristic 0x0002 (113 B, read and write, variable length), MTU 247, long write.
-- [ ] 4.2 Validate writes through `sched_codec` in the authorize path; reject with an ATT error. On accept: replace the table, save, print `ble: write ok` and the table.
-- [ ] 4.3 Add `board_button_held_ms()` for the DK buttons. In the main loop open the window on a 2 s hold when no alarm is active: 100 ms interval, 0 dBm, 60 s timer, print `ble: adv start` and `ble: adv stop`.
-- [ ] 4.4 Link policy: no pairing; disconnect 30 s after the last write or 60 s after connect with no write.
+- [x] 4.1 Add `ble_sched.c/.h`: GAP name `ShakeClock`, vendor UUID base `e1430d6d-6e9b-4b29-ba99-6f30cbe203d0`, service 0x0001, characteristic 0x0002 (113 B, read and write, variable length), MTU 247, long write.
+- [x] 4.2 Validate writes through `sched_codec` in the authorize path; reject with an ATT error. On accept: replace the table, save, print `ble: write ok` and the table.
+- [x] 4.3 Add `board_button_held_ms()` for the DK buttons. In the main loop open the window on a 2 s hold when no alarm is active: 100 ms interval, 0 dBm, 60 s timer, print `ble: adv start` and `ble: adv stop`.
+- [x] 4.4 Link policy: no pairing; disconnect 30 s after the last write or 60 s after connect with no write.
 - [ ] 4.5 Alarm priority: on alarm start call a stop function that ends advertising and drops the link. Hold during an alarm only silences it.
 
 ## 5. Verification
 
-- [ ] 5.1 With nRF Connect for Desktop (BLE app): scan finds `ShakeClock`; connect; read returns 113 B; write a valid table and confirm `ble: write ok` and a matching `alarm?`.
-- [ ] 5.2 Write bad values: 21 B, version 2, minute 1440, duplicate minute. Each fails and the table is unchanged.
+- [x] 5.1 With nRF Connect for Desktop (BLE app): scan finds `ShakeClock`; connect; read returns 113 B; write a valid table and confirm `ble: write ok` and a matching `alarm?`.
+- [x] 5.2 Write bad values: 21 B, version 2, minute 1440, duplicate minute. Each fails and the table is unchanged.
 - [ ] 5.3 Window and link timing: no advertising after boot; 2 s hold opens it; it closes after 60 s; idle link drops at 60 s; link drops 30 s after a write. Time them from the UART log.
 - [ ] 5.4 Alarm during a connection: set an alarm a minute ahead, stay connected, confirm the link drops and the buzzer starts on time. Confirm a write during the matching minute does not fire the alarm.
 - [ ] 5.5 Write a dated note under `notes/log/` with the results, and run `openspec validate add-ble-alarm-schedule-service --strict`.
