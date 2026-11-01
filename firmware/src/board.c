@@ -8,7 +8,7 @@
 #include "dk_breadboard_pins.h"
 #include "nrf.h"
 #include "nrf_gpio.h"
-#include "nrfx_clock.h"
+#include "nrf_sdh.h"
 #include "nrfx_gpiote.h"
 #include "nrfx_rtc.h"
 
@@ -73,11 +73,6 @@ void board_button_wake_enable(void)
 static volatile uint32_t s_rtc_overflows;
 static const nrfx_rtc_t s_rtc = NRFX_RTC_INSTANCE(1);
 
-static void clock_evt(nrfx_clock_evt_type_t evt)
-{
-    (void)evt;
-}
-
 static void rtc_evt(nrfx_rtc_int_type_t type)
 {
     /* Compare channels: nrfx already disabled the channel (one-shot); the IRQ is the wake. */
@@ -89,14 +84,16 @@ static void rtc_evt(nrfx_rtc_int_type_t type)
 
 void board_time_init(void)
 {
-    nrfx_clock_init(clock_evt);
-    nrfx_clock_enable();
-    nrfx_clock_lfclk_start();
-    /* LFXO starts in ~0.3 s. Bounded so a missing crystal cannot hang boot;
-     * the RTC then runs from the RC fallback. */
-    for (uint32_t i = 0; i < 8000000 && !nrfx_clock_lfclk_is_running(); i++)
+    /* The SoftDevice owns POWER/CLOCK: it starts LFCLK from the crystal and brings up RTC0.
+     * Bounded so a missing crystal cannot hang boot. */
+    if (nrf_sdh_enable_request() == NRF_SUCCESS)
     {
+        for (uint32_t i = 0; i < 8000000 && !nrf_sdh_is_enabled(); i++)
+        {
+        }
     }
+    /* POWER is SoftDevice-owned: DC/DC must go through the SoftDevice API. */
+    (void)sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
 
     const nrfx_rtc_config_t cfg = {
         .prescaler          = 0,

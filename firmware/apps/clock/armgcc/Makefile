@@ -30,6 +30,20 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
+  $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
+  $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
+  $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
+  $(SDK_ROOT)/components/libraries/atomic_fifo/nrf_atfifo.c \
+  $(SDK_ROOT)/components/libraries/atomic_flags/nrf_atflags.c \
+  $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
+  $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage_sd.c \
+  $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
+  $(SDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
+  $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
+  $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
+  $(SDK_ROOT)/components/ble/common/ble_advdata.c \
+  $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
+  $(SDK_ROOT)/components/ble/nrf_ble_qwr/nrf_ble_qwr.c \
   $(FW_DIR)/src/board.c \
   $(FW_DIR)/src/buzzer.c \
   $(FW_DIR)/src/spi_bus.c \
@@ -62,7 +76,22 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/experimental_section_vars \
   $(SDK_ROOT)/components/toolchain/cmsis/include \
   $(SDK_ROOT)/components/libraries/util \
-  $(SDK_ROOT)/components/drivers_nrf/nrf_soc_nosd \
+  $(SDK_ROOT)/components/softdevice/s112/headers \
+  $(SDK_ROOT)/components/softdevice/s112/headers/nrf52 \
+  $(SDK_ROOT)/components/softdevice/common \
+  $(SDK_ROOT)/components/ble/common \
+  $(SDK_ROOT)/components/ble/nrf_ble_gatt \
+  $(SDK_ROOT)/components/ble/nrf_ble_qwr \
+  $(SDK_ROOT)/components/libraries/fstorage \
+  $(SDK_ROOT)/components/libraries/atomic \
+  $(SDK_ROOT)/components/libraries/atomic_fifo \
+  $(SDK_ROOT)/components/libraries/atomic_flags \
+  $(SDK_ROOT)/components/libraries/strerror \
+  $(SDK_ROOT)/components/libraries/balloc \
+  $(SDK_ROOT)/components/libraries/memobj \
+  $(SDK_ROOT)/components/libraries/mutex \
+  $(SDK_ROOT)/components/libraries/timer \
+  $(SDK_ROOT)/components/libraries/crc16 \
 
 LIB_FILES += \
 
@@ -78,6 +107,11 @@ CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52
 CFLAGS += -DNRF52832_XXAA
+CFLAGS += -DS112
+CFLAGS += -DSOFTDEVICE_PRESENT
+CFLAGS += -DNRF_SD_BLE_API_VERSION=7
+# GCC 15 flags SDK 17.1.0 nrf_fstorage.c:205 (intentional fs_data section walk).
+CFLAGS += -Wno-error=array-bounds
 CFLAGS += -DNRF52_PAN_74
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
@@ -96,6 +130,9 @@ ASMFLAGS += -DFLOAT_ABI_HARD
 ASMFLAGS += -DNRF52
 ASMFLAGS += -DNRF52832_XXAA
 ASMFLAGS += -DNRF52_PAN_74
+ASMFLAGS += -DS112
+ASMFLAGS += -DSOFTDEVICE_PRESENT
+ASMFLAGS += -DNRF_SD_BLE_API_VERSION=7
 
 LDFLAGS += $(OPT)
 LDFLAGS += -mthumb -mabi=aapcs -L$(SDK_ROOT)/modules/nrfx/mdk -T$(LINKER_SCRIPT)
@@ -148,3 +185,10 @@ flash: default
 erase:
 	openocd -f interface/jlink.cfg -c "transport select swd" -f target/nrf52.cfg \
 		-c "init; nrf52_recover; reset halt; flash fillw 0x10001208 0x0000005A 1; exit"
+
+# One-time (and after make erase): S112 7.2.0 below 0x19000. The app hex does not contain it.
+SD_HEX := $(SDK_ROOT)/components/softdevice/s112/hex/s112_nrf52_7.2.0_softdevice.hex
+.PHONY: flash_softdevice
+flash_softdevice:
+	openocd -f interface/jlink.cfg $(OPENOCD_SERIAL) -c "transport select swd" -f target/nrf52.cfg \
+		-c "program $(SD_HEX) verify reset exit"

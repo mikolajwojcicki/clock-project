@@ -5,8 +5,10 @@ GROUP(-lgcc -lc -lnosys)
 
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x0, LENGTH = 0x80000
-  RAM (rwx) :  ORIGIN = 0x20000000, LENGTH = 0x10000
+  /* S112 7.2.0 owns flash below 0x19000. The last 4 KB page (0x7F000) holds the schedule record. */
+  FLASH (rx) : ORIGIN = 0x19000, LENGTH = 0x66000
+  /* Provisional: SoftDevice RAM start is set from the nrf_sdh_ble_enable log (task 2.3). */
+  RAM (rwx) :  ORIGIN = 0x20002000, LENGTH = 0xE000
 }
 
 SECTIONS
@@ -56,6 +58,42 @@ SECTIONS
     PROVIDE(__start_nrf_balloc = .);
     KEEP(*(.nrf_balloc))
     PROVIDE(__stop_nrf_balloc = .);
+  } > FLASH
+  .sdh_soc_observers :
+  {
+    PROVIDE(__start_sdh_soc_observers = .);
+    KEEP(*(SORT(.sdh_soc_observers*)))
+    PROVIDE(__stop_sdh_soc_observers = .);
+  } > FLASH
+  .sdh_ble_observers :
+  {
+    PROVIDE(__start_sdh_ble_observers = .);
+    KEEP(*(SORT(.sdh_ble_observers*)))
+    PROVIDE(__stop_sdh_ble_observers = .);
+  } > FLASH
+  .sdh_req_observers :
+  {
+    PROVIDE(__start_sdh_req_observers = .);
+    KEEP(*(SORT(.sdh_req_observers*)))
+    PROVIDE(__stop_sdh_req_observers = .);
+  } > FLASH
+  .sdh_state_observers :
+  {
+    PROVIDE(__start_sdh_state_observers = .);
+    KEEP(*(SORT(.sdh_state_observers*)))
+    PROVIDE(__stop_sdh_state_observers = .);
+  } > FLASH
+  .sdh_stack_observers :
+  {
+    PROVIDE(__start_sdh_stack_observers = .);
+    KEEP(*(SORT(.sdh_stack_observers*)))
+    PROVIDE(__stop_sdh_stack_observers = .);
+  } > FLASH
+  .fs_data :
+  {
+    PROVIDE(__start_fs_data = .);
+    KEEP(*(.fs_data))
+    PROVIDE(__stop_fs_data = .);
   } > FLASH
 
 } INSERT AFTER .text
