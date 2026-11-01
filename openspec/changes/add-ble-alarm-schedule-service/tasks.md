@@ -29,6 +29,6 @@
 
 - [x] 5.1 With nRF Connect for Desktop (BLE app): scan finds `ShakeClock`; connect; read returns 113 B; write a valid table and confirm `ble: write ok` and a matching `alarm?`.
 - [x] 5.2 Write bad values: 21 B, version 2, minute 1440, duplicate minute. Each fails and the table is unchanged.
-- [ ] 5.3 Window and link timing: no advertising after boot; 2 s hold opens it; it closes after 60 s; idle link drops at 60 s; link drops 30 s after a write. Time them from the UART log.
-- [ ] 5.4 Alarm during a connection: set an alarm a minute ahead, stay connected, confirm the link drops and the buzzer starts on time. Confirm a write during the matching minute does not fire the alarm.
+- [x] 5.3 Window and link timing: no advertising after boot; 2 s hold opens it; it closes after 60 s; idle link drops at 60 s; link drops 30 s after a write. Time them from the UART log.
+- [x] 5.4 Alarm during a connection: set an alarm a minute ahead, stay connected, confirm the link drops and the buzzer starts on time. Confirm a write during the matching minute does not fire the alarm.
 - [ ] 5.5 Write a dated note under `notes/log/` with the results, and run `openspec validate add-ble-alarm-schedule-service --strict`.
