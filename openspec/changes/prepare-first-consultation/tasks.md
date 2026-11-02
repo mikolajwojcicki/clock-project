@@ -8,8 +8,8 @@
 
 ## 2. Demo rehearsal
 
-- [ ] 2.1 Flash the current clock app to the DK and run the script: boot refresh, set time, set one alarm from the web page, alarm sounds, motion dismiss, DCF sync attempt; verify each step's result (pass/fail and observed behavior) is written in the note.
-- [ ] 2.2 Check `hardware/docs/hardware-block-diagram.pdf` against the board actually on the desk (parts and connections); verify mismatches are listed in the note.
+- [x] 2.1 Flash the current clock app to the DK and run the script: boot refresh, set time, set one alarm from the web page, alarm sounds, motion dismiss, DCF sync attempt; verify each step's result (pass/fail and observed behavior) is written in the note.
+- [x] 2.2 Check `hardware/docs/hardware-block-diagram.pdf` against the board actually on the desk (parts and connections); verify mismatches are listed in the note.
 
 ## 3. Consultation
 

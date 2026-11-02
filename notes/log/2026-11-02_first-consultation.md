@@ -51,7 +51,37 @@ From `firmware/docs/diagrams/README.md` (spec-vs-code table and as-built notes).
 
 ## Demo rehearsal
 
+2026-11-02 evening, firmware built from `a4bf3ae` (`-dirty` from unrelated files; firmware, board and web paths equal to `8c415fe`), default build (`SLEEP_UART=1`). nRF52 DK on J-Link USB, flashed with `make flash` (verify OK), reset over SWD. UART log captured on the DK VCOM at 115200 Bd. DCF input from the DCF-1060N receiver indoors (not the Nucleo generator). Web page served from `web/` on `localhost:8000` in Chromium.
+
+| Step | Result | Observed |
+| --- | --- | --- |
+| Boot refresh | pass | `display ok 3716 ms` 3 s after reset; DCF window opened at boot because the time was unset |
+| Set time | pass | console line `2026-11-02 21:04:45` → `set ... poniedziałek`, then one line per second. Panel did not redraw until the DCF window closed (21:09:29), by design (`apps/clock/src/main.c` main loop: no refresh inside a window). Deferred refresh at 21:09:33 (3725 ms), author confirmed correct time and weekday |
+| Alarm from web page | pass | `ble adv` from console. First connection 21:06:15-21:07:15 without a write; second connection at 21:07:41, `ble: write ok`, `alarm 1 1 21:12 on` at 21:07:57; disconnect 30 s later |
+| Alarm sounds | pass | `ALARM 21:12 poniedziałek` at 21:12:00, `display ok` at 21:12:04; author heard the buzzer |
+| Motion dismiss | pass | author shook the board from 21:12:07; `MOTION event 1..20`, `ALARM stop (motion)` at 21:12:14 (about 7 s of shaking) |
+| DCF sync attempt | fail | boot window 21:04:29-21:09:29: 9 × `dcf: rejected pulse`, then `dcf: timeout (time unchanged)`. Indoor reception at the desk, evening; no frame decoded. Generator path not tried this run |
+
+For the meeting: the DCF step is stated as failed indoors. Either show it with the Nucleo generator or show the log.
+
 ## Board vs block diagram
+
+`hardware/docs/hardware-block-diagram.pdf` draws the target PCB. The board on the desk (author's check, 2026-11-02):
+
+| Diagram block | Desk | Match |
+| --- | --- | --- |
+| USB-C | none; power from the DK J-Link USB | no |
+| MCP73831 | not in the power path today | no |
+| Li-Ion | not connected today | no |
+| AP2112K 3,3 V | DK onboard regulator instead | no |
+| MDBT42Q-512KV2 nRF52832 | nRF52 DK PCA10040 (bare nRF52832 QFAA, no module) | partial: same SoC |
+| e-paper | Waveshare 2.13" over the 8-pin header | yes |
+| LIS3DH | LIS3DH breakout, INT1 wired | yes |
+| DCF-1060N | DCF-1060N (MAS6180 inside) | yes |
+| buzzer | AP-1205V-P1 via NPN and flyback diode | yes |
+| przyciski, SWD | DK onboard buttons, SWD via DK J-Link | partial: no separate 1×4 SWD header |
+
+The whole power chain (USB-C → MCP73831 → Li-Ion → AP2112K) is not on the desk. The battery path per `notes/agent-reference/dk-prototype-power.md` exists but was not used in this run. Say this at the meeting: the diagram is the target, the desk is the DK prototype.
 
 ## Consultation
 
