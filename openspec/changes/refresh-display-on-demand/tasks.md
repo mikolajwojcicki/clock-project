@@ -9,9 +9,9 @@
 
 ## 2. Measurement and notes
 
-- [ ] 2.1 Flash `SLEEP_UART=0`, record 10 min on configuration C with a press every 60 s, pack with `ppk-archive.sh pack`, and verify the pack with its read-back check
-- [ ] 2.2 Log the run in `notes/log/` with idle current, charge per refresh, and the daily energy for the assumed presses per day; verify the table replaces the `[INFERENCE]` in the C9 section
-- [ ] 2.3 Add the entry to `notes/ai-use.md` if any prose is kept, and commit firmware and notes separately
+- [x] 2.1 Flash `SLEEP_UART=0`, record 10 min on configuration C with a press every 60 s, pack with `ppk-archive.sh pack`, and verify the pack with its read-back check
+- [x] 2.2 Log the run in `notes/log/` with idle current, charge per refresh, and the daily energy for the assumed presses per day; verify the table replaces the `[INFERENCE]` in the C9 section
+- [x] 2.3 Add the entry to `notes/ai-use.md` if any prose is kept, and commit firmware and notes separately
 
 ## Workflow follow-up
 
