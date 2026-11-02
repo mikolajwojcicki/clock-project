@@ -31,9 +31,9 @@ static bool s_dcf_retry_wait;
 static uint32_t s_dcf_retry_ms;
 static bool s_set;
 static uint32_t s_last_ms;
-static int s_drawn_min = -1;
 static bool s_draw;
 static bool s_drawing;
+static bool s_btn_down; /* press latch: one refresh request per released-to-pressed edge */
 static char s_line[24];
 static unsigned s_line_len;
 
@@ -45,9 +45,10 @@ static void draw(void)
     uint32_t t0 = board_ms();
     bool ok = epd_refresh(face_pixel, &s_time);
     con_printf("display %s %lu ms\n", ok ? "ok" : "FAIL", (unsigned long)(board_ms() - t0));
-    s_drawn_min = s_time.min;
     s_draw = false;
     s_drawing = false;
+    /* A press that began during the blocking refresh must not count as a new edge. */
+    s_btn_down = board_any_button_pressed();
 }
 
 static void announce_alarm(bool started)
@@ -55,6 +56,7 @@ static void announce_alarm(bool started)
     if (started)
     {
         con_printf("ALARM %02d:%02d %s\n", s_time.hour, s_time.min, clock_wday_pl(s_time.wday));
+        s_draw = true;
     }
 }
 
@@ -211,10 +213,6 @@ static void poll_clock(void)
         s_dcf_pending = true;
         s_dcf_pending_ms = now;
     }
-    if (s_time.min != s_drawn_min)
-    {
-        s_draw = true;
-    }
 }
 
 static volatile bool s_int1;
@@ -254,7 +252,15 @@ static void poll_alarm(void)
 {
     static bool buzzing;
     static bool was_active;
-    bool want = alarm_step(board_ms(), board_any_button_pressed());
+    bool alarm_before = alarm_active();
+    bool pressed = board_any_button_pressed();
+    bool want = alarm_step(board_ms(), pressed);
+    /* One refresh per press edge; a press that meets a sounding alarm only silences it. */
+    if (pressed && !s_btn_down && !alarm_before)
+    {
+        s_draw = true;
+    }
+    s_btn_down = pressed;
     if (alarm_active() && !was_active)
     {
         motion_arm();
