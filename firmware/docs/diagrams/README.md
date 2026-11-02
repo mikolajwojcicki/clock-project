@@ -13,24 +13,25 @@ After code changes there, re-check the fact tables below and redraw.
 | File (`.puml` → `.svg`, `.pdf`) | Level | Type | Shows |
 |---|---|---|---|
 | `l1-overview` | L1 | state | CPU states (start, praca, sen WFE, odświeżanie e-papieru), the DCF / alarm / BLE modes that power extra parts, every wake interrupt |
-| `l2-modules` | L2 | component | ISRs (flags only), the six `app_poll` steps in `main.c`, all 14 `firmware/src` modules, hardware and SoftDevice |
+| `l2-modules-a`, `-b` | L2 | component | **a** ISRs (flags only), the six `app_poll` steps in `main.c` and the modules each calls; **b** all 14 `firmware/src` modules, calls between them, hardware and SoftDevice |
 | `l3-detail-a` … `l3-detail-f` | L3 | activity / state | one figure in six parts: **A** boot, main loop, RTC1 deadline, sleep entry/exit; **B** `poll_uart`, `poll_clock`, `poll_ble`; **C** `poll_alarm` with motion dismiss and buzzer; **D** `poll_dcf`; **E** DCF-77 decoder state machine and `on_edge`; **F** `draw` / e-paper refresh with nested sleep |
-| `ble-overview` | BLE | activity, swimlanes | web page, browser and OS BLE, SoftDevice, `ble_sched.c`, schedule store; SoftDevice role note |
-| `ble-sequence` | BLE | sequence | advertising, connect, discovery, schedule read, schedule write (single and long), flash save, disconnect |
+| `ble-overview-a`, `-b` | BLE | activity, swimlanes | web page, browser and OS BLE, SoftDevice, `ble_sched.c`, schedule store; **a** advertising, connect, discovery, read, plus the SoftDevice role (legend); **b** write, flash save, read-back, disconnect |
+| `ble-sequence-a`, `-b` | BLE | sequence | numbered messages (continuous across parts): **a** advertising, connect, discovery, schedule read; **b** schedule write (single and long), flash save, read-back, disconnect |
 
-L3 is split because one chart was far too large for A4. Every L3 node has a
-`'` comment above it naming its `file:function`. `ble-overview` and
-`ble-sequence` are dense: place them on a full page.
+L3, L2 and both BLE diagrams are split into labelled parts (one index entry
+each) so the text stays readable on A4. Every L3 node has a `'` comment above
+it naming its `file:function`.
 `software-flowchart.*` one level up is the older single-chart summary and is
 left unchanged.
 Draft Polish figure captions (agent draft, to be rewritten by the author):
 [`captions.md`](captions.md).
 
 Printed text size when a figure is scaled to the A4 text block (16 × 24.7 cm),
-from the SVG `font-size` (2026-11-02): `l3-detail-d` 8.7 pt, `l3-detail-f` 7.2 pt,
-`l3-detail-a`/`-c` 5.9 pt, `l1-overview` and `l3-detail-b` 5.6 pt, `l2-modules` 4.8 pt
-(5.9 pt landscape), `l3-detail-e` 4.4 pt (6.8 pt landscape), `ble-sequence` 4.3 pt,
-`ble-overview` 4.2 pt. The PDFs are vector, so they stay sharp when zoomed.
+from the SVG `font-size` (2026-11-02, portrait): `l3-detail-d` 8.7 pt,
+`l2-modules-a` 8.0, `l2-modules-b` 7.8, `ble-overview-b` 7.6, `ble-overview-a` 7.3,
+`l3-detail-e` 7.3, `ble-sequence-a` 7.2, `l3-detail-f` 7.2, `ble-sequence-b` 7.0,
+`l3-detail-a`/`-c` 5.9, `l1-overview` and `l3-detail-b` 5.6 pt. The PDFs are
+vector, so they stay sharp when zoomed.
 
 ## Render
 
@@ -63,7 +64,7 @@ Checked on 2026-11-02 against `software-flowchart.puml`: the server output had
 the same size (1770 × 2586 px) and DejaVu Serif text as the committed export,
 and `pdftotext` on the PDF returned "zegarów", "Zwiększ", "brzęczyk".
 Set `PLANTUML_URL` to use a server on another port.
-Steps 1–3 were run as written on a fresh `git clone` (2026-11-02): all ten
+Steps 1–3 were run as written on a fresh `git clone` (2026-11-02): all 13
 sources rendered, and every `.svg` and `.pdf` was byte-identical to the committed ones.
 
 ## Fact table (firmware)
@@ -189,7 +190,7 @@ Sources: `firmware/src/ble_sched.c`, `sched_codec.[ch]`, `sched_store.c`,
 
 Checked 2026-11-02 that the levels use the same names and states.
 
-| Step | L1 `l1-overview` | L2 `l2-modules` | L3 |
+| Step | L1 `l1-overview` | L2 `l2-modules-a`/`-b` | L3 |
 |---|---|---|---|
 | **Alarm cycle** | | | |
 | Minute matches a slot | Cisza → Alarm, "minuta zgodna z rozkładem" | `2. poll_clock` → `alarm` | B: `alarm_on_minute()` |
