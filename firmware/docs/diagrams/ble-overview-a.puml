@@ -1,4 +1,5 @@
-' BLE overview, part A: advertising, connect, discovery, schedule read; SoftDevice role.
+' BLE overview, part A: advertising, connect, discovery, schedule read.
+' SoftDevice role: softdevice.md (next to this file).
 ' Derived from firmware/src/ble_sched.c, sched_codec.c, apps/clock/src/main.c, web/app.js;
 ' see README.md (Fact table, Bluetooth). Part B: ble-overview-b.puml.
 ' Render: README.md, section Render.
@@ -9,7 +10,6 @@ skinparam backgroundColor white
 skinparam defaultFontName DejaVu Serif
 skinparam activityFontName DejaVu Serif
 skinparam activityDiamondFontName DejaVu Serif
-skinparam legendFontName DejaVu Serif
 skinparam dpi 160
 skinparam ActivityBorderColor black
 skinparam ActivityDiamondBorderColor black
@@ -50,13 +50,4 @@ start
 |WWW|
 :decode(), tabela\nna ekranie;
 stop
-
-legend bottom
-  **SoftDevice S112**: gotowy program binarny Nordic w dolnej części
-  flash (poniżej 0x19000), działa obok aplikacji. Posiada radio i czasy
-  warstwy łącza, GAP, GATT, ATT, zegary POWER/CLOCK i kolejkę operacji
-  flash. Aplikacja woła funkcje sd_* (instrukcja SVC); zdarzenia
-  (połączenie, rozłączenie, koniec rozgłaszania, autoryzacja odczytu
-  i zapisu, koniec operacji flash) dostaje przez przerwanie SWI2.
-endlegend
 @enduml

@@ -35,7 +35,7 @@ package "Sprzęt i SoftDevice" as Hw {
   component "SoftDevice S112\nradio, flash" as sd
   component "Odbiornik\nDCF-77 (PON)" as hw_dcf
   component "LIS3DH" as hw_lis
-  component "E-papier" as hw_epd
+  component "e-Paper" as hw_epd
   component "Brzęczyk" as hw_buzz
 }
 

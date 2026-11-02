@@ -1,4 +1,4 @@
-' L3 part F: draw() and the e-paper refresh with its nested sleep.
+' L3 part F: draw() and the e-Paper refresh with its nested sleep.
 ' Every node is preceded by a comment naming its source (file:function).
 ' Render: README.md, section Render.
 @startuml
@@ -14,7 +14,7 @@ skinparam ActivityBorderColor black
 skinparam ActivityDiamondBorderColor black
 skinparam ArrowColor black
 
-title L3-F: odświeżenie e-papieru (draw)
+title L3-F: odświeżenie wyświetlacza e-Paper (draw)
 
 start
 ' main.c:draw

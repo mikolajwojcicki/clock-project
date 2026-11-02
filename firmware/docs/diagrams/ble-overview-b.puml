@@ -1,6 +1,6 @@
 ' BLE overview, part B: schedule write, flash save, read-back, disconnect.
 ' Derived from firmware/src/ble_sched.c, sched_codec.c, sched_store.c, apps/clock/src/main.c,
-' web/app.js; see README.md (Fact table, Bluetooth). Part A (with the SoftDevice role): ble-overview-a.puml.
+' web/app.js; see README.md (Fact table, Bluetooth). Part A: ble-overview-a.puml. SoftDevice role: softdevice.md.
 ' Render: README.md, section Render.
 @startuml
 skinparam monochrome true
