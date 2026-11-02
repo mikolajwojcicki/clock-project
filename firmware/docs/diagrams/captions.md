@@ -16,7 +16,7 @@ przed jego wstawieniem (np. „na rys. 3.2”). Numer rysunku nadaje LaTeX.
 | `l3-detail-c` | Obsługa alarmu: faza brzęczyka, zliczanie ruchu z akcelerometru LIS3DH i wyłączenie alarmu (część C) | Źródło: opracowanie własne |
 | `l3-detail-d` | Planowanie okna synchronizacji DCF-77 i obsługa jego wyniku (część D) | Źródło: opracowanie własne |
 | `l3-detail-e` | Automat stanów dekodera ramek DCF-77 i obsługa przerwania od zboczy sygnału odbiornika (część E) | Źródło: opracowanie własne |
-| `l3-detail-f` | Odświeżanie wyświetlacza e-papierowego z uśpieniem procesora w czasie oczekiwania na sygnał BUSY (część F) | Źródło: opracowanie własne |
+| `l3-detail-f` | Odświeżanie wyświetlacza e-Paper z uśpieniem procesora w czasie oczekiwania na sygnał BUSY (część F) | Źródło: opracowanie własne |
 | `ble-overview-a` | Podział zadań między stroną WWW, przeglądarką, stosem SoftDevice i oprogramowaniem zegara: rozgłaszanie, połączenie i odczyt harmonogramu (część A) | Źródło: opracowanie własne |
 | `ble-overview-b` | Podział zadań między stroną WWW, przeglądarką, stosem SoftDevice i oprogramowaniem zegara: zapis harmonogramu i rozłączenie (część B) | Źródło: opracowanie własne |
 | `ble-sequence-a` | Sekwencja komunikatów Bluetooth Low Energy przy nawiązaniu połączenia i odczycie harmonogramu alarmów (część A) | Źródło: opracowanie własne |

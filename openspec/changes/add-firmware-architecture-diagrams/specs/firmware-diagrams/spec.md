@@ -29,11 +29,11 @@ Every diagram SHALL describe what the code in `firmware/apps/clock` and `firmwar
 - **THEN** the diagram follows the code and the index lists that difference
 
 ### Requirement: Bluetooth explained in two views
-The repository SHALL contain one BLE diagram and one BLE sequence diagram. The BLE diagram SHALL show the web app, the browser and operating system BLE stack, the SoftDevice, the firmware BLE handler code, and the schedule store, with the role of the SoftDevice stated. The sequence diagram SHALL show the ordered messages of a schedule read and a schedule write.
+The repository SHALL contain one BLE diagram and one BLE sequence diagram (each MAY be split into labelled parts). The BLE diagram SHALL show the web app, the browser and operating system BLE stack, the SoftDevice, the firmware BLE handler code, and the schedule store. The role of the SoftDevice SHALL be described in a companion file next to the diagrams, not inside the diagram. The sequence diagram SHALL show the ordered messages of a schedule read and a schedule write.
 
 #### Scenario: SoftDevice role
-- **WHEN** a reader opens the BLE diagram
-- **THEN** it states what the SoftDevice is, which parts of the stack it owns, and which events the application receives from it
+- **WHEN** a reader follows the SoftDevice reference from the BLE diagram
+- **THEN** the companion file states what the SoftDevice is, which parts of the stack it owns, and which events the application receives from it
 
 #### Scenario: Both directions between web app and firmware
 - **WHEN** a reader follows the BLE sequence diagram
@@ -52,3 +52,10 @@ The index or a captions file SHALL hold one draft Polish caption per diagram, ma
 #### Scenario: Caption present
 - **WHEN** a reader looks up a diagram in the captions file
 - **THEN** a draft caption marked as an agent draft exists for it
+
+### Requirement: Glossary and naming
+A glossary file next to the diagrams SHALL explain every abbreviation and technical term used in the diagrams. The display SHALL be named "e-Paper" in diagrams and their companion files.
+
+#### Scenario: Unknown term
+- **WHEN** a reader meets an abbreviation in any diagram
+- **THEN** the glossary explains it

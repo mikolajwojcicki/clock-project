@@ -12,10 +12,10 @@ After code changes there, re-check the fact tables below and redraw.
 
 | File (`.puml` → `.svg`, `.pdf`) | Level | Type | Shows |
 |---|---|---|---|
-| `l1-overview` | L1 | state | CPU states (start, praca, sen WFE, odświeżanie e-papieru), the DCF / alarm / BLE modes that power extra parts, every wake interrupt |
+| `l1-overview` | L1 | state | CPU states (start, praca, sen WFE, odświeżanie wyświetlacza e-Paper), the DCF / alarm / BLE modes that power extra parts, every wake interrupt |
 | `l2-modules-a`, `-b` | L2 | component | **a** ISRs (flags only), the six `app_poll` steps in `main.c` and the modules each calls; **b** all 14 `firmware/src` modules, calls between them, hardware and SoftDevice |
-| `l3-detail-a` … `l3-detail-f` | L3 | activity / state | one figure in six parts: **A** boot, main loop, RTC1 deadline, sleep entry/exit; **B** `poll_uart`, `poll_clock`, `poll_ble`; **C** `poll_alarm` with motion dismiss and buzzer; **D** `poll_dcf`; **E** DCF-77 decoder state machine and `on_edge`; **F** `draw` / e-paper refresh with nested sleep |
-| `ble-overview-a`, `-b` | BLE | activity, swimlanes | web page, browser and OS BLE, SoftDevice, `ble_sched.c`, schedule store; **a** advertising, connect, discovery, read, plus the SoftDevice role (legend); **b** write, flash save, read-back, disconnect |
+| `l3-detail-a` … `l3-detail-f` | L3 | activity / state | one figure in six parts: **A** boot, main loop, RTC1 deadline, sleep entry/exit; **B** `poll_uart`, `poll_clock`, `poll_ble`; **C** `poll_alarm` with motion dismiss and buzzer; **D** `poll_dcf`; **E** DCF-77 decoder state machine and `on_edge`; **F** `draw` / e-Paper refresh with nested sleep |
+| `ble-overview-a`, `-b` | BLE | activity, swimlanes | web page, browser and OS BLE, SoftDevice, `ble_sched.c`, schedule store; **a** advertising, connect, discovery, read; **b** write, flash save, read-back, disconnect. The SoftDevice role is described in [`softdevice.md`](softdevice.md), not in the figure |
 | `ble-sequence-a`, `-b` | BLE | sequence | numbered messages (continuous across parts): **a** advertising, connect, discovery, schedule read; **b** schedule write (single and long), flash save, read-back, disconnect |
 
 L3, L2 and both BLE diagrams are split into labelled parts (one index entry
@@ -23,12 +23,16 @@ each) so the text stays readable on A4. Every L3 node has a `'` comment above
 it naming its `file:function`.
 `software-flowchart.*` one level up is the older single-chart summary and is
 left unchanged.
-Draft Polish figure captions (agent draft, to be rewritten by the author):
-[`captions.md`](captions.md).
+Companion files (Polish, agent drafts, to be rewritten by the author):
+[`captions.md`](captions.md) (one figure caption per file),
+[`softdevice.md`](softdevice.md) (what the SoftDevice is, what it owns, which
+calls and events cross the boundary), [`glossary.md`](glossary.md) (every
+abbreviation and term used in the figures).
+The display is named "e-Paper" everywhere (Waveshare product name), not "e-papier".
 
 Printed text size when a figure is scaled to the A4 text block (16 × 24.7 cm),
 from the SVG `font-size` (2026-11-02, portrait): `l3-detail-d` 8.7 pt,
-`l2-modules-a` 8.0, `l2-modules-b` 7.8, `ble-overview-b` 7.6, `ble-overview-a` 7.3,
+`l2-modules-a` 8.0, `ble-overview-a` 8.3, `l2-modules-b` 7.8, `ble-overview-b` 7.6,
 `l3-detail-e` 7.3, `ble-sequence-a` 7.2, `l3-detail-f` 7.2, `ble-sequence-b` 7.0,
 `l3-detail-a`/`-c` 5.9, `l1-overview` and `l3-detail-b` 5.6 pt. The PDFs are
 vector, so they stay sharp when zoomed.
@@ -81,7 +85,7 @@ Source of every node in the diagrams. File paths are relative to `firmware/`.
 | GPIOTE PORT (SENSE) | DK button falling edge (P0.13–16) | `src/board.c:on_button` | nothing; `app_poll` reads pin levels |
 | GPIOTE PORT (SENSE, toggle) | `DCF_OUT` edge (P0.25), only while a sync window is open | `src/dcf77_sync.c:on_edge` | rise: store time and period; fall: publish one pulse (`s_pending`) or count an overrun |
 | GPIOTE IN channel | LIS3DH `INT1` rising (P0.23), only while an alarm sounds | `apps/clock/src/main.c:on_int1` | `s_int1 = true` |
-| GPIOTE IN channel | `EPD_BUSY` falling (P0.29), only during an e-paper refresh | `src/epd.c:on_busy` | nothing; `wait_idle` re-reads the pin |
+| GPIOTE IN channel | `EPD_BUSY` falling (P0.29), only during an e-Paper refresh | `src/epd.c:on_busy` | nothing; `wait_idle` re-reads the pin |
 | SWI2 = `SD_EVT_IRQn` | SoftDevice BLE and SoC events | SDK `nrf_sdh.c:SD_EVT_IRQHandler` → `src/ble_sched.c:on_ble_evt`, `nrf_ble_qwr`, `nrf_fstorage_sd` | sets `s_ev_*` flags, answers GATT authorize requests (see BLE facts) |
 | UARTE0 | console RX byte (build `SLEEP_UART=1` only) | SDK `app_uart_fifo.c` | byte into the RX FIFO; `poll_uart` reads it |
 
@@ -107,12 +111,12 @@ Source of every node in the diagrams. File paths are relative to `firmware/`.
 | RTC1 (LFCLK 32.768 kHz crystal) | `src/board.c:board_time_init`, `board_ms`, `board_wake_at` | free-running ms timebase, CC0 app wake, CC1 wait wake | always running |
 | LFCLK, POWER | SoftDevice (`board.c:clocks_start`) | LFXO start, DC/DC via `sd_power_dcdc_mode_set` | running |
 | GPIOTE | `board.c`, `dcf77_sync.c`, `main.c`, `epd.c` | buttons and `DCF_OUT` by SENSE (PORT event); `INT1`, `EPD_BUSY` by IN channels | buttons only |
-| SPIM0, 250 kHz | `src/spi_bus.c:spi_bus_transfer` | e-paper (mode 0, `EPD_CS`), LIS3DH (mode 3, `SENSOR_CS`) | enabled only per transfer; SCK/MOSI held high |
+| SPIM0, 250 kHz | `src/spi_bus.c:spi_bus_transfer` | e-Paper (mode 0, `EPD_CS`), LIS3DH (mode 3, `SENSOR_CS`) | enabled only per transfer; SCK/MOSI held high |
 | PWM0, 2.7 kHz | `src/buzzer.c:buzzer_tone_start`, `buzzer_off` | buzzer tone on `BUZZER_EN` (P0.31) | uninit, pin low |
 | UARTE0 115200 | `src/board.c:con_init` (SDK `app_uart`) | debug console | absent in `SLEEP_UART=0` build |
 | NVMC via SoftDevice | `src/sched_store.c:sched_store_save` | flash page 0x7F000 | — |
 | GPIO `DCF_PON` (P0.24, active low) | `src/dcf77_sync.c:dcf77_sync_open`, `close_window` | receiver power | high = off |
-| E-paper SSD1680 | `src/epd.c:refresh_panel` | full refresh, then deep sleep mode 1 (cmd 0x10); `EPD_RST` released | no power switch; panel in deep sleep |
+| e-Paper SSD1680 | `src/epd.c:refresh_panel` | full refresh, then deep sleep mode 1 (cmd 0x10); `EPD_RST` released | no power switch; panel in deep sleep |
 | LIS3DH | `src/lis3dh.c:lis3dh_motion_int1_enable`, `lis3dh_power_down` | 100 Hz, ±2 g, high-pass, INT1 at 256 mg, latched | power-down mode by register (no power switch) |
 | SAADC | — | not used (no battery measurement yet) | — |
 
@@ -201,7 +205,7 @@ Checked 2026-11-02 that the levels use the same names and states.
 | 03:00 | Odbiornik DCF wyłączony → Okno DCF, "tylko bez alarmu" | `2. poll_clock` "03:00 → DCF"; `4. poll_dcf` → `dcf77_sync` | B: "DCF oczekuje, 3 próby"; D: `dcf77_sync_open()` (DCF_PON = 0) |
 | Pulses | wake GPIOTE PORT: DCF_OUT | GPIOTE `on_edge` ⇢ `dcf77_sync` → `dcf77_classify` | E: `on_edge` note, WAIT_MARKER → RECEIVE → `finish_frame` |
 | Two frames agree | Okno DCF → Odbiornik DCF wyłączony | `dcf77_sync` → Odbiornik DCF-77 (PON) | E: WAIT_START → OFF, `close_window()`; D: "Wynik OK" |
-| Time set | Praca CPU → Odświeżanie e-papieru (after the window closes) | `4. poll_dcf` → `alarm`; `main` → `draw` | D: `s_draw = true`, `alarm_on_clock_set()`; A: draw condition "okno DCF zamknięte"; F |
+| Time set | Praca CPU → Odświeżanie wyświetlacza e-Paper (after the window closes) | `4. poll_dcf` → `alarm`; `main` → `draw` | D: `s_draw = true`, `alarm_on_clock_set()`; A: draw condition "okno DCF zamknięte"; F |
 | Failure | Okno DCF → wyłączony after 5 min; retry after 1 h | `4. poll_dcf` "okno, ponowienia" | E: "5 min od otwarcia"; D: "próby − 1; ponowienie za 1 h" |
 
 ## Spec-vs-code mismatches
@@ -223,14 +227,14 @@ something else. Recorded only; fixing them is a separate change.
 | 9 | `display-refresh-policy` → button press refreshes the face | face shows time, weekday **and alarm status** | face draws weekday, HH:MM and seconds; no alarm status | `clock_face.c:clock_face_black` | certain |
 | 10 | `display-refresh-policy` → refresh triggers | no boot refresh listed | `main` refreshes once at boot | `main.c:main` | certain |
 | 11 | `display-refresh-policy` → alarm start and time changes refresh; no refresh in a DCF window | a request during a refresh is kept; no refresh inside a window | `draw` clears `s_draw` at the end, so a request raised inside the refresh (via `app_poll` in the waits) is lost; `poll_dcf` can open a window during a refresh | `main.c:draw`, `epd.c:wait_idle` | likely |
-| 12 | `low-power-sleep-policy` → wake sources limited | RTC1 1 s tick, buttons, INT1, DCF edge, alarm and e-paper timers | no free-running 1 s tick: one RTC1 compare at the earliest deadline; UARTE0 and SoftDevice (SWI2) also wake | `main.c:arm_wake`, `board.c:board_wake_at` | certain |
+| 12 | `low-power-sleep-policy` → wake sources limited | RTC1 1 s tick, buttons, INT1, DCF edge, alarm and e-Paper timers | no free-running 1 s tick: one RTC1 compare at the earliest deadline; UARTE0 and SoftDevice (SWI2) also wake | `main.c:arm_wake`, `board.c:board_wake_at` | certain |
 | 13 | `low-power-sleep-policy` → peripherals powered only while used | UART does not keep the MCU awake when idle | default build `SLEEP_UART=1` keeps UARTE0 RX on; only `SLEEP_UART=0` removes it | `board.c:con_init`, `armgcc/Makefile` | certain |
-| 14 | `low-power-sleep-policy`, `motion-dismiss` → powered down | accelerometer (and display) "off" / "powered down" | LIS3DH power-down by register, e-paper deep sleep by command; no supply switch. Only the DCF receiver is power-gated (PON) | `lis3dh.c:lis3dh_power_down`, `epd.c:refresh_panel` | certain |
+| 14 | `low-power-sleep-policy`, `motion-dismiss` → powered down | accelerometer (and display) "off" / "powered down" | LIS3DH power-down by register, e-Paper deep sleep by command; no supply switch. Only the DCF receiver is power-gated (PON) | `lis3dh.c:lis3dh_power_down`, `epd.c:refresh_panel` | certain |
 | 15 | `idle-pin-states` → peripheral traffic unchanged | accelerometer passes its identity check at start | clock app never calls `lis3dh_who_am_i` (only bring-up does) | `lis3dh.c`, `main.c:main` | certain |
 | 16 | `ble-schedule-service` → GATT service layout ("advertise the name and the service UUID") | UUID advertised | UUID is in the scan response; the advertising packet has flags + name | `ble_sched.c:ble_sched_init` | wording |
 
 Other as-built notes (no spec covers them):
 
 - `sdk_config.h` says the DCF receiver uses "one IN channel"; `dcf77_sync_open` asks for `hi_accuracy = false`, i.e. GPIOTE PORT/SENSE.
-- `firmware/docs/software-flowchart.puml` lists `DCF_OUT` under "GPIOTE IN" and says the e-paper and LIS3DH are "bez zasilania"; see rows 12 and 14.
+- `firmware/docs/software-flowchart.puml` lists `DCF_OUT` under "GPIOTE IN" and says the e-Paper and LIS3DH are "bez zasilania"; see rows 12 and 14.
 - `epd.c:refresh_panel`: a BUSY timeout returns before the deep-sleep command 0x10, so on that path the panel is not put to sleep (likely; not run).
