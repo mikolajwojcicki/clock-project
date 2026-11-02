@@ -1,0 +1,83 @@
+' L2 modules, part A: interrupt sources and main-loop handlers in main.c, and which firmware/src modules they call.
+' Derived from firmware/apps/clock/src/main.c and firmware/src/*.c; see README.md (fact table).
+' Arrows: solid = function call, dashed = flag set in an interrupt and read in the loop.
+' Part B (modules, hardware, SoftDevice): l2-modules-b.puml. Render: README.md, section Render.
+@startuml
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam nodesep 10
+skinparam ranksep 50
+
+package "Przerwania (ISR)" as Isr {
+  component "RTC1: rtc_evt" as irq_rtc
+  component "GPIOTE: on_button,\non_edge (DCF_OUT),\non_int1, on_busy" as irq_gpiote
+  component "SWI2 (SoftDevice):\non_ble_evt, qwr_cb" as irq_sd
+  component "UARTE0: FIFO" as irq_uart
+}
+
+package "main.c: pętla główna" as Main {
+  component "main(): app_poll(),\npotem draw() albo\nboard_sleep()" as main
+  component "1. poll_uart" as p_uart
+  component "2. poll_clock" as p_clock
+  component "3. poll_alarm" as p_alarm
+  component "4. poll_dcf" as p_dcf
+  component "5. poll_ble" as p_ble
+  component "6. arm_wake" as p_wake
+  component "draw" as p_draw
+}
+
+package "Moduły firmware/src" as Mods {
+  component "board" as m_board
+  component "clock" as m_clock
+  component "alarm" as m_alarm
+  component "motion_count" as m_motion
+  component "lis3dh" as m_lis
+  component "buzzer" as m_buzz
+  component "dcf77_sync" as m_dcf
+  component "ble_sched" as m_ble
+  component "sched_store" as m_store
+  component "epd" as m_epd
+  component "clock_face" as m_face
+}
+
+' interrupts: flags only; every interrupt also wakes main() from board_sleep()
+irq_rtc ..> main
+irq_gpiote ..> p_alarm
+irq_gpiote ..> m_dcf
+irq_sd ..> m_ble
+irq_uart ..> p_uart
+
+main --> p_uart
+main --> p_clock
+main --> p_alarm
+main --> p_dcf
+main --> p_ble
+main --> p_wake
+main --> p_draw
+main --> m_board
+
+p_uart --> m_clock
+p_uart --> m_alarm
+p_uart --> m_store
+p_uart --> m_dcf
+p_uart --> m_ble
+p_clock --> m_clock
+p_clock --> m_alarm
+p_alarm --> m_alarm
+p_alarm --> m_motion
+p_alarm --> m_lis
+p_alarm --> m_buzz
+p_dcf --> m_dcf
+p_dcf --> m_alarm
+p_ble --> m_ble
+p_wake --> m_board
+p_draw --> m_epd
+p_draw --> m_face
+@enduml

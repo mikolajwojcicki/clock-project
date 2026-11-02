@@ -1,0 +1,59 @@
+' L2 modules, part B: firmware/src modules, the calls between them, and the hardware and SoftDevice they drive.
+' Derived from firmware/src/*.c; see README.md (fact table).
+' Part A (interrupts and main loop): l2-modules-a.puml. Render: README.md, section Render.
+@startuml
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam nodesep 12
+skinparam ranksep 60
+
+package "Moduły firmware/src" as Mods {
+  component "board\nRTC1, board_ms,\nsen WFE, przyciski" as m_board
+  component "alarm\ntabela 7×8,\n1 s / 1 s, 60 s" as m_alarm
+  component "clock\nczas kalendarzowy" as m_clock
+  component "motion_count\n20 zdarzeń w 30 s" as m_motion
+  component "lis3dh\nrejestry, INT1" as m_lis
+  component "buzzer\nPWM0 2,7 kHz" as m_buzz
+  component "dcf77_sync\nokno, automat ramek" as m_dcf
+  component "dcf77_classify\nszerokość impulsu" as m_cls
+  component "ble_sched\nusługa GATT" as m_ble
+  component "sched_store\nflash 0x7F000" as m_store
+  component "sched_codec\n113 B, CRC" as m_codec
+  component "epd\nSSD1680" as m_epd
+  component "clock_face\npiksele tarczy" as m_face
+  component "spi_bus\nSPIM0" as m_spi
+}
+
+package "Sprzęt i SoftDevice" as Hw {
+  component "SoftDevice S112\nradio, flash" as sd
+  component "Odbiornik\nDCF-77 (PON)" as hw_dcf
+  component "LIS3DH" as hw_lis
+  component "E-papier" as hw_epd
+  component "Brzęczyk" as hw_buzz
+}
+
+m_dcf --> m_cls
+m_dcf --> m_clock : clock_set
+m_ble --> m_alarm : table_replace / get
+m_ble --> m_store
+m_ble --> m_codec
+m_store --> m_codec
+m_store --> m_alarm
+m_lis --> m_spi
+m_epd --> m_spi
+m_ble --> sd : sd_ble_*
+m_store --> sd : nrf_fstorage_sd
+m_board --> m_buzz : buzzer_off
+m_board --> sd : start, LFCLK
+m_dcf --> hw_dcf
+m_spi --> hw_lis
+m_spi --> hw_epd
+m_buzz --> hw_buzz
+@enduml

@@ -10,6 +10,8 @@ skinparam noteFontName DejaVu Serif
 skinparam dpi 160
 skinparam ArrowColor black
 skinparam StateBorderColor black
+skinparam nodesep 20
+skinparam ranksep 40
 
 title L3-E: dekoder DCF-77 (dcf77_sync_step, on_pulse)
 
@@ -26,40 +28,34 @@ state "WAIT_START" as Start : druga ramka przyjęta,\nczeka na początek minuty
 
 [*] --> Off
 ' dcf77_sync.c:dcf77_sync_open
-Off --> Marker : dcf77_sync_open():\nGPIOTE na DCF_OUT, DCF_PON = 0
+Off --> Marker : dcf77_sync_open():\nGPIOTE na DCF_OUT,\nDCF_PON = 0
 ' dcf77_sync.c:on_pulse, dcf77_sync.c:begin_frame
-Marker --> Recv : impuls po przerwie 1,7–2,3 s\n(bit 0 ramki)
+Marker --> Recv : impuls po przerwie\n1,7–2,3 s (bit 0)
 ' dcf77_sync.c:on_pulse
-Recv --> Recv : bit 0 (40–140 ms) lub 1 (150–260 ms),\nokres 0,8–1,2 s
+Recv --> Recv : bit 0: 40–140 ms,\nbit 1: 150–260 ms,\nokres 0,8–1,2 s
 ' dcf77_sync.c:on_pulse, dcf77_sync.c:dcf77_sync_step, dcf77_sync.c:drop_frames
 Recv --> Marker : zły impuls, okres\nlub zgubiony impuls:\nREJECTED (pulse)
 ' dcf77_sync.c:on_pulse
 Recv --> Check : 59. bit
 ' dcf77_sync.c:finish_frame, dcf77_sync.c:check_frame, dcf77_sync.c:same_minute
-Check --> Marker : pierwsza poprawna ramka → kandydat;\nbłąd znaczników, parzystości, BCD,\ndnia tygodnia → REJECTED;\ndruga ≠ kandydat + 1 min → REJECTED (mismatch)
+Check --> Marker : 1. ramka → kandydat;\nbłąd znaczników,\nparzystości, BCD,\ndnia → REJECTED;\n2. ≠ kandydat + 1 min\n→ REJECTED (mismatch)
 ' dcf77_sync.c:finish_frame
-Check --> Start : druga = kandydat + 1 min
+Check --> Start : 2. = kandydat\n+ 1 min
 ' dcf77_sync.c:on_pulse, dcf77_sync.c:close_window
-Start --> Off : impuls po przerwie minutowej:\nOK, edge_ms; close_window()
+Start --> Off : przerwa\nminutowa: OK,\nclose_window()
 ' dcf77_sync.c:on_pulse, dcf77_sync.c:drop_frames
-Start --> Marker : inny impuls: REJECTED (pulse)
+Start --> Marker : inny impuls:\nREJECTED (pulse)
 ' dcf77_sync.c:dcf77_sync_step, dcf77_sync.c:close_window
-Marker --> Off : 5 min od otwarcia:\nREJECTED (timeout)
+Marker --> Off : 5 min od otwarcia\n(też z RECEIVE\ni WAIT_START):\nREJECTED (timeout)
 
 ' dcf77_sync.c:on_edge
 note as Isr
-  ISR on_edge (GPIOTE PORT, każde zbocze DCF_OUT):
-  narastające: zapisz czas i okres
-  od poprzedniego narastającego;
-  opadające: szerokość = teraz − narastające;
-  poprzedni impuls nieodebrany → overrun,
-  inaczej s_pending = true dla dcf77_sync_step.
-end note
-
-' dcf77_sync.c:dcf77_sync_step
-note bottom of Off
-  Limit 5 min działa w każdym stanie
-  okna (RECEIVE, WAIT_START też):
-  REJECTED (timeout), close_window().
+  ISR on_edge (GPIOTE PORT,
+  każde zbocze DCF_OUT):
+  narastające: zapisz czas
+  i okres od poprzedniego;
+  opadające: szerokość impulsu;
+  poprzedni nieodebrany → overrun,
+  inaczej s_pending = true.
 end note
 @enduml
