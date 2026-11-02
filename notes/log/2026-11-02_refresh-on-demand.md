@@ -41,3 +41,7 @@ Idle 74.8 µA gives 1.79 mAh a day. Net refresh charge 16.59 mC (mean of the fou
 C9 with a refresh every minute was 8.5 mAh a day, so 20 presses a day is 4.5 times lower. Idle is 95 % of the budget at 20 presses; the 72 µA of the peripherals on the rail is now the target, not the panel. DCF windows and buzzer are not in this table.
 
 The number of presses per day is an assumption, not a measurement.
+
+## Alarm refresh and buzzer pattern (task 1.2)
+
+UART bench on `8c415fe`: one `display ok` per alarm start, none at stop by button, motion or timeout (UART log, 12:01 and 12:02 alarms). The buzzer pattern was not recorded on `D2`. The author set an alarm over BLE, heard it sound 1 s on / 1 s off, and vouches for this. This is an author observation, not a measurement.
