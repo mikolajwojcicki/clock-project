@@ -1,0 +1,71 @@
+' L1 overview: CPU power states, the modes that power extra parts, and the wake events.
+' Derived from firmware/apps/clock/src/main.c and firmware/src/*.c; see README.md (fact table).
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam StateBorderColor black
+
+state "Procesor (CPU)" as Cpu {
+  state "Start" as Boot : stan bezpieczny pinów, SoftDevice,\nLFXO i RTC1, rozkład z flash,\npierwsze odświeżenie e-papieru
+  state "Praca CPU" as Run : app_poll(): UART, zegar, alarm,\nDCF, BLE, ustawienie terminu RTC1
+  state "Sen System ON (WFE)" as Sleep : RTC1 i LFXO pracują,\nSPIM, PWM, UARTE wyłączone
+  state "Odświeżanie e-papieru" as Draw : SPI do panelu, między krokami\nsen WFE do BUSY lub terminu,\npotem głęboki sen panelu
+
+  [*] --> Boot
+  Boot --> Run
+  Run --> Sleep : brak pracy;\nRTC1 CC0 = najbliższy termin
+  Sleep --> Run : przerwanie budzące
+  Run -left-> Draw : żądanie odświeżenia\ni okno DCF zamknięte
+  Draw --> Run : panel w głębokim śnie
+
+  note right of Sleep
+    Przerwania budzące CPU:
+    RTC1 COMPARE0 (termin aplikacji)
+    RTC1 COMPARE1 (oczekiwanie sterownika)
+    RTC1 OVERFLOW (co 512 s)
+    GPIOTE PORT: przyciski (zawsze)
+    GPIOTE PORT: DCF_OUT (tylko okno DCF)
+    GPIOTE IN: INT1 LIS3DH (tylko alarm)
+    GPIOTE IN: EPD_BUSY (tylko odświeżanie)
+    SWI2: zdarzenia SoftDevice (BLE, flash)
+    UARTE0: konsola (tylko wersja z UART)
+  end note
+}
+
+state "Tryby zasilające dodatkowe układy (niezależne od snu CPU)" as Modes {
+  state "Odbiornik DCF wyłączony" as DcfOff
+  state "Okno DCF" as DcfOn : PON niski, odbiornik zasilany,\nzbocza DCF_OUT, maks. 5 min
+  [*] --> DcfOff
+  DcfOff --> DcfOn : start, 03:00 lub\nponowienie po 1 h;\ntylko bez alarmu
+  DcfOn --> DcfOff : dwie zgodne ramki\nlub upływ 5 min
+  ||
+  state "Cisza" as AlarmOff
+  state "Alarm" as AlarmOn : brzęczyk PWM 1 s / 1 s,\nLIS3DH aktywny,\nINT1 włączone
+  [*] --> AlarmOff
+  AlarmOff --> AlarmOn : minuta zgodna\nz rozkładem\n(też po ustawieniu czasu)
+  AlarmOn --> AlarmOff : przycisk,\n20 ruchów w 30 s\nlub upływ 60 s
+  ||
+  state "Radio wyłączone" as BleOff
+  state "Rozgłaszanie BLE" as BleAdv : co 100 ms, maks. 60 s
+  state "Połączenie BLE" as BleConn
+  [*] --> BleOff
+  BleOff --> BleAdv : przycisk\ntrzymany 2 s,\nbrak alarmu
+  BleAdv --> BleOff : upływ 60 s\nlub alarm
+  BleAdv --> BleConn : połączenie\nz przeglądarki
+  BleConn --> BleOff : rozłączenie, alarm,\n60 s bez zapisu\nlub 30 s po zapisie
+}
+
+Cpu -[hidden]down-> Modes
+
+note bottom of Modes
+  Alarm ma pierwszeństwo: zamyka radio BLE i wstrzymuje otwarcie okna DCF
+  (okno porzucone, gdy alarm trwa dłużej niż 5 min).
+  Okno DCF wstrzymuje odświeżanie e-papieru do swojego końca.
+end note
+@enduml

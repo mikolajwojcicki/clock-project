@@ -1,0 +1,73 @@
+' L3 part C: poll_alarm (alarm cycle, motion dismiss, buzzer).
+' Every node is preceded by a comment naming its source (file:function).
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+
+title L3-C: alarm, ruch i brzęczyk (krok 3 app_poll)
+
+start
+' main.c:poll_alarm, board.c:board_any_button_pressed, alarm.c:alarm_step
+:pressed = dowolny przycisk;\nwant = alarm_step(teraz, pressed);
+' alarm.c:alarm_step
+note right
+  alarm_step: przycisk → stop (BUTTON);
+  ≥ 60 s od startu → stop (TIMEOUT);
+  inaczej want = (czas mod 2 s) < 1 s
+end note
+' main.c:poll_alarm
+if (Nowe naciśnięcie i alarm nie trwał?) then (tak)
+  ' main.c:poll_alarm
+  :s_draw = true (odświeżenie na przycisk);
+else (nie)
+endif
+' main.c:poll_alarm, main.c:motion_arm
+if (Alarm właśnie się zaczął?) then (tak)
+  ' main.c:motion_arm, lis3dh.c:lis3dh_motion_int1_enable
+  :GPIOTE IN na INT1 (P0.23, narastające);\nmotion_count_reset();\nLIS3DH: 100 Hz, ±2 g, filtr HP,\nINT1 przy 256 mg, zatrzaśnięte (SPI tryb 3);
+else (nie)
+endif
+' main.c:poll_alarm, main.c:on_int1
+if (Alarm trwa i s_int1 (ISR on_int1)?) then (tak)
+  ' main.c:poll_alarm, lis3dh.c:lis3dh_int1_source
+  :s_int1 = false; odczyt INT1_SRC\n(zwalnia zatrzask INT1);
+  ' motion_count.c:motion_count_event
+  if (motion_count_event(): odstęp ≥ 300 ms,\n20 zdarzeń w oknie 30 s?) then (tak)
+    ' alarm.c:alarm_stop_motion
+    :alarm_stop_motion(); want = false;
+  else (nie)
+  endif
+else (nie)
+endif
+' main.c:poll_alarm, main.c:motion_disarm
+if (Alarm właśnie się skończył?) then (tak)
+  ' main.c:motion_disarm, lis3dh.c:lis3dh_power_down
+  :zwolnij kanał GPIOTE INT1;\nlis3dh_power_down(); motion_count_reset();
+else (nie)
+endif
+' main.c:poll_alarm
+if (want ≠ stan brzęczyka?) then (tak)
+  ' buzzer.c:buzzer_tone_start, buzzer.c:buzzer_off
+  if (want?) then (tak)
+    ' buzzer.c:buzzer_tone_start
+    :PWM0 na BUZZER_EN (P0.31):\n1 MHz / 370 = 2,7 kHz, 50 %, pętla;
+  else (nie)
+    ' buzzer.c:buzzer_off
+    :PWM0 stop i uninit;\nBUZZER_EN = 0;
+  endif
+else (nie)
+endif
+' main.c:poll_alarm, alarm.c:alarm_take_stop
+:alarm_take_stop(): wypisz przyczynę\n(button / motion / timeout);
+stop
+@enduml

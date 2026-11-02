@@ -7,10 +7,10 @@
 
 ## 2. Firmware diagrams (three levels)
 
-- [ ] 2.1 Draw `l1-overview.puml` (power states and wake events); render SVG and PDF and verify it shows every wake source from the fact table.
-- [ ] 2.2 Draw `l2-modules.puml` (main loop, handlers, modules, interactions); verify every module in `firmware/src` used by the clock app appears.
-- [ ] 2.3 Draw `l3-detail.puml` (per-handler decisions, peripherals, sleep entry/exit); split into labeled parts if unreadable on A4; verify each node's comment cites a source function.
-- [ ] 2.4 Cross-check L1 against L2 against L3 for consistent names and states; verify by walking one alarm cycle and one DCF sync through all three.
+- [x] 2.1 Draw `l1-overview.puml` (power states and wake events); render SVG and PDF and verify it shows every wake source from the fact table.
+- [x] 2.2 Draw `l2-modules.puml` (main loop, handlers, modules, interactions); verify every module in `firmware/src` used by the clock app appears.
+- [x] 2.3 Draw `l3-detail.puml` (per-handler decisions, peripherals, sleep entry/exit); split into labeled parts if unreadable on A4; verify each node's comment cites a source function.
+- [x] 2.4 Cross-check L1 against L2 against L3 for consistent names and states; verify by walking one alarm cycle and one DCF sync through all three.
 
 ## 3. Bluetooth diagrams
 

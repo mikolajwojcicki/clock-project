@@ -1,0 +1,70 @@
+' L3 part A: boot, main loop, RTC1 deadline and sleep entry/exit.
+' Every node is preceded by a comment naming its source (file:function).
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+
+title L3-A: start, pętla główna, termin RTC1 i sen
+
+start
+' board.c:board_safe_state
+:board_safe_state(): DC/DC włączony,\nDCF_PON = 1 (odbiornik wył.), EPD_CS = SENSOR_CS = 1,\nBUZZER_EN = 0, przyciski z podciąganiem;
+' alarm.c:alarm_init, dcf77_sync.c:dcf77_sync_init, board.c:board_button_wake_enable
+:alarm_init(); nrfx_gpiote_init();\nprzyciski: GPIOTE PORT (SENSE, opadające zbocze);
+' board.c:con_init, board.c:board_time_init, board.c:clocks_start
+:con_init(): UARTE0 115200 (tylko SLEEP_UART=1);\nboard_time_init(): SoftDevice S112 włącza LFXO,\nDC/DC przez sd_power_dcdc_mode_set, stos BLE;\nRTC1 bez preskalera, przerwanie przepełnienia;
+' sched_store.c:sched_store_init
+:sched_store_init(): rekord z flash 0x7F000\n(magic, CRC16) → alarm_table_replace;
+' ble_sched.c:ble_sched_init, spi_bus.c:spi_bus_init, lis3dh.c:lis3dh_power_down
+:ble_sched_init(): GATT, bez rozgłaszania;\nspi_bus_init(): SCK, MOSI wysoko;\nlis3dh_power_down(): tryb power-down przez rejestry;
+' main.c:main, main.c:draw
+:draw(): pierwsze odświeżenie (część F);\nDCF oczekuje, 3 próby;
+repeat
+  ' main.c:app_poll
+  :app_poll(): poll_uart, poll_clock, poll_alarm,\npoll_dcf, poll_ble (części B, C, D, E);
+  ' main.c:arm_wake, main.c:want_wake
+  :arm_wake(): najwcześniejszy z terminów:\nnastępna sekunda (s_last_ms + 1000),\nzmiana fazy brzęczyka (alarm_next_ms),\nkoniec okna DCF, porzucenie DCF, ponowienie DCF,\nlimit łącza BLE, sprawdzenie przytrzymania (100 ms);
+  ' main.c:arm_wake
+  if (Jest jakiś termin?) then (tak)
+    ' board.c:board_wake_at
+    if (Termin już minął?) then (tak)
+      ' board.c:board_wake_at
+      :s_wake_due = true; CC0 wyłączony;
+    else (nie)
+      ' board.c:board_wake_at
+      :RTC1 CC0 = licznik + ticki\n(zaokrąglone w górę, maks. 500 s);
+    endif
+  else (nie)
+    ' board.c:board_wake_cancel
+    :RTC1 CC0 wyłączony;
+  endif
+  ' main.c:main
+  if (s_draw, nie trwa rysowanie\ni okno DCF zamknięte?) then (tak)
+    ' main.c:draw
+    :draw() (część F);
+  else (nie)
+    ' board.c:board_sleep
+    if (s_wake_due?) then (tak)
+      ' board.c:board_sleep
+      :s_wake_due = false;\npowrót bez snu;
+    else (nie)
+      ' board.c:board_sleep
+      :wyczyść flagi wyjątków FPU\n(anomalia nRF52 nr 87);
+      ' board.c:board_sleep
+      :WFE, SEV, WFE: sen System ON;
+      ' board.c:rtc_evt, board.c:on_button, nrf_sdh.c:SD_EVT_IRQHandler
+      :wybudzenie: RTC1 COMPARE / OVERFLOW,\nGPIOTE PORT lub IN, SWI2 (SoftDevice), UARTE0;
+    endif
+  endif
+repeat while (zasilanie)
+@enduml

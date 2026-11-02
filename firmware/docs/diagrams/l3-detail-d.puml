@@ -1,0 +1,53 @@
+' L3 part D: poll_dcf (window scheduling, decoder step, result handling).
+' Every node is preceded by a comment naming its source (file:function).
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+
+title L3-D: okno DCF-77 (krok 4 app_poll)
+
+start
+' main.c:poll_dcf
+if (DCF oczekuje?) then (tak)
+  ' main.c:poll_dcf
+  if (Alarm trwa?) then (nie)
+    ' dcf77_sync.c:dcf77_sync_open
+    :dcf77_sync_open(): GPIOTE PORT (SENSE,\noba zbocza) na DCF_OUT (P0.25),\npotem DCF_PON = 0: odbiornik zasilany;
+  else (tak)
+    ' main.c:poll_dcf
+    :czekaj; po 5 min porzuć okno;
+  endif
+else (nie)
+endif
+' main.c:poll_dcf
+if (Minął termin ponowienia?) then (tak)
+  ' main.c:poll_dcf
+  :DCF oczekuje (sprawdzone w następnym przebiegu);
+else (nie)
+endif
+' dcf77_sync.c:dcf77_sync_step
+:dcf77_sync_step() (część E):\nokno zamknięte → nic;\n≥ 5 min od otwarcia → REJECTED (timeout), close_window;\nzgubiony impuls → odrzuć ramki;\nimpuls od ISR → on_pulse();
+' main.c:poll_dcf
+if (Wynik OK?) then (tak)
+  ' main.c:poll_dcf, alarm.c:alarm_on_clock_set
+  :s_time = czas ramki; s_last_ms = edge_ms\n(sekunda 0 na zboczu impulsu);\ns_draw = true; próby = 0;\nalarm_on_clock_set();
+else (nie)
+  ' main.c:poll_dcf
+  if (Okno zamknięte bez OK\ni zostały próby?) then (tak)
+    ' main.c:poll_dcf
+    :próby − 1; ponowienie za 1 h\nod zamknięcia okna;
+  else (nie)
+  endif
+endif
+stop
+@enduml

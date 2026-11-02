@@ -128,3 +128,21 @@ candidate + 1 min → `ST_WAIT_START` → next minute-gap pulse gives `DCF77_SYN
 | Exit | any enabled IRQ above | CPU continues after `WFE`; `main` loop calls `app_poll` |
 | Nested sleep | `board_wait_ms`, `epd.c:wait_idle` | sleep on RTC1 CC1 or BUSY, call `app_poll` on each wake so the buzzer keeps its phase during a refresh |
 | Never | — | System OFF is not used |
+
+## Consistency walk (L1 → L2 → L3)
+
+Checked 2026-11-02 that the levels use the same names and states.
+
+| Step | L1 `l1-overview` | L2 `l2-modules` | L3 |
+|---|---|---|---|
+| **Alarm cycle** | | | |
+| Minute matches a slot | Cisza → Alarm, "minuta zgodna z rozkładem" | `2. poll_clock` → `alarm` | B: `alarm_on_minute()` |
+| Sounding | Alarm: PWM 1 s / 1 s, LIS3DH, INT1; BLE → Radio wyłączone; DCF waits | `3. poll_alarm` → `alarm`, `lis3dh`, `buzzer`; `5. poll_ble` → `ble_sched` | C: `motion_arm`, PWM0 2,7 kHz; B: `ble_sched_stop`; D: "czekaj; po 5 min porzuć okno"; A: `arm_wake` adds `alarm_next_ms` |
+| Shake | wake GPIOTE IN: INT1 | GPIOTE `on_int1` ⇢ `3. poll_alarm` → `motion_count` | C: `INT1_SRC`, `motion_count_event` (300 ms, 20 in 30 s) |
+| Stop | Alarm → Cisza: przycisk, 20 ruchów, 60 s | `3. poll_alarm` → `alarm`, `lis3dh`, `buzzer` | C: `alarm_stop_motion`, `motion_disarm`, PWM0 stop |
+| **DCF sync** | | | |
+| 03:00 | Odbiornik DCF wyłączony → Okno DCF, "tylko bez alarmu" | `2. poll_clock` "03:00 → DCF"; `4. poll_dcf` → `dcf77_sync` | B: "DCF oczekuje, 3 próby"; D: `dcf77_sync_open()` (DCF_PON = 0) |
+| Pulses | wake GPIOTE PORT: DCF_OUT | GPIOTE `on_edge` ⇢ `dcf77_sync` → `dcf77_classify` | E: `on_edge` note, WAIT_MARKER → RECEIVE → `finish_frame` |
+| Two frames agree | Okno DCF → Odbiornik DCF wyłączony | `dcf77_sync` → Odbiornik DCF-77 (PON) | E: WAIT_START → OFF, `close_window()`; D: "Wynik OK" |
+| Time set | Praca CPU → Odświeżanie e-papieru (after the window closes) | `4. poll_dcf` → `alarm`; `main` → `draw` | D: `s_draw = true`, `alarm_on_clock_set()`; A: draw condition "okno DCF zamknięte"; F |
+| Failure | Okno DCF → wyłączony after 5 min; retry after 1 h | `4. poll_dcf` "okno, ponowienia" | E: "5 min od otwarcia"; D: "próby − 1; ponowienie za 1 h" |

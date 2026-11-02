@@ -1,0 +1,77 @@
+' L3 part B: poll_uart (debug console), poll_clock and poll_ble.
+' Every node is preceded by a comment naming its source (file:function).
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+
+title L3-B: konsola, zegar i BLE (kroki 1, 2 i 5 app_poll)
+
+start
+partition "poll_uart (main.c), tylko wersja SLEEP_UART=1" {
+  ' main.c:poll_uart, board.c:con_getc
+  :czytaj bajty z FIFO UARTE0 do końca linii (CR/LF);
+  ' main.c:accept_line, alarm.c:alarm_parse, clock.c:clock_parse
+  :accept_line():\n„alarm d [s] HH:MM on|off” → alarm_set, sched_store_save;\n„alarm?” → lista włączonych slotów;\n„dcf sync” → dcf77_sync_open od razu (bez sprawdzenia alarmu);\n„ble adv” → ble_sched_adv_start, jeśli brak alarmu;\n„RRRR-MM-DD GG:MM:SS” → nowy czas, s_draw, alarm_on_clock_set;
+}
+partition "poll_clock (main.c)" {
+  ' main.c:poll_clock
+  if (Czas ustawiony, nie trwa rysowanie\ni minęło ≥ 1000 ms?) then (tak)
+    ' main.c:poll_clock, clock.c:clock_add_seconds
+    :clock_add_seconds(pełne sekundy);\ns_last_ms += kroki × 1000;\nprzełącz CLOCK_SEC_MARK (P0.22);
+    ' main.c:poll_clock
+    if (Nowa minuta?) then (tak)
+      ' alarm.c:alarm_on_minute, main.c:announce_alarm
+      :alarm_on_minute(): włączony slot dnia = HH:MM\ni minuta jeszcze nie wyzwoliła →\nalarm aktywny, s_draw = true;
+      ' main.c:poll_clock
+      if (Jest 03:00?) then (tak)
+        ' main.c:poll_clock
+        :DCF oczekuje, 3 próby (część D);
+      else (nie)
+      endif
+    else (nie)
+    endif
+  else (nie)
+  endif
+}
+partition "poll_ble (main.c)" {
+  ' main.c:poll_ble, alarm.c:alarm_active
+  if (Alarm trwa?) then (tak)
+    ' ble_sched.c:ble_sched_stop
+    :ble_sched_stop(): sd_ble_gap_adv_stop,\nsd_ble_gap_disconnect;
+  else (nie)
+    ' main.c:poll_ble, board.c:board_button_held_ms
+    if (Przycisk trzymany ≥ 2 s\ni BLE bezczynne?) then (tak)
+      ' ble_sched.c:ble_sched_adv_start
+      :ble_sched_adv_start(): rozgłaszanie\nco 100 ms przez 60 s;
+    else (nie)
+      ' main.c:poll_ble
+      :jeśli przycisk trzymany < 2 s:\nsprawdź znowu za 100 ms (arm_wake);
+    endif
+  endif
+  ' ble_sched.c:ble_sched_poll
+  :ble_sched_poll(): obsłuż flagi s_ev_* z ISR SWI2;
+  ' ble_sched.c:ble_sched_poll
+  if (s_stage_ready (zapis przyjęty w ISR)?) then (tak)
+    ' alarm.c:alarm_table_replace, sched_store.c:sched_store_save
+    :alarm_table_replace(); sched_store_save():\nkasowanie i zapis strony przez SoftDevice,\nczekanie w sd_app_evt_wait;
+  else (nie)
+  endif
+  ' ble_sched.c:ble_sched_poll, ble_sched.c:deadline
+  if (Połączenie: 60 s bez zapisu\nlub 30 s po zapisie?) then (tak)
+    ' ble_sched.c:ble_sched_poll
+    :sd_ble_gap_disconnect();
+  else (nie)
+  endif
+}
+stop
+@enduml

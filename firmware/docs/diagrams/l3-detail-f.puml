@@ -1,0 +1,59 @@
+' L3 part F: draw() and the e-paper refresh with its nested sleep.
+' Every node is preceded by a comment naming its source (file:function).
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+
+title L3-F: odświeżenie e-papieru (draw)
+
+start
+' main.c:draw
+:s_drawing = true (poll_clock czeka,\nsekundy dogoni po rysowaniu);
+' epd.c:refresh_panel, board.c:board_wait_ms
+:EPD_RST, EPD_DC wyjścia; BUSY wejście z podciąganiem;\nimpuls RST 20 / 2 / 20 ms (board_wait_ms: sen na RTC1 CC1);
+' epd.c:refresh_panel, epd.c:wait_idle
+:czekaj na BUSY = 0 (wait_idle);
+' epd.c:refresh_panel, epd.c:cmd
+:0x12 reset programowy; wait_idle;\nkonfiguracja: 0x01, 0x11, 0x44, 0x45, 0x3C, 0x21, 0x18;\nwait_idle;
+' epd.c:write_both_rams, epd.c:write_face, clock_face.c:clock_face_black
+:zapis RAM 0x24 i 0x26, 250 wierszy po 16 B:\npiksele z clock_face_black (dzień, GG:MM, SS);\npo każdym wierszu app_poll();
+' spi_bus.c:spi_bus_transfer
+note right
+  Każdy transfer: SPIM0 init (250 kHz, tryb 0),
+  EPD_CS = 0, transfer blokujący, EPD_CS = 1,
+  SPIM0 uninit, SCK i MOSI wysoko.
+end note
+' epd.c:refresh_panel
+:0x22 = 0xF7, 0x20: pełne odświeżenie;
+partition "wait_idle (epd.c)" {
+  ' epd.c:wait_idle
+  :GPIOTE IN na EPD_BUSY (P0.29), opadające zbocze;
+  repeat
+    ' epd.c:wait_idle, main.c:app_poll
+    :app_poll() (brzęczyk trzyma fazę,\nprzyciski i DCF działają);
+    ' epd.c:wait_idle, board.c:board_wake_at, board.c:board_sleep
+    :RTC1 CC1 = limit 10 s; board_sleep();
+  repeat while (BUSY = 1 i limit nie minął?) is (tak)
+  ' epd.c:wait_idle
+  :zwolnij kanał GPIOTE; BUSY wejście z podciąganiem;
+}
+' epd.c:refresh_panel
+:ponowny zapis obu RAM\n(zamiana buforów po pełnym odświeżeniu);
+' epd.c:refresh_panel
+:0x10 = 0x01: głęboki sen panelu; board_wait_ms(100);
+' epd.c:epd_refresh
+:EPD_RST jako wejście bez podciągania\n(bez prądu przez moduł);
+' main.c:draw
+:s_draw = false; s_drawing = false;\nzatrzaśnij stan przycisku;
+stop
+@enduml

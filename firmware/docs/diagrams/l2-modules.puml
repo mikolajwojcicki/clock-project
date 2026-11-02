@@ -1,0 +1,113 @@
+' L2 modules: interrupt sources, main-loop handlers in main.c, firmware/src modules, hardware.
+' Derived from firmware/apps/clock/src/main.c and firmware/src/*.c; see README.md (fact table).
+' Arrows: solid = function call, dashed = flag set in an interrupt and read in the loop.
+' Render: README.md, section Render.
+@startuml
+left to right direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam nodesep 14
+skinparam ranksep 70
+
+package "Przerwania (ISR)" as Isr {
+  component "RTC1: rtc_evt\nterminy CC0, CC1" as irq_rtc
+  component "GPIOTE\nprzyciski: on_button\nDCF_OUT: on_edge\nINT1: on_int1\nEPD_BUSY: on_busy" as irq_gpiote
+  component "SWI2: zdarzenia SoftDevice\non_ble_evt, qwr_cb" as irq_sd
+  component "UARTE0: FIFO app_uart" as irq_uart
+}
+
+package "main.c: pętla główna" as Main {
+  component "main()\napp_poll(): kroki 1–6 po kolei,\npotem draw() albo board_sleep().\nKażde przerwanie budzi CPU\nz board_sleep()." as main
+  component "1. poll_uart\nkonsola: czas, alarm,\n„dcf sync”, „ble adv”" as p_uart
+  component "2. poll_clock\n+1 s, nowa minuta,\n03:00 → DCF" as p_clock
+  component "3. poll_alarm\nfaza, ruch, brzęczyk" as p_alarm
+  component "4. poll_dcf\nokno, ponowienia,\nustawienie czasu" as p_dcf
+  component "5. poll_ble\nprzytrzymanie 2 s,\nzapis rozkładu" as p_ble
+  component "6. arm_wake\nnajbliższy termin" as p_wake
+  component "draw\nodświeżenie tarczy" as p_draw
+}
+
+package "Moduły firmware/src" as Mods {
+  component "board\nRTC1, board_ms, sen WFE" as m_board
+  component "clock\nczas kalendarzowy" as m_clock
+  component "alarm\ntabela 7×8, 1 s / 1 s, 60 s" as m_alarm
+  component "motion_count\n20 zdarzeń w 30 s" as m_motion
+  component "lis3dh" as m_lis
+  component "buzzer\nPWM0 2,7 kHz" as m_buzz
+  component "dcf77_sync\nautomat ramek" as m_dcf
+  component "dcf77_classify" as m_cls
+  component "ble_sched\nusługa GATT" as m_ble
+  component "sched_store\nflash 0x7F000" as m_store
+  component "sched_codec\n113 B, CRC" as m_codec
+  component "epd\nSSD1680" as m_epd
+  component "clock_face" as m_face
+  component "spi_bus\nSPIM0" as m_spi
+}
+
+package "Sprzęt i SoftDevice" as Hw {
+  component "SoftDevice S112" as sd
+  component "Odbiornik DCF-77" as hw_dcf
+  component "LIS3DH" as hw_lis
+  component "E-papier" as hw_epd
+  component "Brzęczyk" as hw_buzz
+}
+
+' interrupts: flags only
+irq_gpiote ..> m_dcf
+irq_gpiote ..> p_alarm
+irq_sd ..> m_ble
+irq_uart ..> p_uart
+irq_rtc ..> m_board
+
+' loop
+main --> p_uart
+main --> p_clock
+main --> p_alarm
+main --> p_dcf
+main --> p_ble
+main --> p_wake
+main --> p_draw
+
+' handlers -> modules
+p_uart --> m_clock
+p_uart --> m_alarm
+p_uart --> m_store
+p_uart --> m_dcf
+p_uart --> m_ble
+p_clock --> m_clock
+p_clock --> m_alarm
+p_alarm --> m_alarm
+p_alarm --> m_motion
+p_alarm --> m_lis
+p_alarm --> m_buzz
+p_dcf --> m_dcf
+p_dcf --> m_alarm
+p_ble --> m_ble
+p_wake --> m_board
+main --> m_board
+p_draw --> m_epd
+p_draw --> m_face
+
+' module -> module and hardware
+m_dcf --> m_cls
+m_ble --> m_alarm
+m_ble --> m_store
+m_ble --> m_codec
+m_store --> m_codec
+m_lis --> m_spi
+m_epd --> m_spi
+m_ble --> sd
+m_store --> sd
+m_board --> sd
+m_dcf --> hw_dcf
+m_spi --> hw_lis
+m_spi --> hw_epd
+m_buzz --> hw_buzz
+@enduml

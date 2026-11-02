@@ -1,0 +1,65 @@
+' L3 part E: DCF-77 decoder state machine (dcf77_sync.c) and its edge interrupt.
+' Every state and transition is preceded by a comment naming its source (file:function).
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam StateBorderColor black
+
+title L3-E: dekoder DCF-77 (dcf77_sync_step, on_pulse)
+
+' dcf77_sync.c:state_t ST_OFF
+state "OFF" as Off : DCF_PON = 1, GPIOTE wył.
+' dcf77_sync.c:state_t ST_WAIT_MARKER
+state "WAIT_MARKER" as Marker : czeka na impuls\npo przerwie minutowej
+' dcf77_sync.c:state_t ST_RECEIVE
+state "RECEIVE" as Recv : zbiera 59 bitów
+' dcf77_sync.c:finish_frame, dcf77_sync.c:check_frame
+state "finish_frame" as Check <<choice>>
+' dcf77_sync.c:state_t ST_WAIT_START
+state "WAIT_START" as Start : druga ramka przyjęta,\nczeka na początek minuty
+
+[*] --> Off
+' dcf77_sync.c:dcf77_sync_open
+Off --> Marker : dcf77_sync_open():\nGPIOTE na DCF_OUT, DCF_PON = 0
+' dcf77_sync.c:on_pulse, dcf77_sync.c:begin_frame
+Marker --> Recv : impuls po przerwie 1,7–2,3 s\n(bit 0 ramki)
+' dcf77_sync.c:on_pulse
+Recv --> Recv : bit 0 (40–140 ms) lub 1 (150–260 ms),\nokres 0,8–1,2 s
+' dcf77_sync.c:on_pulse, dcf77_sync.c:dcf77_sync_step, dcf77_sync.c:drop_frames
+Recv --> Marker : zły impuls, okres\nlub zgubiony impuls:\nREJECTED (pulse)
+' dcf77_sync.c:on_pulse
+Recv --> Check : 59. bit
+' dcf77_sync.c:finish_frame, dcf77_sync.c:check_frame, dcf77_sync.c:same_minute
+Check --> Marker : pierwsza poprawna ramka → kandydat;\nbłąd znaczników, parzystości, BCD,\ndnia tygodnia → REJECTED;\ndruga ≠ kandydat + 1 min → REJECTED (mismatch)
+' dcf77_sync.c:finish_frame
+Check --> Start : druga = kandydat + 1 min
+' dcf77_sync.c:on_pulse, dcf77_sync.c:close_window
+Start --> Off : impuls po przerwie minutowej:\nOK, edge_ms; close_window()
+' dcf77_sync.c:on_pulse, dcf77_sync.c:drop_frames
+Start --> Marker : inny impuls: REJECTED (pulse)
+' dcf77_sync.c:dcf77_sync_step, dcf77_sync.c:close_window
+Marker --> Off : 5 min od otwarcia:\nREJECTED (timeout)
+
+' dcf77_sync.c:on_edge
+note as Isr
+  ISR on_edge (GPIOTE PORT, każde zbocze DCF_OUT):
+  narastające: zapisz czas i okres
+  od poprzedniego narastającego;
+  opadające: szerokość = teraz − narastające;
+  poprzedni impuls nieodebrany → overrun,
+  inaczej s_pending = true dla dcf77_sync_step.
+end note
+
+' dcf77_sync.c:dcf77_sync_step
+note bottom of Off
+  Limit 5 min działa w każdym stanie
+  okna (RECEIVE, WAIT_START też):
+  REJECTED (timeout), close_window().
+end note
+@enduml
