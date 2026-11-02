@@ -16,7 +16,7 @@ Firmware: bare-metal nRF52832, nRF5 SDK 17.1.0, SoftDevice for BLE. `firmware/ap
 
 ## Decisions
 
-- **Format: PlantUML via the local `plantuml/plantuml-server` podman image.** User choice. Matches the existing `.puml` + SVG + PDF pipeline. Alternatives (Mermaid, TikZ, Graphviz) rejected by user. The image is the server flavour, so the render step must be proven first (task 1.1): run the container and POST/GET to its `/svg` endpoint, or call the jar inside it if present. Fall back to the existing nix-shell `plantuml` only if the container cannot render, and say so in the index.
+- **Format: PlantUML via the local `plantuml/plantuml-server` podman image, driven with `curl`.** User choice. The container runs as a server; sources are sent as HTTP requests and the SVG comes back in the response. Matches the existing `.puml` + SVG + PDF pipeline. Alternatives (Mermaid, TikZ, Graphviz) rejected by user. Task 1.1 starts the container (published port, removed afterwards) and fixes the exact request form (POST of the `.puml` text to `/svg`, or GET with the encoded source) against the existing flowchart. Fall back to the nix-shell `plantuml` only if the server cannot render, and say so in the index.
 - **Location: `firmware/docs/diagrams/`.** Source of truth beside code; thesis copies later.
 - **Files:** `l1-overview`, `l2-modules`, `l3-detail` (activity/state style), `ble-overview` (component/swimlane with SoftDevice), `ble-sequence` (sequence). Each `.puml` + `.svg` + `.pdf`. Monochrome, DejaVu Serif, dpi 160, same skin as the existing chart so figures look uniform in print.
 - **L3 may split.** If one L3 chart is unreadable on A4, split into labeled parts (`l3-detail-a/b/...`) while keeping a single index entry. Decide after reading the code.
@@ -26,7 +26,7 @@ Firmware: bare-metal nRF52832, nRF5 SDK 17.1.0, SoftDevice for BLE. `firmware/ap
 
 ## Risks / Trade-offs
 
-- Server image may not expose a CLI render path → prove in 1.1; documented fallback.
+- Exact curl request form depends on the server version (POST body vs encoded GET, size limits on large L3 sources) → settle in 1.1 with the existing flowchart and a large test; documented in the index.
 - L3 detail makes the chart huge → allow split, keep node text short.
 - Code changes after drawing make diagrams stale → README states the commit the diagrams were derived from.
 - Spec/code drift found during reading → listed, not fixed here (separate change).

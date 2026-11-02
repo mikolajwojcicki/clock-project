@@ -2,7 +2,7 @@
 
 ## 1. Render pipeline and fact table
 
-- [ ] 1.1 Prove PlantUML rendering through the local podman `plantuml/plantuml-server` image: render the existing `firmware/docs/software-flowchart.puml` to SVG to a temp dir and verify a valid SVG with Polish letters is produced; convert to PDF with `rsvg-convert` from nix-shell.
+- [ ] 1.1 Prove PlantUML rendering by `curl` against the local podman `plantuml/plantuml-server` container (start it with a published port, stop it afterwards): send `firmware/docs/software-flowchart.puml` and verify a valid SVG with Polish letters comes back; convert to PDF with `rsvg-convert` from nix-shell; record the working curl command for the README.
 - [ ] 1.2 Read `firmware/apps/clock/src/main.c`, `firmware/src/*.c` and `sdk_config.h`; write a fact table (handlers, ISRs, peripherals, timers, SoftDevice events, flash writes, sleep entry) in `firmware/docs/diagrams/README.md` and verify each row names a file and function.
 
 ## 2. Firmware diagrams (three levels)
