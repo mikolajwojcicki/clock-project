@@ -1,0 +1,130 @@
+# Firmware diagrams
+
+PlantUML sources and their SVG/PDF exports for the clock firmware
+(`firmware/apps/clock`, `firmware/src`) and its Bluetooth path (`web/`).
+Every diagram is drawn **as built from the code**, not from `openspec/specs/`.
+
+## Render
+
+The SVG comes from the `plantuml/plantuml-server` podman image over HTTP;
+the PDF comes from that SVG via `rsvg-convert` (keeps the Polish letters,
+same pipeline as `firmware/docs/software-flowchart.*`).
+
+```sh
+# 1. Start the server (local only, removed when stopped).
+podman run -d --rm --name plantuml-diag -p 127.0.0.1:18080:8080 docker.io/plantuml/plantuml-server:latest
+
+# 2. Render every *.puml in this directory to .svg and .pdf.
+nix-shell -p librsvg curl --run firmware/docs/diagrams/render.sh
+#    or only some: ... --run 'firmware/docs/diagrams/render.sh l1-overview.puml'
+
+# 3. Stop the server.
+podman stop plantuml-diag
+```
+
+`render.sh` sends each source as the POST body to `/svg`:
+
+```sh
+curl -sS -f -X POST -H 'Content-Type: text/plain; charset=utf-8' \
+  --data-binary @l1-overview.puml http://127.0.0.1:18080/svg -o l1-overview.svg
+rsvg-convert -f pdf -o l1-overview.pdf l1-overview.svg
+```
+
+A PlantUML syntax error comes back as HTTP 400, so `curl -f` stops the script.
+Checked on 2026-11-02 against `software-flowchart.puml`: the server output had
+the same size (1770 × 2586 px) and DejaVu Serif text as the committed export,
+and `pdftotext` on the PDF returned "zegarów", "Zwiększ", "brzęczyk".
+Set `PLANTUML_URL` to use a server on another port.
+
+## Fact table (firmware)
+
+Source of every node in the diagrams. File paths are relative to `firmware/`.
+
+### Interrupts (wake sources)
+
+| Interrupt | Trigger | Handler | What the handler does |
+|---|---|---|---|
+| RTC1 COMPARE0 | `BOARD_WAKE_APP` deadline | `src/board.c:rtc_evt` | nothing; the IRQ is the wake (nrfx disables the one-shot channel) |
+| RTC1 COMPARE1 | `BOARD_WAKE_WAIT` deadline (driver waits) | `src/board.c:rtc_evt` | nothing; wake only |
+| RTC1 OVERFLOW | 24-bit counter wrap (512 s) | `src/board.c:rtc_evt` | `s_rtc_overflows++` for `board_ms` |
+| GPIOTE PORT (SENSE) | DK button falling edge (P0.13–16) | `src/board.c:on_button` | nothing; `app_poll` reads pin levels |
+| GPIOTE PORT (SENSE, toggle) | `DCF_OUT` edge (P0.25), only while a sync window is open | `src/dcf77_sync.c:on_edge` | rise: store time and period; fall: publish one pulse (`s_pending`) or count an overrun |
+| GPIOTE IN channel | LIS3DH `INT1` rising (P0.23), only while an alarm sounds | `apps/clock/src/main.c:on_int1` | `s_int1 = true` |
+| GPIOTE IN channel | `EPD_BUSY` falling (P0.29), only during an e-paper refresh | `src/epd.c:on_busy` | nothing; `wait_idle` re-reads the pin |
+| SWI2 = `SD_EVT_IRQn` | SoftDevice BLE and SoC events | SDK `nrf_sdh.c:SD_EVT_IRQHandler` → `src/ble_sched.c:on_ble_evt`, `nrf_ble_qwr`, `nrf_fstorage_sd` | sets `s_ev_*` flags, answers GATT authorize requests (see BLE facts) |
+| UARTE0 | console RX byte (build `SLEEP_UART=1` only) | SDK `app_uart_fifo.c` | byte into the RX FIFO; `poll_uart` reads it |
+
+### Main loop (`apps/clock/src/main.c:main`)
+
+| Step | Function | Facts |
+|---|---|---|
+| Boot | `main` | `board_safe_state` (DC/DC on, `DCF_PON` high = receiver off, CS lines high, buzzer low), `alarm_init`, `dcf77_sync_init`, `board_button_wake_enable`, `con_init`, `board_time_init` (SoftDevice enable, LFXO, RTC1), `sched_store_init` (load table from flash), `ble_sched_init`, `spi_bus_init`, `lis3dh_power_down`, first `draw`, DCF sync pending (3 tries) |
+| Loop | `main` | `app_poll`; then if `s_draw && !s_drawing && !dcf77_sync_active()` → `draw` and loop again; else `board_sleep` |
+| Poll | `app_poll` | `poll_uart`, `poll_clock`, `poll_alarm`, `poll_dcf`, `poll_ble`, `arm_wake`, every pass, in this order. No event bits: each handler checks its own state |
+| Console | `poll_uart`, `accept_line` | `YYYY-MM-DD HH:MM:SS` sets time; `alarm …` sets a slot then `sched_store_save`; `alarm?` lists; `dcf sync` opens a window; `ble adv` opens advertising |
+| Time | `poll_clock` | skipped until time is set (UART or DCF) and while drawing; adds whole elapsed seconds from `board_ms`; on a new minute `alarm_on_minute`; at 03:00 sets DCF sync pending with 3 tries |
+| Alarm | `poll_alarm` | `alarm_step` (button stops, 60 s timeout, 1 s on / 1 s off); start → `motion_arm`; `s_int1` → `lis3dh_int1_source` + `motion_count_event` (20 events, 300 ms gap, 30 s window) → `alarm_stop_motion`; stop → `motion_disarm`; buzzer PWM on/off follows the phase; a press edge without an alarm requests a redraw |
+| DCF | `poll_dcf` | pending window opens only when no alarm (dropped after 5 min late); `dcf77_sync_step` decodes one pulse; OK → set time, redraw, `alarm_on_clock_set`; failed window → retry after 1 h while tries remain |
+| BLE | `poll_ble` | alarm active → `ble_sched_stop`; button held ≥ 2 s and idle → `ble_sched_adv_start`; hold in progress → re-check every 100 ms; `ble_sched_poll` applies a received table |
+| Deadline | `arm_wake` | earliest of: next second (`s_last_ms + 1000`), next buzzer phase (`alarm_next_ms`), DCF window end, late DCF drop, DCF retry, BLE link timeout, button-hold check → `board_wake_at(BOARD_WAKE_APP)`; none → `board_wake_cancel` |
+| Display | `draw` | `epd_refresh(face_pixel)`; requested only by boot, time set, DCF OK, alarm start and a button press edge — not every minute |
+
+### Peripherals
+
+| Peripheral | Owner | Use | Idle state |
+|---|---|---|---|
+| RTC1 (LFCLK 32.768 kHz crystal) | `src/board.c:board_time_init`, `board_ms`, `board_wake_at` | free-running ms timebase, CC0 app wake, CC1 wait wake | always running |
+| LFCLK, POWER | SoftDevice (`board.c:clocks_start`) | LFXO start, DC/DC via `sd_power_dcdc_mode_set` | running |
+| GPIOTE | `board.c`, `dcf77_sync.c`, `main.c`, `epd.c` | buttons and `DCF_OUT` by SENSE (PORT event); `INT1`, `EPD_BUSY` by IN channels | buttons only |
+| SPIM0, 250 kHz | `src/spi_bus.c:spi_bus_transfer` | e-paper (mode 0, `EPD_CS`), LIS3DH (mode 3, `SENSOR_CS`) | enabled only per transfer; SCK/MOSI held high |
+| PWM0, 2.7 kHz | `src/buzzer.c:buzzer_tone_start`, `buzzer_off` | buzzer tone on `BUZZER_EN` (P0.31) | uninit, pin low |
+| UARTE0 115200 | `src/board.c:con_init` (SDK `app_uart`) | debug console | absent in `SLEEP_UART=0` build |
+| NVMC via SoftDevice | `src/sched_store.c:sched_store_save` | flash page 0x7F000 | — |
+| GPIO `DCF_PON` (P0.24, active low) | `src/dcf77_sync.c:dcf77_sync_open`, `close_window` | receiver power | high = off |
+| E-paper SSD1680 | `src/epd.c:refresh_panel` | full refresh, then deep sleep mode 1 (cmd 0x10); `EPD_RST` released | no power switch; panel in deep sleep |
+| LIS3DH | `src/lis3dh.c:lis3dh_motion_int1_enable`, `lis3dh_power_down` | 100 Hz, ±2 g, high-pass, INT1 at 256 mg, latched | power-down mode by register (no power switch) |
+| SAADC | — | not used (no battery measurement yet) | — |
+
+### Timers and deadlines
+
+| Constant | Value | Where |
+|---|---|---|
+| Second tick | 1000 ms | `main.c:poll_clock`, `arm_wake` |
+| `ALARM_ON_MS` / `ALARM_OFF_MS` | 1000 / 1000 ms | `src/alarm.h`, `alarm.c:alarm_step` |
+| `ALARM_TIMEOUT_MS` | 60 s | `alarm.c:alarm_step` |
+| `MOTION_N`, `MOTION_GAP_MS`, `MOTION_WINDOW_MS` | 20, 300 ms, 30 s | `src/motion_count.c:motion_count_event` |
+| DCF sync start | 03:00 daily and at boot | `main.c:poll_clock`, `main` |
+| `DCF77_WINDOW_MS` | 300 s | `dcf77_sync.c:dcf77_sync_step` |
+| `DCF_LATE_MS` | 300 s (pending window dropped if alarm still active) | `main.c:poll_dcf` |
+| `DCF_RETRIES`, `DCF_RETRY_MS` | 3, 1 h | `main.c:poll_dcf` |
+| DCF bit widths | 0: 40–140 ms, 1: 150–260 ms, minute gap 1.7–2.3 s, second 0.8–1.2 s | `src/dcf77_classify.c`, `dcf77_sync.c:on_pulse` |
+| `BLE_HOLD_MS`, `BLE_HOLD_POLL_MS` | 2 s, 100 ms | `main.c:poll_ble` |
+| `EPD_BUSY_TIMEOUT_MS` | 10 s | `epd.c:wait_idle` |
+| RTC wake cap | 500 s (24-bit counter) | `board.c:board_wake_at` |
+
+### DCF-77 decoder (`src/dcf77_sync.c`)
+
+States `ST_OFF` → `ST_WAIT_MARKER` (wait for a pulse after a minute gap) → `ST_RECEIVE`
+(59 bits) → `check_frame` (markers bit 0/20/17-18, even parity, BCD range, weekday) →
+first frame becomes the candidate, back to `ST_WAIT_MARKER` → second frame must be
+candidate + 1 min → `ST_WAIT_START` → next minute-gap pulse gives `DCF77_SYNC_OK` with
+`edge_ms` and closes the window. Any bad pulse, overrun or mismatch drops both frames
+(`drop_frames`). `close_window` is the only exit: GPIOTE off, `DCF_PON` high.
+
+### Flash writes
+
+| Caller | Function | When |
+|---|---|---|
+| UART `alarm …` | `main.c:accept_line` → `src/sched_store.c:sched_store_save` | every accepted console edit |
+| BLE write | `src/ble_sched.c:ble_sched_poll` → `sched_store_save` | every accepted table write |
+| Both | `sched_store_save` | erase page 0x7F000, write record (magic, 113 B, CRC16), waits in `sd_app_evt_wait` for the SoftDevice flash ops |
+
+### Sleep entry and exit (`src/board.c`)
+
+| Step | Function | Facts |
+|---|---|---|
+| Arm | `main.c:arm_wake` → `board_wake_at` | RTC1 CC0 one-shot; a past target sets `s_wake_due` instead |
+| Enter | `board_sleep` | returns at once if `s_wake_due`; clears FPU flags (anomaly 87); `WFE`, `SEV`, `WFE` (System ON, no `sd_app_evt_wait`) |
+| Exit | any enabled IRQ above | CPU continues after `WFE`; `main` loop calls `app_poll` |
+| Nested sleep | `board_wait_ms`, `epd.c:wait_idle` | sleep on RTC1 CC1 or BUSY, call `app_poll` on each wake so the buzzer keeps its phase during a refresh |
+| Never | — | System OFF is not used |
