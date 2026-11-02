@@ -268,6 +268,15 @@ composite, not a C measurement). Idle 74.7 µA, refresh 16.75 mC.
 | Refresh, 16.75 mC × 1440 | **6.70 mAh** | 79 % |
 | **3.0 V rail (estimate, DCF and alarm omitted)** | **~8.5 mAh ≈ 92 J** | |
 
-Refresh on button press and alarm only (about 20 a day, `[INFERENCE]`):
-0.093 mAh, so the budget is idle, 1.79 mAh. Idle is 37 times the 2 µA of the
-nRF alone (A10, A11); the 72 µA gap is the peripherals on the rail.
+Refresh on button press and alarm only, measured in
+[`2026-11-02_refresh-on-demand.md`](2026-11-02_refresh-on-demand.md)
+(`8c415fe`, idle 74.8 µA, 16.59 mC net per full refresh):
+
+| Presses + alarm starts per day | Refresh charge | Total per day |
+| --- | --- | --- |
+| 10 | 0.046 mAh | 1.84 mAh |
+| 20 (assumed use, `[INFERENCE]`) | 0.092 mAh | 1.89 mAh |
+| 50 | 0.230 mAh | 2.03 mAh |
+
+Idle is 37 times the 2 µA of the nRF alone (A10, A11); the 72 µA gap is the
+peripherals on the rail.
