@@ -4,6 +4,34 @@ PlantUML sources and their SVG/PDF exports for the clock firmware
 (`firmware/apps/clock`, `firmware/src`) and its Bluetooth path (`web/`).
 Every diagram is drawn **as built from the code**, not from `openspec/specs/`.
 
+**Drawn from commit `8c415fe` (2026-11-02)**, the last commit touching
+`firmware/apps/clock`, `firmware/src`, `firmware/boards` or `web/` at drawing time.
+After code changes there, re-check the fact tables below and redraw.
+
+## Index
+
+| File (`.puml` → `.svg`, `.pdf`) | Level | Type | Shows |
+|---|---|---|---|
+| `l1-overview` | L1 | state | CPU states (start, praca, sen WFE, odświeżanie e-papieru), the DCF / alarm / BLE modes that power extra parts, every wake interrupt |
+| `l2-modules` | L2 | component | ISRs (flags only), the six `app_poll` steps in `main.c`, all 14 `firmware/src` modules, hardware and SoftDevice |
+| `l3-detail-a` … `l3-detail-f` | L3 | activity / state | one figure in six parts: **A** boot, main loop, RTC1 deadline, sleep entry/exit; **B** `poll_uart`, `poll_clock`, `poll_ble`; **C** `poll_alarm` with motion dismiss and buzzer; **D** `poll_dcf`; **E** DCF-77 decoder state machine and `on_edge`; **F** `draw` / e-paper refresh with nested sleep |
+| `ble-overview` | BLE | activity, swimlanes | web page, browser and OS BLE, SoftDevice, `ble_sched.c`, schedule store; SoftDevice role note |
+| `ble-sequence` | BLE | sequence | advertising, connect, discovery, schedule read, schedule write (single and long), flash save, disconnect |
+
+L3 is split because one chart was far too large for A4. Every L3 node has a
+`'` comment above it naming its `file:function`. `ble-overview` and
+`ble-sequence` are dense: place them on a full page.
+`software-flowchart.*` one level up is the older single-chart summary and is
+left unchanged.
+Draft Polish figure captions (agent draft, to be rewritten by the author):
+[`captions.md`](captions.md).
+
+Printed text size when a figure is scaled to the A4 text block (16 × 24.7 cm),
+from the SVG `font-size` (2026-11-02): `l3-detail-d` 8.7 pt, `l3-detail-f` 7.2 pt,
+`l3-detail-a`/`-c` 5.9 pt, `l1-overview` and `l3-detail-b` 5.6 pt, `l2-modules` 4.8 pt
+(5.9 pt landscape), `l3-detail-e` 4.4 pt (6.8 pt landscape), `ble-sequence` 4.3 pt,
+`ble-overview` 4.2 pt. The PDFs are vector, so they stay sharp when zoomed.
+
 ## Render
 
 The SVG comes from the `plantuml/plantuml-server` podman image over HTTP;
@@ -35,6 +63,8 @@ Checked on 2026-11-02 against `software-flowchart.puml`: the server output had
 the same size (1770 × 2586 px) and DejaVu Serif text as the committed export,
 and `pdftotext` on the PDF returned "zegarów", "Zwiększ", "brzęczyk".
 Set `PLANTUML_URL` to use a server on another port.
+Steps 1–3 were run as written on a fresh `git clone` (2026-11-02): all ten
+sources rendered, and every `.svg` and `.pdf` was byte-identical to the committed ones.
 
 ## Fact table (firmware)
 
@@ -172,3 +202,34 @@ Checked 2026-11-02 that the levels use the same names and states.
 | Two frames agree | Okno DCF → Odbiornik DCF wyłączony | `dcf77_sync` → Odbiornik DCF-77 (PON) | E: WAIT_START → OFF, `close_window()`; D: "Wynik OK" |
 | Time set | Praca CPU → Odświeżanie e-papieru (after the window closes) | `4. poll_dcf` → `alarm`; `main` → `draw` | D: `s_draw = true`, `alarm_on_clock_set()`; A: draw condition "okno DCF zamknięte"; F |
 | Failure | Okno DCF → wyłączony after 5 min; retry after 1 h | `4. poll_dcf` "okno, ponowienia" | E: "5 min od otwarcia"; D: "próby − 1; ponowienie za 1 h" |
+
+## Spec-vs-code mismatches
+
+The diagrams follow the code. Each row is a place where `openspec/specs/` says
+something else. Recorded only; fixing them is a separate change.
+"Certain" = read in the code; "likely" = follows from the code but not run on hardware.
+
+| # | Spec → requirement | Spec says | Code does | Evidence | Status |
+|---|---|---|---|---|---|
+| 1 | `ble-schedule-service` → GATT service layout | service UUID `e1430d6d-…` | service `e1430001-…`, characteristic `e1430002-…`; `e1430d6d-…` is only the vendor base (web uses the real ones) | `ble_sched.c:s_base`, `SERVICE_UUID16`; `web/schedule.js` | certain |
+| 2 | `ble-schedule-service` → connection policy | disconnect 30 s after the last accepted **or rejected** write | only an accepted write restarts the 30 s timer | `ble_sched.c:ble_sched_poll` (`s_wrote` only on `s_stage_ready`) | certain |
+| 3 | `ble-schedule-service` → advertising window | 2 s hold during an alarm only silences it | hold timer is not read while the alarm runs; if the button stays down 2 s after the silence, advertising starts | `main.c:poll_ble`, `board.c:board_button_held_ms` | likely |
+| 4 | `dcf77-time-sync` → retry after a failed window | retry at the next full hour | retry 1 h after the window **closed** (03:05 → 04:05 → 05:10 …) | `main.c:poll_dcf` (`s_dcf_retry_ms = now + DCF_RETRY_MS`) | certain |
+| 5 | `dcf77-time-sync` → operator can open a window | `dcf sync` uses the scheduled path | console opens the window directly, without the alarm check; a failed manual window uses the scheduled retries | `main.c:accept_line` | likely |
+| 6 | `alarm-buzzer-timing` → no button, no stop before timeout | stop 59 s after the first burst | `ALARM_TIMEOUT_MS` = 60 s (last burst 58–59 s, then 1 s silence); `alarm-schedule` says 60 s, so the two specs disagree | `alarm.h`, `alarm.c:alarm_step` | certain |
+| 7 | `alarm-buzzer-timing` → pattern | `BUZZER_EN` 1 s on, 1 s off | "on" second is a 2,7 kHz PWM tone, not a steady level (timing matches) | `buzzer.c:buzzer_tone_start` | certain |
+| 8 | `alarm-schedule` → UART alarm commands | `alarm?` lists slots that are enabled **or have a non-zero time** | lists enabled slots only | `main.c:accept_line`, `poll_ble` | certain |
+| 9 | `display-refresh-policy` → button press refreshes the face | face shows time, weekday **and alarm status** | face draws weekday, HH:MM and seconds; no alarm status | `clock_face.c:clock_face_black` | certain |
+| 10 | `display-refresh-policy` → refresh triggers | no boot refresh listed | `main` refreshes once at boot | `main.c:main` | certain |
+| 11 | `display-refresh-policy` → alarm start and time changes refresh; no refresh in a DCF window | a request during a refresh is kept; no refresh inside a window | `draw` clears `s_draw` at the end, so a request raised inside the refresh (via `app_poll` in the waits) is lost; `poll_dcf` can open a window during a refresh | `main.c:draw`, `epd.c:wait_idle` | likely |
+| 12 | `low-power-sleep-policy` → wake sources limited | RTC1 1 s tick, buttons, INT1, DCF edge, alarm and e-paper timers | no free-running 1 s tick: one RTC1 compare at the earliest deadline; UARTE0 and SoftDevice (SWI2) also wake | `main.c:arm_wake`, `board.c:board_wake_at` | certain |
+| 13 | `low-power-sleep-policy` → peripherals powered only while used | UART does not keep the MCU awake when idle | default build `SLEEP_UART=1` keeps UARTE0 RX on; only `SLEEP_UART=0` removes it | `board.c:con_init`, `armgcc/Makefile` | certain |
+| 14 | `low-power-sleep-policy`, `motion-dismiss` → powered down | accelerometer (and display) "off" / "powered down" | LIS3DH power-down by register, e-paper deep sleep by command; no supply switch. Only the DCF receiver is power-gated (PON) | `lis3dh.c:lis3dh_power_down`, `epd.c:refresh_panel` | certain |
+| 15 | `idle-pin-states` → peripheral traffic unchanged | accelerometer passes its identity check at start | clock app never calls `lis3dh_who_am_i` (only bring-up does) | `lis3dh.c`, `main.c:main` | certain |
+| 16 | `ble-schedule-service` → GATT service layout ("advertise the name and the service UUID") | UUID advertised | UUID is in the scan response; the advertising packet has flags + name | `ble_sched.c:ble_sched_init` | wording |
+
+Other as-built notes (no spec covers them):
+
+- `sdk_config.h` says the DCF receiver uses "one IN channel"; `dcf77_sync_open` asks for `hi_accuracy = false`, i.e. GPIOTE PORT/SENSE.
+- `firmware/docs/software-flowchart.puml` lists `DCF_OUT` under "GPIOTE IN" and says the e-paper and LIS3DH are "bez zasilania"; see rows 12 and 14.
+- `epd.c:refresh_panel`: a BUSY timeout returns before the deep-sleep command 0x10, so on that path the panel is not put to sleep (likely; not run).

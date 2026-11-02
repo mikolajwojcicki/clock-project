@@ -20,6 +20,6 @@
 
 ## 4. Index, captions, drift list
 
-- [ ] 4.1 Finish `README.md`: diagram index, regenerate commands (podman container then `rsvg-convert`), source commit, and a spec-vs-code mismatch list; verify the commands run as written from a clean checkout.
-- [ ] 4.2 Write `captions.md` with one Polish agent-draft caption per diagram, and add an entry to `notes/ai-use.md`; verify one caption per exported diagram.
+- [x] 4.1 Finish `README.md`: diagram index, regenerate commands (podman container then `rsvg-convert`), source commit, and a spec-vs-code mismatch list; verify the commands run as written from a clean checkout.
+- [x] 4.2 Write `captions.md` with one Polish agent-draft caption per diagram, and add an entry to `notes/ai-use.md`; verify one caption per exported diagram.
 - [ ] 4.3 Final check: all `.puml` have `.svg` and `.pdf`, files open and are legible; commit in separate commits (tooling/render check, firmware diagrams, BLE diagrams, docs) with thesis-readable bodies.
