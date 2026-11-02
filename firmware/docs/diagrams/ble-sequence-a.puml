@@ -1,0 +1,43 @@
+' BLE sequence, part A: advertising window, connect, discovery, schedule read.
+' Message order follows firmware/src/ble_sched.c (on_ble_evt, on_authorize, ble_sched_poll),
+' SDK nrf_ble_gatt.c, and web/app.js (connect). Part B: ble-sequence-b.puml.
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam SequenceLifeLineBorderColor black
+skinparam ParticipantBorderColor black
+skinparam maxMessageSize 120
+autonumber
+
+participant "Strona\nWWW" as Web
+participant "Przeglądarka\ni BLE OS" as Br
+participant "SoftDevice\nS112" as SD
+participant "ble_sched.c\n(SWI2)" as Isr
+participant "pętla\ngłówna" as Loop
+participant "alarm.c" as Store
+
+== Rozgłaszanie ==
+Loop -> SD : przycisk 2 s, brak alarmu: adv_start (100 ms, 60 s)
+SD -> Br : ADV_IND „ShakeClock”, SCAN_RSP z UUID
+
+== Połączenie ==
+Web -> Br : requestDevice, wybór, gatt.connect()
+Br -> SD : CONNECT_IND
+SD -> Isr : GAP_EVT_CONNECTED → s_ev_connect
+SD <-> Br : wymiana MTU (do 247)
+Loop -> Loop : ble_sched_poll: limit 60 s
+Web -> SD : odkrycie usługi i charakterystyki (SoftDevice sam)
+
+== Odczyt rozkładu ==
+Web -> SD : readValue(): ATT Read Request
+SD -> Isr : RW_AUTHORIZE_REQUEST (odczyt)
+Isr -> Store : alarm_table_get()
+Isr -> SD : sched_encode, authorize_reply (113 B)
+SD -> Web : ATT Read Response → decode()
+@enduml

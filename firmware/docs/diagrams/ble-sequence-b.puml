@@ -1,0 +1,53 @@
+' BLE sequence, part B: schedule write (single and long), flash save, read-back, disconnect.
+' Message order follows firmware/src/ble_sched.c (on_authorize, qwr_cb, on_ble_evt, ble_sched_poll),
+' SDK nrf_ble_qwr.c, and web/app.js (upload, onDisconnected). Part A: ble-sequence-a.puml.
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam SequenceLifeLineBorderColor black
+skinparam ParticipantBorderColor black
+skinparam maxMessageSize 80
+autonumber 16
+
+participant "Strona\nWWW" as Web
+participant "Przeglądarka\ni BLE OS" as Br
+participant "SoftDevice\nS112" as SD
+participant "ble_sched.c\n(SWI2)" as Isr
+participant "pętla główna,\nsched_store.c" as Loop
+
+== Zapis rozkładu ==
+Web -> Br : writeValue\nWithResponse\n(113 B)
+alt MTU ≥ 116
+  Br -> SD : Write Request
+  SD -> Isr : RW_AUTHORIZE\n(WRITE_REQ)
+  Isr -> Isr : validate
+else MTU < 116
+  Br -> SD : Prepare Write ×n\n(bufor nrf_ble_qwr)
+  Br -> SD : Execute Write
+  SD -> Isr : RW_AUTHORIZE\n(EXEC_WRITE)
+  Isr -> Isr : qwr_cb:\nvalidate
+end
+Isr -> SD : authorize_reply\n(status)
+note over Isr
+  validate = sched_decode;
+  OK → s_stage_ready
+  (długi: po odpowiedzi)
+end note
+SD -> Web : Write Response\nlub błąd ATT
+Loop -> Loop : table_replace,\nsched_store_save,\nlimit 30 s
+Loop -> SD : flash: kasowanie,\nzapis 0x7F000
+Web -> SD : readValue(),\nporównanie
+
+== Rozłączenie ==
+Loop -> SD : limit lub alarm:\ndisconnect
+SD -> Br : LL_TERMINATE
+Br -> Web : gattserver\ndisconnected
+SD -> Isr : GAP_EVT_\nDISCONNECTED
+note over SD, Isr : bez połączenia: po 60 s\nADV_SET_TERMINATED
+@enduml

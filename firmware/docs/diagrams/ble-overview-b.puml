@@ -1,0 +1,50 @@
+' BLE overview, part B: schedule write, flash save, read-back, disconnect.
+' Derived from firmware/src/ble_sched.c, sched_codec.c, sched_store.c, apps/clock/src/main.c,
+' web/app.js; see README.md (Fact table, Bluetooth). Part A (with the SoftDevice role): ble-overview-a.puml.
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+skinparam SwimlaneTitleFontSize 13
+
+|WWW|
+|Przeglądarka, OS|
+|SoftDevice|
+|ble_sched.c|
+|Rozkład|
+
+|WWW|
+start
+:edycja,\n„Upload”:\nwriteValue\n(113 B);
+|Przeglądarka, OS|
+:Write Request\nalbo Prepare\n+ Execute\n(MTU < 116);
+|SoftDevice|
+:autoryzacja\nzapisu\n(długi: bufor\nnrf_ble_qwr);
+|ble_sched.c|
+if (sched_decode\npoprawny?) then (tak)
+  :odpowiedź\nOK;
+  |Rozkład|
+  :pętla główna:\ntable_replace,\nsched_store\n_save\n(flash);
+  |ble_sched.c|
+  :limit łącza\n30 s od\nzapisu;
+else (nie)
+  :błąd ATT;
+endif
+|WWW|
+:readValue(),\nporównanie\nbajtów;
+|ble_sched.c|
+:limit minął\nlub alarm:\ndisconnect;
+|SoftDevice|
+:DISCON-\nNECTED;
+|WWW|
+:„discon-\nnected”,\nedycje\nzostają;
+stop
+@enduml

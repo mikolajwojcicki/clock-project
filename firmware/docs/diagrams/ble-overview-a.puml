@@ -1,0 +1,62 @@
+' BLE overview, part A: advertising, connect, discovery, schedule read; SoftDevice role.
+' Derived from firmware/src/ble_sched.c, sched_codec.c, apps/clock/src/main.c, web/app.js;
+' see README.md (Fact table, Bluetooth). Part B: ble-overview-b.puml.
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
+skinparam legendFontName DejaVu Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+skinparam SwimlaneTitleFontSize 13
+
+|WWW|
+|Przeglądarka, OS|
+|SoftDevice|
+|ble_sched.c|
+|Rozkład|
+
+|ble_sched.c|
+start
+:przycisk 2 s,\nbez alarmu:\nadv_start();
+|SoftDevice|
+:rozgłaszanie\n„ShakeClock”,\n100 ms, ≤ 60 s;
+|WWW|
+:„Connect”:\nrequestDevice();
+|Przeglądarka, OS|
+:skan, wybór,\ngatt.connect();
+|SoftDevice|
+:łącze,\nCONNECTED;
+|ble_sched.c|
+:limit łącza 60 s;
+|Przeglądarka, OS|
+:MTU, odkrycie\nusługi;
+|SoftDevice|
+:odpowiada sam\nz tablicy GATT;
+|WWW|
+:readValue();
+|SoftDevice|
+:autoryzacja\nodczytu;
+|Rozkład|
+:alarm_table\n_get();
+|ble_sched.c|
+:sched_encode,\nodpowiedź\n113 B;
+|WWW|
+:decode(), tabela\nna ekranie;
+stop
+
+legend bottom
+  **SoftDevice S112**: gotowy program binarny Nordic w dolnej części
+  flash (poniżej 0x19000), działa obok aplikacji. Posiada radio i czasy
+  warstwy łącza, GAP, GATT, ATT, zegary POWER/CLOCK i kolejkę operacji
+  flash. Aplikacja woła funkcje sd_* (instrukcja SVC); zdarzenia
+  (połączenie, rozłączenie, koniec rozgłaszania, autoryzacja odczytu
+  i zapisu, koniec operacji flash) dostaje przez przerwanie SWI2.
+endlegend
+@enduml
