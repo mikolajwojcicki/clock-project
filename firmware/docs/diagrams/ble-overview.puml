@@ -1,0 +1,90 @@
+' BLE overview: who does what between the Web Bluetooth page and the clock schedule store.
+' Derived from firmware/src/ble_sched.c, sched_codec.c, sched_store.c, apps/clock/src/main.c,
+' web/app.js, web/schedule.js; see README.md (Fact table, Bluetooth).
+' Render: README.md, section Render.
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam activityFontName DejaVu Serif
+skinparam activityDiamondFontName DejaVu Serif
+skinparam noteFontName DejaVu Serif
+skinparam dpi 160
+skinparam ActivityBorderColor black
+skinparam ActivityDiamondBorderColor black
+skinparam ArrowColor black
+
+title Konfiguracja rozkładu przez BLE: role warstw
+
+|Strona WWW|
+|Przeglądarka i OS|
+|SoftDevice S112|
+|ble_sched.c|
+|Rozkład w zegarze|
+
+|ble_sched.c|
+start
+:przycisk 2 s,\nbrak alarmu:\nadv_start();
+|SoftDevice S112|
+:rozgłaszanie\n„ShakeClock”,\n100 ms, maks. 60 s;
+|Strona WWW|
+:„Connect”:\nrequestDevice();
+|Przeglądarka i OS|
+:skanowanie,\nwybór urządzenia,\ngatt.connect();
+|SoftDevice S112|
+:łącze; koniec\nrozgłaszania;\nCONNECTED;
+|ble_sched.c|
+:limit łącza 60 s;
+|Przeglądarka i OS|
+:MTU, odkrycie\nusługi i\ncharakterystyki;
+|SoftDevice S112|
+:odpowiada sam\nz tablicy GATT;
+|Strona WWW|
+:readValue();
+|SoftDevice S112|
+:autoryzacja\nodczytu;
+|Rozkład w zegarze|
+:alarm_table_get():\ntabela 7 × 8;
+|ble_sched.c|
+:sched_encode,\nodpowiedź 113 B;
+|Strona WWW|
+:decode(), edycja,\n„Upload”:\nwriteValue(113 B);
+|Przeglądarka i OS|
+:Write Request albo\nPrepare + Execute\n(gdy MTU < 116);
+|SoftDevice S112|
+:autoryzacja\nzapisu (długi:\nbufor nrf_ble_qwr);
+|ble_sched.c|
+if (sched_decode\npoprawny?) then (tak)
+  :odpowiedź OK;
+  |Rozkład w zegarze|
+  :pętla główna:\ntable_replace,\nsched_store_save\n(flash 0x7F000);
+  |ble_sched.c|
+  :limit łącza\n30 s od zapisu;
+else (nie)
+  :błąd ATT;
+endif
+|Strona WWW|
+:readValue(),\nporównanie\nbajtów;
+|ble_sched.c|
+:limit minął\nlub alarm:\ndisconnect;
+|SoftDevice S112|
+:DISCONNECTED;
+note right
+  **SoftDevice S112**: gotowy program
+  binarny Nordic w dolnej części flash
+  (poniżej 0x19000), działa obok
+  aplikacji. Posiada radio i czasy
+  warstwy łącza, GAP, GATT, ATT,
+  zegary POWER/CLOCK i kolejkę
+  operacji flash. Aplikacja woła
+  funkcje sd_* (instrukcja SVC);
+  zdarzenia (połączenie, rozłączenie,
+  koniec rozgłaszania, autoryzacja,
+  koniec operacji flash) dostaje
+  przez przerwanie SWI2.
+end note
+|Strona WWW|
+:stan „disconnected”,\nedycje zostają;
+stop
+@enduml

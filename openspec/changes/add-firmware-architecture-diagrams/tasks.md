@@ -14,9 +14,9 @@
 
 ## 3. Bluetooth diagrams
 
-- [ ] 3.1 Read `firmware/src/ble_sched.c`, `sched_codec.c`, `sched_store.c`, `web/app.js`, `web/schedule.js`; add BLE facts (advertising window, UUIDs, MTU, long write, storage) to the fact table.
-- [ ] 3.2 Draw `ble-overview.puml` with lanes web app, browser/OS BLE, SoftDevice, `ble_sched`, schedule store, and an explicit SoftDevice-role note; verify it covers advertising, connect, discovery, read, write, disconnect.
-- [ ] 3.3 Draw `ble-sequence.puml` for a schedule read and a schedule write; verify message order matches `ble_sched.c` event handling.
+- [x] 3.1 Read `firmware/src/ble_sched.c`, `sched_codec.c`, `sched_store.c`, `web/app.js`, `web/schedule.js`; add BLE facts (advertising window, UUIDs, MTU, long write, storage) to the fact table.
+- [x] 3.2 Draw `ble-overview.puml` with lanes web app, browser/OS BLE, SoftDevice, `ble_sched`, schedule store, and an explicit SoftDevice-role note; verify it covers advertising, connect, discovery, read, write, disconnect.
+- [x] 3.3 Draw `ble-sequence.puml` for a schedule read and a schedule write; verify message order matches `ble_sched.c` event handling.
 
 ## 4. Index, captions, drift list
 

@@ -129,6 +129,32 @@ candidate + 1 min → `ST_WAIT_START` → next minute-gap pulse gives `DCF77_SYN
 | Nested sleep | `board_wait_ms`, `epd.c:wait_idle` | sleep on RTC1 CC1 or BUSY, call `app_poll` on each wake so the buzzer keeps its phase during a refresh |
 | Never | — | System OFF is not used |
 
+## Fact table (Bluetooth)
+
+Sources: `firmware/src/ble_sched.c`, `sched_codec.[ch]`, `sched_store.c`,
+`firmware/apps/clock/config/sdk_config.h`, `firmware/apps/clock/armgcc/*`, `web/app.js`, `web/schedule.js`.
+
+| Topic | Fact | Where |
+|---|---|---|
+| SoftDevice | S112 7.2.0 (peripheral-only), flash below 0x19000, app RAM from 0x200022c8; flashed once by `make flash_softdevice`, not in the app hex | `armgcc/Makefile`, `clock_gcc_nrf52.ld` |
+| SoftDevice owns | radio and link-layer timing, GAP/GATT/ATT, POWER/CLOCK (LFCLK from crystal, 20 ppm), flash erase/write scheduling | `sdk_config.h` `NRF_SDH_*`, `board.c:clocks_start` |
+| App → SoftDevice | `sd_*` calls (SVC): `sd_ble_gap_adv_set_configure`, `sd_ble_gap_adv_start/stop`, `sd_ble_gatts_rw_authorize_reply`, `sd_ble_gap_disconnect`, `sd_power_dcdc_mode_set`, flash via `nrf_fstorage_sd` | `ble_sched.c`, `board.c`, `sched_store.c` |
+| SoftDevice → app | events via SWI2 (`SD_EVT_IRQn`, `NRF_SDH_DISPATCH_MODEL 0` = interrupt) → `NRF_SDH_BLE_OBSERVER` `on_ble_evt` (prio 3), `nrf_ble_gatt` (1), `nrf_ble_qwr` (2); SoC flash events → `nrf_fstorage_sd` | `nrf_sdh.c`, `ble_sched.c:on_ble_evt` |
+| Events handled | `GAP_EVT_CONNECTED`, `DISCONNECTED`, `ADV_SET_TERMINATED`, `PHY_UPDATE_REQUEST` (auto), `SEC_PARAMS_REQUEST` (pairing not supported), `GATTS_EVT_SYS_ATTR_MISSING`, `GATTS_EVT_RW_AUTHORIZE_REQUEST` | `ble_sched.c:on_ble_evt` |
+| Advertising | starts only on 2 s button hold (or console `ble adv`) and no alarm; connectable scannable undirected, 100 ms interval, 60 s duration, 1M PHY; adv data = flags + name `ShakeClock`; scan response = 128-bit service UUID | `main.c:poll_ble`, `ble_sched.c:ble_sched_adv_start`, `ble_sched_init` |
+| UUIDs | vendor base `e1430d6d-6e9b-4b29-ba99-6f30cbe203d0`; service `e1430001-…`, characteristic `e1430002-…` (bytes 12–13 replaced) | `ble_sched.c:s_base`, `web/schedule.js` |
+| Characteristic | read + write, open security, value in stack, `rd_auth` + `wr_auth`, 113 B | `ble_sched.c:ble_sched_init` |
+| Format | byte 0 = version 1, then 7 × 8 u16 LE, Monday first; bit 15 = enabled, bits 0–10 = minute of day | `sched_codec.h`, `web/schedule.js:encode` |
+| Connection | one link; preferred interval 100–200 ms, latency 0, supervision 4 s; ATT MTU up to 247, data length 27 | `ble_sched.c:ble_sched_init`, `sdk_config.h` |
+| Read | authorize-read → `alarm_table_get` + `sched_encode` of the live table → reply 113 B | `ble_sched.c:on_authorize` |
+| Write (fits MTU) | authorize-write → `validate` (`sched_decode`: length, version, minute ≤ 1439, no duplicate enabled time in a day; busy while the previous write is not yet applied) → reply status; OK → copy to `s_stage`, `s_stage_ready` | `ble_sched.c:on_authorize`, `validate` |
+| Long write (MTU too small) | prepare writes buffered by `nrf_ble_qwr` (256 B); at execute `qwr_cb` gets AUTH_REQUEST with the whole value → `validate` into `s_pend`, then EXECUTE_WRITE → `s_stage`, `s_stage_ready` | `ble_sched.c:qwr_cb` |
+| Error codes (ATT) | 0x0D wrong length, 0x82 version, 0x83 minute, 0x84 duplicate, 0x90 busy | `ble_sched.c:status_for`, `ERR_BUSY` |
+| Apply and store | main loop `ble_sched_poll` → `alarm_table_replace` → `sched_store_save` (erase page 0x7F000, write record: magic, 113 B, CRC16; waits in `sd_app_evt_wait`) | `ble_sched.c:ble_sched_poll`, `sched_store.c` |
+| Link timeouts | disconnect 60 s after connect without an accepted write, 30 s after the last accepted write; alarm start drops adv and link | `ble_sched.c:deadline`, `ble_sched_poll`, `main.c:poll_ble` |
+| Web page | `requestDevice` (filter name + service) → `gatt.connect` → `getPrimaryService` → `getCharacteristic` → `readValue` → `decode`; upload = `writeValueWithResponse(113 B)` then `readValue` and byte compare; `gattserverdisconnected` → state "disconnected" | `web/app.js:connect`, `upload`, `onDisconnected` |
+| MTU / long write choice | made by the browser and OS BLE stack, not by the page: 113 B fits one Write Request when ATT MTU ≥ 116, else Prepare/Execute Write | `web/app.js:upload`, ATT spec |
+
 ## Consistency walk (L1 → L2 → L3)
 
 Checked 2026-11-02 that the levels use the same names and states.
