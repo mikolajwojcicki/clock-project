@@ -2,9 +2,9 @@
 
 ## 1. Pack check
 
-- [ ] 1.1 Run `git diff --stat 8c415fe HEAD -- firmware/apps/clock firmware/src firmware/boards web`; verify it is empty, or that every change is reflected in `firmware/docs/diagrams/` (fixes go to `add-firmware-architecture-diagrams`, then re-render with `render.sh`).
-- [ ] 1.2 Confirm the pack files open: `hardware/docs/hardware-block-diagram.pdf` and every `firmware/docs/diagrams/*.pdf` (`pdfinfo` returns a page count for each); `software-flowchart.*` is not in the pack.
-- [ ] 1.3 List not-implemented and partial behavior (from `firmware/docs/diagrams/README.md` mismatch table, unused SAADC, no System OFF, no supply switch for LIS3DH and e-Paper) in `notes/log/YYYY-MM-DD_first-consultation.md`; verify each row names a source file.
+- [x] 1.1 Run `git diff --stat 8c415fe HEAD -- firmware/apps/clock firmware/src firmware/boards web`; verify it is empty, or that every change is reflected in `firmware/docs/diagrams/` (fixes go to `add-firmware-architecture-diagrams`, then re-render with `render.sh`).
+- [x] 1.2 Confirm the pack files open: `hardware/docs/hardware-block-diagram.pdf` and every `firmware/docs/diagrams/*.pdf` (`pdfinfo` returns a page count for each); `software-flowchart.*` is not in the pack.
+- [x] 1.3 List not-implemented and partial behavior (from `firmware/docs/diagrams/README.md` mismatch table, unused SAADC, no System OFF, no supply switch for LIS3DH and e-Paper) in `notes/log/YYYY-MM-DD_first-consultation.md`; verify each row names a source file.
 
 ## 2. Demo rehearsal
 
