@@ -36,7 +36,7 @@ Between SPI transfers, from bus init on, the firmware SHALL drive the shared SPI
 - **THEN** the clock and data-out lines are still at a defined high level at the display inputs
 
 ### Requirement: Peripheral traffic is unchanged
-The display and the accelerometer SHALL work as before the change: the panel refreshes every minute, the accelerometer identifies itself, and motion during an alarm still silences it.
+The display and the accelerometer SHALL work as before the change: the panel refreshes according to the display refresh policy, the accelerometer identifies itself, and motion during an alarm still silences it.
 
 #### Scenario: Accelerometer after the change
 - **WHEN** the clock starts with the LIS3DH fitted
