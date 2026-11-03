@@ -18,7 +18,8 @@ Detailed tool and ownership record:
 | 7 | Flyback diode | `1N4148` | Buzzer coil protection | Owned | Existing project record |
 | 8 | Base resistor | Approximately 1 kOhm, 1/4 W | NPN base current limit | Owned | Existing project record |
 | 9 | Breadboard and jumpers | Solderless board, M-M and F-M wires | Temporary wiring | Owned | Existing project record |
-| 10 | Charger and battery | TP4056 USB-C breakout and 400 to 500 mAh Li-Po with JST-PH | Optional power experiments | Owned | Existing project record |
+| 10 | Charger and battery | Pimoroni LiPo Amigo `PIM611` (plain, off-board charger on `J5`) and Akyga `LP503035` 3.7 V 500 mAh protected Li-Po with JST-PH | Battery mode: cell to Amigo `BAT`/`VBAT` pads to `J5` | To buy | `temp-resources/shit-to-buy.md`; schematic `J5` `Amigo_VBAT` |
+| 10a | TP4056 USB-C breakout | TP4056 | Unused spare; replaced by the LiPo Amigo | Owned | Existing project record |
 | 11 | ST Nucleo-F411RE | `MB1136 C-04` | Bench DCF-77 signal generator, not product hardware | Owned | User statement |
 | 12 | SCK series resistor | Approximately 100 Ohm (47 to 220 Ohm), 1/4 W | Damps ringing on `SPI_SCK` at `P0.03`; without it the display hangs | To buy | `notes/log/2026-10-22_epd-sck-ringing.md` |
 | 13 | Perfboard | Approx. 7x9 cm, double-sided, 2.54 mm pitch, plated holes | Shield for the nRF52 DK; carries all peripherals | To buy | Decision 2026-10-24: perfboard is a DK shield |
@@ -26,11 +27,11 @@ Detailed tool and ownership record:
 | 15 | Female header 1x8 | 2.54 mm | Waveshare e-Paper connection | To buy | Shield decision |
 | 16 | Female headers | 2.54 mm, sized to LIS3DH and DCF-1060N-800 pin rows | Keeps the breakouts removable | To buy | Shield decision |
 | 17 | Male pin header strip | 1x40, 2.54 mm | Breakout pins and test points | To buy | Shield decision |
-| 18 | Pull-up resistors | 10 kOhm, 1/4 W | Button and bus pull-ups | To buy | Shield decision |
+| 18 | Pull-up resistors | 10 kOhm, 1/4 W | Spares only: the shield fits no button pull-ups (DK internal pull-ups) | To buy | `hardware/docs/perfboard-shield.md` |
 | 19 | Tactile buttons | 6x6 mm THT, 3 to 4 pcs | MODE, UP, DOWN, SNOOZE | To buy | Shield decision |
 | 20 | Decoupling capacitors | 100 nF ceramic and 10 uF | Local decoupling at DCF and LIS3DH | To buy | Shield decision |
 | 21 | Battery connector | JST-PH 2-pin, THT | Li-Po connection on the shield | To buy | Shield decision |
-| 22 | Slide switch | SPDT, 2.54 mm | Power on/off | To buy | Shield decision |
+| 22 | Slide switch | `MSS-2245`, SPDT, 2.54 mm (one pole used) | `SW5`: battery `VBAT` to `5V` | To buy | Shield decision; `hardware/kicad/dk-perfboard-shield.kicad_sch` |
 | 23 | Standoffs | M3 with screws | Mount the shield | To buy | Shield decision |
 
 ## Warnings and alternatives
@@ -47,7 +48,11 @@ Detailed tool and ownership record:
   flyback diode circuit in the breadboard guide.
 - A low-power passive piezo buzzer is a comparison candidate from the supplied
   research conversation. It does not replace the AP-1205V-P1 architecture.
-- Do not use the TP4056 and Li-Po during first USB-powered bring-up.
+- Do not connect the battery path (Amigo, Akyga, SW5) during first USB-powered
+  bring-up, and never feed the DK from USB and the battery at the same time.
+- The TP4056 breakout is replaced by the LiPo Amigo and is an unused spare. See
+  [`perfboard-shield.md`](../docs/perfboard-shield.md) and the schematic
+  [`dk-perfboard-shield`](../kicad/dk-perfboard-shield.kicad_sch).
 
 ## Sources
 
