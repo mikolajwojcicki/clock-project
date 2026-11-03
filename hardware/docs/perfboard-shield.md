@@ -4,6 +4,8 @@ Pin map for the soldered prototype. The perfboard plugs onto the nRF52 DK
 (`PCA10040`) and carries every peripheral. The nets are the same as in
 [`breadboard-wiring-table.md`](breadboard-wiring-table.md). Pin names match
 `firmware/boards/dk_breadboard_pins.h`, so the firmware does not change.
+Source schematic: [`hardware/kicad/dk-perfboard-shield.kicad_sch`](../kicad/dk-perfboard-shield.kicad_sch)
+(PDF and netlist beside it).
 
 Bench results from the breadboard build that the layout MUST respect:
 
@@ -17,7 +19,7 @@ Bench results from the breadboard build that the layout MUST respect:
 
 | DK header | Shield pins used | Nets |
 | --- | --- | --- |
-| `P1` (power) | `VDD`, `GND`, `5V` | `3V3`, `GND`, `5V` (buzzer only) |
+| `P1` (power) | `VDD`, `GND`, `5V` | `3V3`, `GND`, `5V` (battery mode: switched `5V` feeds the DK and the buzzer) |
 | `P2` | `P0.03`, `P0.04`, `P0.28`, `P0.29`, `P0.30`, `P0.31` | `SPI_SCK`, `SPI_MOSI`, `EPD_RST`, `EPD_BUSY`, `SENSOR_CS`, `BUZZER_EN` |
 | `P3` | `P0.11`, `P0.12`, `P0.13` to `P0.16` | `EPD_CS`, `EPD_DC`, `SW1` to `SW4` |
 | `P4` | `P0.02`, `P0.23`, `P0.24`, `P0.25` | `SPI_MISO`, `SENSOR_INT1`, `DCF_PON`, `DCF_OUT` |
@@ -48,8 +50,8 @@ for this reason.
 | Buzzer stage | `P0.31` to 1 kΩ to `2N3904` base; emitter `GND`; buzzer `+` on `5V`, `-` on collector; `1N4148` across the buzzer | Check transistor pin order |
 | `C1` 100 nF + `C2` 10 µF | `3V3` to `GND`, next to the display and DCF sockets | Local decoupling |
 | `C3` 100 nF | `3V3` to `GND`, next to the LIS3DH socket | |
-| Slide switch | in series with `3V3` to the peripherals | Do not switch the DK `VDD` pin itself |
-| JST-PH 2-pin | battery to the TP4056 board, not to the DK | Not used in first bring-up |
+| `SW5` slide switch `MSS-2245` | `VBAT` (from `J5`) to the switched `5V` net: DK `P1` `5V` and buzzer `+` | One pole used. Never on the DK `VDD` pin or the peripheral `3V3` rail |
+| `J5` 2-pin (`Amigo_VBAT`) | Amigo `BAT`/`VBAT` and `GND` to `SW5` and shield `GND` | Battery mode only; charger stays off-board on the Amigo |
 | Four tactile buttons | see Buttons | |
 
 ## Layout rules
@@ -65,6 +67,18 @@ for this reason.
 ## Check before first power-up
 
 Same order and checks as section 6 of the wiring table: `GND`/`3V3`, then SPI,
-then signals, then the buzzer stage. Power the shield only from the DK `VDD`
-pin. Use the PPK2 on the DK measurement header exactly as in the baseline
-measurement.
+then signals, then the buzzer stage. In USB mode power the shield only from the
+DK `VDD` pin (battery path unconnected). Use the PPK2 on the DK measurement
+header exactly as in the baseline measurement.
+
+## Power modes
+
+1. **USB bring-up:** DK USB powers `VDD`. `J5` empty, `SW5` off. Do not attach
+   the battery to `P1` `5V`.
+2. **Battery mode:** USB unplugged. Akyga cell to Amigo `PIM611` JST, Amigo
+   `BAT`/`VBAT` pads to `J5`, then `SW5` (`VBAT` to `5V`) to DK `P1` `5V` and
+   the buzzer `+`. The Amigo `5V` pads are USB VBUS only and are not a battery
+   rail. Leave the Amigo Fast Charge pads open.
+
+Never dual-feed: DK USB and the battery path must not supply the DK at the same
+time. Unplug USB before closing `SW5`.
