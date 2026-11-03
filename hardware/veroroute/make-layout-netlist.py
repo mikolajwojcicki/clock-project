@@ -44,7 +44,7 @@ TYPES = {
     "BZ1": "BLOCK_200MIL2",  # pin pitch of AP-1205V-P1 still to be measured
     "SW1": "SWITCH_BUTTON_4PIN", "SW2": "SWITCH_BUTTON_4PIN", "SW3": "SWITCH_BUTTON_4PIN",
     "SW4": "SWITCH_BUTTON_4PIN",  # 2 of 4 pins used; check the internally shorted pairs in VeroRoute
-    "SW5": "SWITCH_DT",  # MSS-2245 one pole; SWITCH_ST (single throw) has no pin 3; check pin numbering in VeroRoute
+    "SW5": "BLOCK_100MIL3",  # MSS-2245 one pole as a 3-pin row; SWITCH_ST/DT fail import ("Part has no pins"). Second pole row stays unused: keep its holes free (row pitch to measure).
 }
 DROP = {"R2", "R3"}  # DNP
 
