@@ -1,0 +1,28 @@
+' L2 modules, part E: display refresh (draw) and the e-Paper path.
+' Derived from firmware/apps/clock/src/main.c and firmware/src/*.c; see README.md (fact table).
+' Arrows: solid = function call.
+' Other L2 parts: l2-modules-a ... d. Render: README.md, section Render.
+@startuml
+top to bottom direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam nodesep 30
+skinparam ranksep 50
+
+component "main(): draw()" as p_draw
+component "clock_face\npiksele tarczy" as m_face
+component "epd\nSSD1680" as m_epd
+component "spi_bus\nSPIM0" as m_spi
+component "e-Paper" as hw_epd
+
+p_draw -down-> m_face
+p_draw -down-> m_epd
+m_epd -down-> m_spi
+m_spi -down-> hw_epd
+@enduml

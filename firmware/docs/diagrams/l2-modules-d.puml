@@ -1,0 +1,34 @@
+' L2 modules, part D: BLE schedule service and schedule storage (poll_ble).
+' Derived from firmware/apps/clock/src/main.c and firmware/src/*.c; see README.md (fact table).
+' Arrows: solid = function call, dashed = flag set in an interrupt and read in the loop.
+' Other L2 parts: l2-modules-a ... c, e. Render: README.md, section Render.
+@startuml
+top to bottom direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam nodesep 30
+skinparam ranksep 50
+
+component "SWI2 (SoftDevice):\non_ble_evt, qwr_cb" as irq_sd
+component "5. poll_ble" as p_ble
+
+component "ble_sched\nusługa GATT" as m_ble
+component "sched_store\nflash 0x7F000" as m_store
+component "sched_codec\n113 B, CRC" as m_codec
+component "alarm\ntabela 7×8" as m_alarm
+component "SoftDevice S112\nradio, flash" as sd
+
+irq_sd .down.> p_ble
+p_ble -down-> m_ble
+m_ble -down-> m_store
+m_store -down-> m_codec
+m_store -down-> m_alarm
+m_store -down-> sd : nrf_fstorage_sd
+m_ble -right-> sd : sd_ble_*
+@enduml

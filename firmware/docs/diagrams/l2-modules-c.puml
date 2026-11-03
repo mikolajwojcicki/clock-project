@@ -1,0 +1,36 @@
+' L2 modules, part C: time keeping and DCF-77 synchronisation (poll_clock, poll_dcf).
+' Derived from firmware/apps/clock/src/main.c and firmware/src/*.c; see README.md (fact table).
+' Arrows: solid = function call, dashed = flag set in an interrupt and read in the loop.
+' Other L2 parts: l2-modules-a, b, d, e. Render: README.md, section Render.
+@startuml
+top to bottom direction
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName DejaVu Serif
+skinparam dpi 160
+skinparam ArrowColor black
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam nodesep 30
+skinparam ranksep 50
+
+component "GPIOTE: on_edge (DCF_OUT)" as irq_gpiote
+component "2. poll_clock" as p_clock
+component "4. poll_dcf" as p_dcf
+
+component "clock\nczas kalendarzowy" as m_clock
+component "alarm\nalarm_on_minute,\nalarm_on_clock_set" as m_alarm
+component "dcf77_sync\nokno, automat ramek\n(sprawdza datę przez clock_set)" as m_dcf
+component "dcf77_classify\nszerokość impulsu" as m_cls
+component "Odbiornik\nDCF-77 (PON)" as hw_dcf
+
+irq_gpiote .down.> p_dcf
+p_clock -down-> m_clock
+p_clock -down-> m_alarm
+p_dcf -down-> m_alarm
+p_dcf -down-> m_dcf
+m_dcf -down-> m_cls
+m_dcf -down-> hw_dcf
+p_clock -[hidden]right-> p_dcf
+@enduml
