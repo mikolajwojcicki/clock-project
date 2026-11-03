@@ -1,0 +1,18 @@
+ERC report (2026-11-03T21:23:20, Encoding UTF8)
+Report includes: Errors, Warnings
+
+***** Sheet /
+[isolated_pin_label]: Label connected to only one pin
+    ; warning
+    @(17.78 mm, 109.22 mm): Label 'CLOCK_SEC_MARK'
+[lib_symbol_mismatch]: Symbol '2N3904' doesn't match copy in library 'Transistor_BJT'
+    ; warning
+    @(218.44 mm, 127.00 mm): Symbol Q1 [2N3904]
+
+ ** ERC messages: 2  Errors 0  Warnings 2
+
+ ** Ignored checks:
+    - Global label only appears once in the schematic
+    - Four connection points are joined together
+    - SPICE model issue
+    - Assigned footprint doesn't match footprint filters
