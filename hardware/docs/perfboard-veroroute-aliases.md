@@ -57,3 +57,6 @@ re-imported; if `PADSx` is rejected, try `SIP` or fall back to `BLOCK_100MILx`.
 `PADSx` imported as individual loose pads (no block to move). The binary has
 `AddSIP` and `BreakSIPSintoPADS`, so PADS are broken-up SIPs: connectors are now
 `SIPx`. Not yet re-imported.
+
+Confirmed 2026-11-03: `SIPx` imports as one 1-row block per header, one hole per
+pin. This is the working mapping (BLOCK_100MILx and PADSx are superseded).
