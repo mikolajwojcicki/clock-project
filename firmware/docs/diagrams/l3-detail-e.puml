@@ -10,8 +10,8 @@ skinparam noteFontName DejaVu Serif
 skinparam dpi 160
 skinparam ArrowColor black
 skinparam StateBorderColor black
-skinparam nodesep 20
-skinparam ranksep 40
+skinparam nodesep 50
+skinparam ranksep 70
 
 title L3-E: dekoder DCF-77 (dcf77_sync_step, on_pulse)
 

@@ -29,14 +29,14 @@ start
 |SoftDevice|
 :autoryzacja\nzapisu\n(długi: bufor\nnrf_ble_qwr);
 |ble_sched.c|
-if (sched_decode\npoprawny?) then (tak)
+if (sched_decode\nniepoprawny?) then (tak)
+  :błąd ATT;
+else (nie)
   :odpowiedź\nOK;
   |Rozkład|
   :pętla główna:\ntable_replace,\nsched_store\n_save\n(flash);
   |ble_sched.c|
   :limit łącza\n30 s od\nzapisu;
-else (nie)
-  :błąd ATT;
 endif
 |WWW|
 :readValue(),\nporównanie\nbajtów;
