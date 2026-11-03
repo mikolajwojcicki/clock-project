@@ -1,4 +1,4 @@
-( { EESchema Netlist Version 1.1 created  2026-11-03T21:23:36 }
+( { EESchema Netlist Version 1.1 created  2026-11-03T21:36:39 }
  ( /1e87bed5-67ac-4bd4-b8ca-61cd83ce3244 $noname  J4 DCF-1060N-800
   (    1 /DCF_PON )
   (    2 /DCF_OUT )
@@ -16,7 +16,7 @@
  ( /4213a53e-de71-4bc6-969a-d0228d3ecf7f $noname  J1 nRF52_DK_(PCA10040)
   (    1 /+3V3 )
   (    2 /GND )
-  (    3 /SPI_SCK_DK )
+  (    3 Net-(J1-P0.03_SPI_SCK) )
   (    4 /SPI_MOSI )
   (    5 /SPI_MISO )
   (    6 /EPD_CS )
@@ -72,7 +72,7 @@
  )
  ( /95b4041e-7525-4b7e-9073-448686550c4d $noname  R_SCK 100
   (    1 /SPI_SCK )
-  (    2 /SPI_SCK_DK )
+  (    2 Net-(J1-P0.03_SPI_SCK) )
  )
  ( /9f82788c-e2a0-4892-8e39-e43f8ae4ac39 $noname  SW1 MODE
   (    1 Net-(J1-P0.13_SW1) )

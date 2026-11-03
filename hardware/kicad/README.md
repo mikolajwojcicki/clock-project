@@ -15,6 +15,25 @@ kicad-cli sch export pdf -o dk-perfboard-shield.pdf dk-perfboard-shield.kicad_sc
 
 `dk-perfboard-shield.net` (OrcadPCB2) is the input for VeroRoute layout (`hardware/veroroute/`).
 
+## Sheet layout
+
+A3 landscape, blocks 1-6 plus the safety-rules frame, laid out so each block crops cleanly for the thesis (`notes/media/*_perfboard_sch-<block>.svg`). The net between `R_SCK` and DK `P0.03` is unnamed in the netlist (`Net-(J1-P0.03_SPI_SCK)`); the `SPI_SCK` side is the bus net.
+
+Regenerate thesis block crops (black-and-white SVG, then crop with a `viewBox` in mm):
+
+```bash
+kicad-cli sch export svg --black-and-white --exclude-drawing-sheet -o /tmp/svg dk-perfboard-shield.kicad_sch
+```
+
+|Crop|`viewBox` (x y w h, mm)|
+|---|---|
+|`power` (block 6)|309 36.5 101 61|
+|`host` (block 1)|11 36.5 100 110|
+|`epaper` (block 2)|115.5 36.5 81 61|
+|`sensors` (block 3)|196.5 36.5 107 61|
+|`dcf` (block 4)|115.5 100 81 56|
+|`buzzer` (block 5)|196.5 100 107 56|
+
 ## ERC: 0 errors, 2 warnings (`erc-dk-perfboard-shield.rpt`)
 
 |Warning|Reason kept|
