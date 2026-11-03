@@ -21,3 +21,10 @@ Modifications the author made, as reported:
 Result: the author reports that the headers now fit. **Open:** photo not yet in `notes/media/`.
 
 DK pins were cut, so `P20` and `P5` are only reachable with the modified Dupont jumper from now on. Layout keeps both zones free of parts and solder joints (design risk list, task 4.3).
+
+## Part measurements (calliper, author)
+
+| Part | Measure | Consequence for the layout |
+| --- | --- | --- |
+| MSS-2245 slide switch | Pin rows 3.58 mm apart, pin thickness about 0.3 mm | Not on the 2.54 mm grid. Only one pole is used, so cut the three pins of the unused row; solder the used row as a 3-pin block (`BLOCK_100MIL3`). |
+| AP-1205V-P1 buzzer | Pins 8.21 mm apart, pin thickness about 0.6 mm | Not on the grid. Use holes 3 apart (7.62 mm) and splay each pin about 0.3 mm; modelled as `BLOCK_100MIL4` with pins 1 and 4. |

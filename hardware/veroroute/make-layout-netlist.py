@@ -41,12 +41,14 @@ TYPES = {
     "R_SCK": "RESISTOR4", "R1": "RESISTOR4",
     "C1": "CAP_CERAMIC", "C3": "CAP_CERAMIC", "C2": "CAP_ELECTRO_200",
     "Q1": "TO92", "D1": "DIODE",
-    "BZ1": "BLOCK_200MIL2",  # pin pitch of AP-1205V-P1 still to be measured
+    "BZ1": "BLOCK_100MIL4",  # AP-1205V-P1 pins are 8.21 mm apart (measured): 3 holes = 7.62 mm, pins splayed 0.3 mm each; pins 1 and 4 used
     "SW1": "SWITCH_BUTTON_4PIN", "SW2": "SWITCH_BUTTON_4PIN", "SW3": "SWITCH_BUTTON_4PIN",
     "SW4": "SWITCH_BUTTON_4PIN",  # 2 of 4 pins used; check the internally shorted pairs in VeroRoute
     "SW5": "BLOCK_100MIL3",  # MSS-2245 one pole as a 3-pin row; SWITCH_ST/DT fail import ("Part has no pins"). Second pole row stays unused: keep its holes free (row pitch to measure).
 }
 DROP = {"R2", "R3"}  # DNP
+# Layout pin number for parts whose footprint skips holes: ref -> {schematic pin: block pin}.
+PIN_REMAP = {"BZ1": {1: 1, 2: 4}}
 
 BLOCK = re.compile(r"\( (\S+) (\S+)\s+(\S+) (\S+)\n(.*?)\n \)", re.S)
 PIN = re.compile(r"\(\s*(\d+) (\S+) \)")
@@ -74,7 +76,8 @@ def build(parts):
     for ref, (value, pins) in parts.items():
         if ref == "J1" or ref in DROP:
             continue
-        nets = {n: clean(net) for n, net in pins.items() if not net.startswith("unconnected-")}
+        remap = PIN_REMAP.get(ref, {})
+        nets = {remap.get(n, n): clean(net) for n, net in pins.items() if not net.startswith("unconnected-")}
         out.append((ref, TYPES[ref], value, nets))
     return out
 

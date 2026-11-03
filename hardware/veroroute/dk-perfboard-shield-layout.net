@@ -55,9 +55,9 @@
   (    7 /SENSOR_CS )
   (    8 /SENSOR_INT1 )
  )
- ( /BZ1 BLOCK_200MIL2 BZ1 AP-1205V-P1
+ ( /BZ1 BLOCK_100MIL4 BZ1 AP-1205V-P1
   (    1 /5V )
-  (    2 Net-BZ1-- )
+  (    4 Net-BZ1-- )
  )
  ( /Q1 TO92 Q1 2N3904
   (    1 /GND )
