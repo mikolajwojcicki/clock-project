@@ -39,15 +39,26 @@ VeroRoute import strings, so no manual alias is needed.
   reserved in layout (task 4.3), no net.
 - KiCad netlist unusable → derived layout netlist (see above).
 
+## Checked against sources (2026-11-03)
+
+| Item | Source | Result |
+|---|---|---|
+| DK P1–P4 pin order | PCA10040 v3.0.0 `PCA10040_Schematic_And_PCB.pdf` sheet 5 + `400150_Pick_And_Place.csv` (P1/P2 at 0°, P3/P4 at 180°) | Matches `HEADERS` in the generator. Block pin 1 = low-x end; on P3/P4 that is Nordic pin 8/10 (D7, SCL) |
+| J4 DCF order PON OUT GND VDD | `temp-resources/docs/dcf77/` vendor pinout photo | Matches J4 pins 1–4 |
+| J2 Waveshare order VCC GND DIN CLK CS DC RST BUSY | `temp-resources/IMG_4276/4277.jpeg`: 8-wire Waveshare cable (grey, brown, blue, yellow, orange, green, white, purple), no 9th PWR wire | Matches J2 pins 1–8 |
+| Q1 2N3904 TO-92 | `temp-resources/2N3904_datasheet.pdf` p. 1: `EBC` | Matches symbol 1 = E, 2 = B, 3 = C |
+| J3 LIS3DH rows | author read the board silkscreen | Split into J3A/J3B (see table) |
+
 ## Still to confirm in the GUI (task 4.3, before routing)
 
 1. `SWITCH_BUTTON_4PIN`: pins 1 and 2 must be the two *unshorted* contacts, else
    the button reads always-on.
 2. `DIODE`: pin 1 = anode? D1 cathode must be on `5V`. Check the placed symbol's
    stripe; swap netlist pins if reversed.
-3. `TO92`: confirm pin 1 = E, 2 = B, 3 = C against the placed footprint.
-4. DK header pin order is inferred (Arduino R3, pin 1 at the USB end); verify
-   against the DK silkscreen before soldering.
+3. `TO92`: the VeroRoute footprint's pin 1 must sit where the part's E lead goes
+   (flat face toward you, E on the left).
+4. One DK silkscreen glance before soldering: P0.03 must be the header pin at the
+   USB-side end of P2 (the GPIO labels are printed next to the headers).
 
 ## Revision 2026-11-03 (later)
 

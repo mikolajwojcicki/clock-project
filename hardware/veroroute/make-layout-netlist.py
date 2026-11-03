@@ -21,10 +21,13 @@ SRC = HERE.parent / "kicad" / "dk-perfboard-shield.net"
 DST = HERE / "dk-perfboard-shield-layout.net"
 
 # DK header pin -> J1 pin number in the schematic symbol. None = no shield net.
-# Pin order is the Arduino R3 order seen from the top of the DK, USB at the
-# left (header pin 1 at the lowest x). [INFERENCE] from the Arduino standard
-# and the Nordic GPIO table; verify against the DK silkscreen before soldering.
-# Comment shows the Arduino / GPIO name of each position.
+# List index = hole position from the lowest DK x (USB at the left), which is also the
+# VeroRoute block pin number. Checked against the Nordic PCA10040 v3.0.0 files: sheet 5
+# (Connectors) numbers P1 1..8 = VIO VIO RESET VIO 5V GND GND VIN, P2 1..6 = A0..A5,
+# P3 1..8 = D0..D7, P4 1..10 = D8..D13 GND AREF SDA SCL; pick-and-place rotates P1/P2
+# 0 deg and P3/P4 180 deg, so Nordic pin 1 is at the low-x end on the bottom headers and
+# at the high-x end on the top headers (hence the reversed P3/P4 lists). D2..D5 =
+# P0.13..P0.16 per the DK User Guide. Comment shows the Arduino / GPIO name of each position.
 HEADERS = {
     "P1": [None, None, None, 1, 16, 2, None, None],  # NC IOREF RESET 3V3 5V GND GND VIN
     "P2": [3, 4, 8, 9, 10, 14],  # A0 P0.03, A1 P0.04, A2 P0.28, A3 P0.29, A4 P0.30, A5 P0.31
