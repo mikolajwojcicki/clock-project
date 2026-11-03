@@ -16,7 +16,7 @@
 
 ## 3. Header test-fit
 
-- [ ] 3.1 Push unsoldered long-pin headers through the perfboard onto DK `P1`–`P4` and confirm the P3/P4 stagger mates (or pick an offset-row or separate-strip fallback); record the result and a photo in the dated bring-up log
+- [ ] 3.1 Push unsoldered long-pin headers through the perfboard onto DK `P1`–`P4`. P1/P2/P3 share the perfboard grid; P4 pins are 1.016 mm off it, so bend the P4 tails 1.016 mm (upper pins on the DK grid, tails in perfboard holes) and confirm all four mate; if the bend fails, use a separate P4 strip or two boards. Record the result and a photo in the dated bring-up log
 
 ## 4. VeroRoute layout
 
