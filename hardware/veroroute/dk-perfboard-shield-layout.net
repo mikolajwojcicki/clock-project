@@ -1,10 +1,10 @@
 ( { EESchema Netlist Version 1.1 derived by make-layout-netlist.py from dk-perfboard-shield.net }
- ( /P1 HDR_F_1x8 P1 DK_P1
+ ( /P1 BLOCK_100MIL8 P1 DK_P1
   (    4 /+3V3 )
   (    5 /5V )
   (    6 /GND )
  )
- ( /P2 HDR_F_1x6 P2 DK_P2
+ ( /P2 BLOCK_100MIL6 P2 DK_P2
   (    1 Net-J1-P0.03_SPI_SCK )
   (    2 /SPI_MOSI )
   (    3 /EPD_RST )
@@ -12,7 +12,7 @@
   (    5 /SENSOR_CS )
   (    6 /BUZZER_EN )
  )
- ( /P3 HDR_F_1x8 P3 DK_P3
+ ( /P3 BLOCK_100MIL8 P3 DK_P3
   (    3 Net-J1-P0.16_SW4 )
   (    4 Net-J1-P0.15_SW3 )
   (    5 Net-J1-P0.14_SW2 )
@@ -20,7 +20,7 @@
   (    7 /EPD_DC )
   (    8 /EPD_CS )
  )
- ( /P4 HDR_F_1x10 P4 DK_P4
+ ( /P4 BLOCK_100MIL10 P4 DK_P4
   (    3 /SPI_MISO )
   (    4 /GND )
   (    5 /DCF_OUT )
@@ -28,25 +28,25 @@
   (    7 /SENSOR_INT1 )
   (    8 /CLOCK_SEC_MARK )
  )
- ( /J4 HDR_F_1x4 J4 DCF-1060N-800
+ ( /J4 BLOCK_100MIL4 J4 DCF-1060N-800
   (    1 /DCF_PON )
   (    2 /DCF_OUT )
   (    3 /GND )
   (    4 /+3V3 )
  )
- ( /SW2 SW_TACT SW2 UP
+ ( /SW2 SWITCH_BUTTON_4PIN SW2 UP
   (    1 Net-J1-P0.14_SW2 )
   (    2 /GND )
  )
- ( /SW3 SW_TACT SW3 DOWN
+ ( /SW3 SWITCH_BUTTON_4PIN SW3 DOWN
   (    1 Net-J1-P0.15_SW3 )
   (    2 /GND )
  )
- ( /C2 CAP_ELECTRO C2 10uF
+ ( /C2 CAP_ELECTRO_200 C2 10uF
   (    1 /+3V3 )
   (    2 /GND )
  )
- ( /J3 HDR_F_1x9 J3 Adafruit_LIS3DH_(#2809)
+ ( /J3 BLOCK_100MIL9 J3 Adafruit_LIS3DH_(#2809)
   (    1 /+3V3 )
   (    3 /GND )
   (    4 /SPI_SCK )
@@ -55,7 +55,7 @@
   (    7 /SENSOR_CS )
   (    8 /SENSOR_INT1 )
  )
- ( /BZ1 BUZZER_2P BZ1 AP-1205V-P1
+ ( /BZ1 BLOCK_200MIL2 BZ1 AP-1205V-P1
   (    1 /5V )
   (    2 Net-BZ1-- )
  )
@@ -64,7 +64,7 @@
   (    2 Net-Q1-B )
   (    3 Net-BZ1-- )
  )
- ( /J2 HDR_F_1x8 J2 Waveshare_2.13in_HAT_Rev2.1
+ ( /J2 BLOCK_100MIL8 J2 Waveshare_2.13in_HAT_Rev2.1
   (    1 /+3V3 )
   (    2 /GND )
   (    3 /SPI_MOSI )
@@ -74,11 +74,11 @@
   (    7 /EPD_RST )
   (    8 /EPD_BUSY )
  )
- ( /R_SCK RES_AXIAL R_SCK 100
+ ( /R_SCK RESISTOR4 R_SCK 100
   (    1 /SPI_SCK )
   (    2 Net-J1-P0.03_SPI_SCK )
  )
- ( /SW1 SW_TACT SW1 MODE
+ ( /SW1 SWITCH_BUTTON_4PIN SW1 MODE
   (    1 Net-J1-P0.13_SW1 )
   (    2 /GND )
  )
@@ -86,19 +86,19 @@
   (    1 /+3V3 )
   (    2 /GND )
  )
- ( /SW5 SW_SLIDE_3P SW5 MSS-2245
+ ( /SW5 SWITCH_ST SW5 MSS-2245
   (    2 /5V )
   (    3 /VBAT )
  )
- ( /J5 HDR_M_1x2 J5 Amigo_VBAT
+ ( /J5 BLOCK_100MIL2 J5 Amigo_VBAT
   (    1 /VBAT )
   (    2 /GND )
  )
- ( /R1 RES_AXIAL R1 1k
+ ( /R1 RESISTOR4 R1 1k
   (    1 /BUZZER_EN )
   (    2 Net-Q1-B )
  )
- ( /D1 DIODE_AXIAL D1 1N4148
+ ( /D1 DIODE D1 1N4148
   (    1 /5V )
   (    2 Net-BZ1-- )
  )
@@ -106,7 +106,7 @@
   (    1 /+3V3 )
   (    2 /GND )
  )
- ( /SW4 SW_TACT SW4 SNOOZE
+ ( /SW4 SWITCH_BUTTON_4PIN SW4 SNOOZE
   (    1 /GND )
   (    2 Net-J1-P0.16_SW4 )
  )

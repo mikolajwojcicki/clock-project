@@ -31,16 +31,20 @@ HEADERS = {
     "P3": [None, None, 20, 19, 18, 17, 7, 6],  # D7 P0.18, D6 P0.17, D5..D2 P0.16..P0.13, D1 P0.12, D0 P0.11
     "P4": [None, None, 5, 15, 13, 12, 11, 21, None, None],  # SCL SDA AREF/P0.02 GND D13..D10 D9 D8
 }
-HEADER_TYPE = {"P1": "HDR_F_1x8", "P2": "HDR_F_1x6", "P3": "HDR_F_1x8", "P4": "HDR_F_1x10"}
+# Types are VeroRoute import strings (Part Aliases dialog, "Valid Import Strings"), so no aliases are needed.
+# BLOCK_100MILx = single-row pin block with x pins at 100 mil.
+HEADER_TYPE = {"P1": "BLOCK_100MIL8", "P2": "BLOCK_100MIL6", "P3": "BLOCK_100MIL8", "P4": "BLOCK_100MIL10"}
 
 # ref -> Type for every other part kept in the layout.
 TYPES = {
-    "J2": "HDR_F_1x8", "J3": "HDR_F_1x9", "J4": "HDR_F_1x4", "J5": "HDR_M_1x2",
-    "R_SCK": "RES_AXIAL", "R1": "RES_AXIAL",
-    "C1": "CAP_CERAMIC", "C3": "CAP_CERAMIC", "C2": "CAP_ELECTRO",
-    "Q1": "TO92", "D1": "DIODE_AXIAL", "BZ1": "BUZZER_2P",
-    "SW1": "SW_TACT", "SW2": "SW_TACT", "SW3": "SW_TACT", "SW4": "SW_TACT",
-    "SW5": "SW_SLIDE_3P",
+    "J2": "BLOCK_100MIL8", "J3": "BLOCK_100MIL9", "J4": "BLOCK_100MIL4", "J5": "BLOCK_100MIL2",
+    "R_SCK": "RESISTOR4", "R1": "RESISTOR4",
+    "C1": "CAP_CERAMIC", "C3": "CAP_CERAMIC", "C2": "CAP_ELECTRO_200",
+    "Q1": "TO92", "D1": "DIODE",
+    "BZ1": "BLOCK_200MIL2",  # pin pitch of AP-1205V-P1 still to be measured
+    "SW1": "SWITCH_BUTTON_4PIN", "SW2": "SWITCH_BUTTON_4PIN", "SW3": "SWITCH_BUTTON_4PIN",
+    "SW4": "SWITCH_BUTTON_4PIN",  # 2 of 4 pins used; check the internally shorted pairs in VeroRoute
+    "SW5": "SWITCH_ST",  # MSS-2245 one pole; check pin count in VeroRoute
 }
 DROP = {"R2", "R3"}  # DNP
 
