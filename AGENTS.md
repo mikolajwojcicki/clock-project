@@ -61,7 +61,7 @@ Root holds shared docs (`AGENTS.md`), Nix flakes/shells, and CI. Keep concerns s
 | Block | Choice | Notes |
 | --- | --- | --- |
 | MCU | Raytac `MDBT42Q-512KV2` (nRF52832 module) | Pre-certified; TME `MDBT42Q-512KV2`; ship-to-Poland OK |
-| Display | Waveshare 2.13" e-Paper module | **Option 2:** 1×8 2.54 mm header to breakout (HV boost on module), not raw FPC + discrete boost |
+| Display | Waveshare 2.13" e-Paper HAT (Rev2.1) | **Option 2:** module with HV boost on board, not raw FPC + discrete boost. Perfboard: HAT plugs onto a 2×20 RPi male header (decision 2026-11-03; 3V3 fed into RPi pin 2/4, see `hardware/docs/waveshare-hat-40pin.md`) |
 | Time sync | DCF-77 receiver module (e.g. MAS6180-class) | Use PD/power-down; enable only for periodic sync |
 | RTC | nRF52 internal RTC + 32.768 kHz crystal | **No** external DS3231 |
 | Motion | ST `LIS3DH` (`LIS3DHTR`) | INT1/INT2 wake; no polling while sleeping |

@@ -43,7 +43,7 @@ for this reason.
 
 | Part | Connects to | Note |
 | --- | --- | --- |
-| Waveshare 2.13" HAT, 1x8 socket | `3V3`, `GND`, `SPI_MOSI`, `SPI_SCK`, `EPD_CS`, `EPD_DC`, `EPD_RST`, `EPD_BUSY` | `BS1` bridge at `0` |
+| Waveshare 2.13" HAT Rev2.1 on a 2x20 male header (RPi layout) | `3V3` → pin 2, `GND` → 6, `SPI_MOSI` → 19, `SPI_SCK` → 23, `EPD_CS` → 24, `EPD_DC` → 22, `EPD_RST` → 11, `EPD_BUSY` → 18 | Pins 2/4 are the HAT's power input (`RPI_5V` net) and get `3V3`, never `5V`. Pins 1/17 power nothing on the HAT. Leave every other pin open. Only parts lower than the header stack under the HAT outline (65 × 30.2 mm). Source: `waveshare-hat-40pin.md` |
 | LIS3DH breakout socket | `3V3`, `GND`, `SPI_SCK`, `SPI_MOSI`, `SPI_MISO`, `SENSOR_CS`, `SENSOR_INT1` | `INT2`, `3Vo` open |
 | DCF-1060N-800 socket | `3V3`, `GND`, `DCF_PON`, `DCF_OUT` | `PON` active low |
 | `R_SCK` 100 Ω | in series on `SPI_SCK`, next to `P0.03` | 47 to 220 Ω ok |

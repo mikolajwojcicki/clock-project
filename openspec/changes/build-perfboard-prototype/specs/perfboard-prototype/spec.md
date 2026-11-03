@@ -5,7 +5,7 @@ Defines the soldered perfboard shield that plugs onto the nRF52 DK and counts as
 ## ADDED Requirements
 
 ### Requirement: Prototype is a DK plug-on shield
-The thesis prototype SHALL be a soldered pad-per-hole perfboard shield that mates with nRF52 DK (`PCA10040`) headers `P1`–`P4`. The e-paper, LIS3DH and DCF-77 modules SHALL plug into female sockets on the shield. Production-PCB-only parts (MDBT42Q module, discrete MCP73831, AP2112K, USB-C receptacle, crystal) SHALL NOT appear in the shield schematic or netlist.
+The thesis prototype SHALL be a soldered pad-per-hole perfboard shield that mates with nRF52 DK (`PCA10040`) headers `P1`–`P4`. The e-paper HAT SHALL plug onto a 2×20 Raspberry Pi-layout male header on the shield, and the LIS3DH and DCF-77 modules SHALL plug into female sockets on the shield. Production-PCB-only parts (MDBT42Q module, discrete MCP73831, AP2112K, USB-C receptacle, crystal) SHALL NOT appear in the shield schematic or netlist.
 
 #### Scenario: Shield is fitted to the DK
 - **WHEN** the shield is pressed onto the DK long-pin headers
