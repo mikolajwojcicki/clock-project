@@ -20,7 +20,9 @@ VeroRoute import strings, so no manual alias is needed.
 | P2 | `SIP6` | 1–6 | |
 | P3 | `SIP8` | 3–8 | |
 | P4 | `SIP10` | 3–8 | |
-| J2 (e-paper), J4 (DCF), J5 (Amigo VBAT) | `SIPn` | per netlist | socket strips |
+| J4 (DCF), J5 (Amigo VBAT) | `SIPn` | per netlist | socket strips |
+| J2A (HAT header, odd RPi pins 1..39) | `SIP20` | 6 `EPD_RST` (pin 11), 10 `SPI_MOSI` (19), 12 `SPI_SCK` (23) | block pin i = RPi pin 2i−1 |
+| J2B (HAT header, even RPi pins 2..40) | `SIP20` | 1 `+3V3` (pin 2), 3 `GND` (6), 9 `EPD_BUSY` (18), 11 `EPD_DC` (22), 12 `EPD_CS` (24) | block pin i = RPi pin 2i; place 1 hole from J2A, same columns |
 | J3A (LIS3DH bottom row) | `SIP6` | 1 `+3V3` (VIN), 3 `GND`, 4 `SPI_SCK`, 5 `SPI_MOSI`, 6 `SENSOR_INT1` | row VIN 3Vo GND SCL SDA INT; 3Vo open |
 | J3B (LIS3DH top row) | `SIP6` | 5 `SPI_MISO` (SDO), 6 `SENSOR_CS` | row I2 A3 A2 A1 SDO CS; place 6 holes (15.24 mm) from J3A, same columns, silkscreen upright |
 | BZ1 | `SIP4` | 1 `5V`, 4 `BZ1-` | pins 2, 3 unused; 8.21 mm pitch fits the holes |

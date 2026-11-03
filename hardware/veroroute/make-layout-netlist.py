@@ -38,17 +38,30 @@ HEADERS = {
 # SIPx = single-row block of x pins, one hole each (BLOCK_100MILx draws a 3-hole-tall pill per pin; PADSx imports as loose pads).
 HEADER_TYPE = {"P1": "SIP8", "P2": "SIP6", "P3": "SIP8", "P4": "SIP10"}
 
-# Adafruit LIS3DH #2809 has two 6-pin rows, 6 holes (15.24 mm) apart, read with the
-# silkscreen upright: socket row -> J3 schematic pin per position (1 VIN 2 3Vo 3 GND
-# 4 SCL 5 SDA 6 SDO 7 CS 8 INT1 9 INT2). None = A1..A3, no shield net.
-J3_ROWS = {
-    "J3A": [1, 2, 3, 4, 5, 8],  # VIN 3Vo GND SCL SDA INT
-    "J3B": [9, None, None, None, 6, 7],  # I2 A3 A2 A1 SDO CS
+# Modules whose pin field is cut into SIP strips: ref -> {strip ref: schematic pin per position}.
+# None = hole with no shield net.
+SOCKET_ROWS = {
+    # Adafruit LIS3DH #2809: two 6-pin rows, 6 holes (15.24 mm) apart, read with the
+    # silkscreen upright (J3 pins: 1 VIN 2 3Vo 3 GND 4 SCL 5 SDA 6 SDO 7 CS 8 INT1 9 INT2).
+    "J3": {
+        "J3A": [1, 2, 3, 4, 5, 8],  # VIN 3Vo GND SCL SDA INT
+        "J3B": [9, None, None, None, 6, 7],  # I2 A3 A2 A1 SDO CS
+    },
+    # Waveshare 2.13" HAT Rev2.1 plugs onto a 2x20 male header (RPi layout), rows 1 hole
+    # apart: J2A = odd RPi pins 1..39, J2B = even pins 2..40, position i = RPi pin 2i-1 / 2i.
+    # Source: hardware/docs/waveshare-hat-40pin.md (Waveshare wiki + HAT schematic).
+    # The HAT power input is RPi pin 2/4 (`RPI_5V` net, same as cable VCC); we feed 3V3 there.
+    # Pins 1/17 (P_3V3) power nothing on the HAT; 12, 27, 28 and the rest stay open.
+    # (J2 pins: 1 VCC 2 GND 3 DIN 4 CLK 5 CS 6 DC 7 RST 8 BUSY.)
+    "J2": {
+        "J2A": [None] * 5 + [7] + [None] * 3 + [3] + [None, 4] + [None] * 8,  # RST 11, DIN 19, CLK 23
+        "J2B": [1, None, 2] + [None] * 5 + [8, None, 6, 5] + [None] * 8,  # VCC 2, GND 6, BUSY 18, DC 22, CS 24
+    },
 }
 
 # ref -> Type for every other part kept in the layout.
 TYPES = {
-    "J2": "SIP8", "J4": "SIP4", "J5": "SIP2",
+    "J4": "SIP4", "J5": "SIP2",
     "R_SCK": "RESISTOR4", "R1": "RESISTOR4",
     "C1": "CAP_CERAMIC", "C3": "CAP_CERAMIC", "C2": "CAP_ELECTRO_200",
     "Q1": "TO92", "D1": "DIODE",
@@ -89,10 +102,11 @@ def build(parts):
     j1 = parts["J1"][1]
     for hdr, pins in HEADERS.items():
         out.append((hdr, HEADER_TYPE[hdr], f"DK_{hdr}", split(j1, pins)))
-    for sub, pins in J3_ROWS.items():
-        out.append((sub, f"SIP{len(pins)}", f"LIS3DH_{sub}", split(parts["J3"][1], pins)))
+    for ref, strips in SOCKET_ROWS.items():
+        for sub, pins in strips.items():
+            out.append((sub, f"SIP{len(pins)}", f"{parts[ref][0]}_{sub}", split(parts[ref][1], pins)))
     for ref, (value, pins) in parts.items():
-        if ref in ("J1", "J3") or ref in DROP:
+        if ref == "J1" or ref in SOCKET_ROWS or ref in DROP:
             continue
         remap = PIN_REMAP.get(ref, {})
         nets = {remap.get(n, n): clean(net) for n, net in pins.items() if not net.startswith("unconnected-")}
@@ -104,9 +118,10 @@ def check(parts, built):
     j1 = parts["J1"][1]
     used = [j for pins in HEADERS.values() for j in pins if j is not None]
     assert sorted(used) == sorted(j1), f"J1 pins not covered exactly once: {sorted(set(j1) ^ set(used))}"
-    j3 = [j for pins in J3_ROWS.values() for j in pins if j is not None]
-    assert sorted(j3) == sorted(parts["J3"][1]), "J3 pins not covered exactly once"
-    assert set(parts) - {"J1", "J3"} - DROP == set(TYPES), "TYPES does not match parts in the netlist"
+    for ref, strips in SOCKET_ROWS.items():
+        got = [j for pins in strips.values() for j in pins if j is not None]
+        assert sorted(got) == sorted(parts[ref][1]), f"{ref} pins not covered exactly once"
+    assert set(parts) - {"J1"} - set(SOCKET_ROWS) - DROP == set(TYPES), "TYPES does not match parts in the netlist"
     for ref, _t, _v, nets in built:
         for n, net in nets.items():
             assert net.startswith(("/", "Net-")) and "(" not in net, (ref, n, net)

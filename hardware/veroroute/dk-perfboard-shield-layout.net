@@ -28,16 +28,28 @@
   (    7 /SENSOR_INT1 )
   (    8 /CLOCK_SEC_MARK )
  )
- ( /J3A SIP6 J3A LIS3DH_J3A
+ ( /J3A SIP6 J3A Adafruit_LIS3DH_(#2809)_J3A
   (    1 /+3V3 )
   (    3 /GND )
   (    4 /SPI_SCK )
   (    5 /SPI_MOSI )
   (    6 /SENSOR_INT1 )
  )
- ( /J3B SIP6 J3B LIS3DH_J3B
+ ( /J3B SIP6 J3B Adafruit_LIS3DH_(#2809)_J3B
   (    5 /SPI_MISO )
   (    6 /SENSOR_CS )
+ )
+ ( /J2A SIP20 J2A Waveshare_2.13in_HAT_Rev2.1_J2A
+  (    6 /EPD_RST )
+  (   10 /SPI_MOSI )
+  (   12 /SPI_SCK )
+ )
+ ( /J2B SIP20 J2B Waveshare_2.13in_HAT_Rev2.1_J2B
+  (    1 /+3V3 )
+  (    3 /GND )
+  (    9 /EPD_BUSY )
+  (   11 /EPD_DC )
+  (   12 /EPD_CS )
  )
  ( /J4 SIP4 J4 DCF-1060N-800
   (    1 /DCF_PON )
@@ -65,16 +77,6 @@
   (    1 /GND )
   (    2 Net-Q1-B )
   (    3 Net-BZ1-- )
- )
- ( /J2 SIP8 J2 Waveshare_2.13in_HAT_Rev2.1
-  (    1 /+3V3 )
-  (    2 /GND )
-  (    3 /SPI_MOSI )
-  (    4 /SPI_SCK )
-  (    5 /EPD_CS )
-  (    6 /EPD_DC )
-  (    7 /EPD_RST )
-  (    8 /EPD_BUSY )
  )
  ( /R_SCK RESISTOR4 R_SCK 100
   (    1 /SPI_SCK )
