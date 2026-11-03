@@ -86,7 +86,7 @@
   (    1 /+3V3 )
   (    2 /GND )
  )
- ( /SW5 SWITCH_ST SW5 MSS-2245
+ ( /SW5 SWITCH_DT SW5 MSS-2245
   (    2 /5V )
   (    3 /VBAT )
  )
