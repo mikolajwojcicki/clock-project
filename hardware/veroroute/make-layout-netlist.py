@@ -32,19 +32,19 @@ HEADERS = {
     "P4": [None, None, 5, 15, 13, 12, 11, 21, None, None],  # SCL SDA AREF/P0.02 GND D13..D10 D9 D8
 }
 # Types are VeroRoute import strings (Part Aliases dialog, "Valid Import Strings"), so no aliases are needed.
-# BLOCK_100MILx = single-row pin block with x pins at 100 mil.
-HEADER_TYPE = {"P1": "BLOCK_100MIL8", "P2": "BLOCK_100MIL6", "P3": "BLOCK_100MIL8", "P4": "BLOCK_100MIL10"}
+# PADSx = single-row block of x plain pads (BLOCK_100MILx draws a 3-hole-tall body that blocks routing).
+HEADER_TYPE = {"P1": "PADS8", "P2": "PADS6", "P3": "PADS8", "P4": "PADS10"}
 
 # ref -> Type for every other part kept in the layout.
 TYPES = {
-    "J2": "BLOCK_100MIL8", "J3": "BLOCK_100MIL9", "J4": "BLOCK_100MIL4", "J5": "BLOCK_100MIL2",
+    "J2": "PADS8", "J3": "PADS9", "J4": "PADS4", "J5": "PADS2",
     "R_SCK": "RESISTOR4", "R1": "RESISTOR4",
     "C1": "CAP_CERAMIC", "C3": "CAP_CERAMIC", "C2": "CAP_ELECTRO_200",
     "Q1": "TO92", "D1": "DIODE",
-    "BZ1": "BLOCK_100MIL4",  # AP-1205V-P1 pins are 8.21 mm apart (measured): 3 holes = 7.62 mm, pins splayed 0.3 mm each; pins 1 and 4 used
+    "BZ1": "PADS4",  # AP-1205V-P1 pins are 8.21 mm apart (measured): 3 holes = 7.62 mm, pins splayed 0.3 mm each; pins 1 and 4 used
     "SW1": "SWITCH_BUTTON_4PIN", "SW2": "SWITCH_BUTTON_4PIN", "SW3": "SWITCH_BUTTON_4PIN",
     "SW4": "SWITCH_BUTTON_4PIN",  # 2 of 4 pins used; check the internally shorted pairs in VeroRoute
-    "SW5": "BLOCK_100MIL3",  # MSS-2245 one pole as a 3-pin row; SWITCH_ST/DT fail import ("Part has no pins"). Second pole row stays unused: keep its holes free (row pitch to measure).
+    "SW5": "PADS3",  # MSS-2245 one pole as a 3-pin row; SWITCH_ST/DT fail import ("Part has no pins"). Second pole row stays unused: keep its holes free (row pitch to measure).
 }
 DROP = {"R2", "R3"}  # DNP
 # Layout pin number for parts whose footprint skips holes: ref -> {schematic pin: block pin}.
