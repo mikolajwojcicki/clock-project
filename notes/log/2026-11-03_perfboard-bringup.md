@@ -26,5 +26,5 @@ DK pins were cut, so `P20` and `P5` are only reachable with the modified Dupont 
 
 | Part | Measure | Consequence for the layout |
 | --- | --- | --- |
-| MSS-2245 slide switch | Pin rows 3.58 mm apart, pin thickness about 0.3 mm | Not on the 2.54 mm grid. Only one pole is used, so cut the three pins of the unused row; solder the used row as a 3-pin block (`BLOCK_100MIL3`). |
-| AP-1205V-P1 buzzer | Pins 8.21 mm apart, pin thickness about 0.6 mm | Not on the grid. Use holes 3 apart (7.62 mm) and splay each pin about 0.3 mm; modelled as `BLOCK_100MIL4` with pins 1 and 4. |
+| MSS-2245 slide switch | Pin rows 3.58 mm apart, pin thickness about 0.3 mm | Not on the 2.54 mm grid. Only one pole is used and it is modelled as a 3-pin block (`BLOCK_100MIL3`). The author fitted the switch without cutting: the second row sits one hole (2.54 mm) from the used row, pins bent about 1 mm. Those 3 holes carry no net and stay free in the layout. |
+| AP-1205V-P1 buzzer | Pins 8.21 mm apart, pin thickness about 0.6 mm | Not on the grid. Holes 3 apart (7.62 mm), each pin splayed about 0.3 mm (fits the holes, author-confirmed); modelled as `BLOCK_100MIL4` with pins 1 and 4. |
