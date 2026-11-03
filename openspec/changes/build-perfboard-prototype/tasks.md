@@ -2,17 +2,17 @@
 
 ## 1. Promote shield schematic
 
-- [ ] 1.1 Copy `dk-perfboard-shield.{kicad_pro,kicad_sch,kicad_pcb,kicad_prl}`, `dk-perfboard-shield-symbols.kicad_sym` and `sym-lib-table` from `scratch/perfboard-routing/kicad-shield/` into `hardware/kicad/`, then fix library paths so the project opens from its new location; leave `breadboard-prototype.*` untouched
-- [ ] 1.2 Set the title block to `v1.0-shield` with the current date; make the sheet note name USB bring-up mode and battery mode separately and state the DK USB + battery dual-feed ban
-- [ ] 1.3 Audit the netlist against `firmware/boards/dk_breadboard_pins.h`: every signal on its spec pin, no net on `P0.05`–`P0.08` or `P0.17`–`P0.20`, no MDBT42Q/AP2112K/MCP73831/USB-C parts
-- [ ] 1.4 Audit the power and passive rules: `R_SCK` 100 Ω between `P0.03` and the bus, no button pull-ups, BZ1+ and D1 cathode on `5V` (not `3V3`), SW5 on `VBAT`→`5V`, C1/C2/C3 fitted, R2/R3 DNP
-- [ ] 1.5 Run `kicad-cli sch erc` → `hardware/kicad/erc-dk-perfboard-shield.rpt` with 0 errors; list each remaining warning with its reason in `hardware/kicad/README.md` (or the sheet notes)
-- [ ] 1.6 Export the OrcadPCB2 `.net` and the PDF with `kicad-cli` into `hardware/kicad/`; commit the schematic, exports and ERC report as one `hardware:` commit
+- [x] 1.1 Copy `dk-perfboard-shield.{kicad_pro,kicad_sch,kicad_pcb,kicad_prl}`, `dk-perfboard-shield-symbols.kicad_sym` and `sym-lib-table` from `scratch/perfboard-routing/kicad-shield/` into `hardware/kicad/`, then fix library paths so the project opens from its new location; leave `breadboard-prototype.*` untouched
+- [x] 1.2 Set the title block to `v1.0-shield` with the current date; make the sheet note name USB bring-up mode and battery mode separately and state the DK USB + battery dual-feed ban
+- [x] 1.3 Audit the netlist against `firmware/boards/dk_breadboard_pins.h`: every signal on its spec pin, no net on `P0.05`–`P0.08` or `P0.17`–`P0.20`, no MDBT42Q/AP2112K/MCP73831/USB-C parts
+- [x] 1.4 Audit the power and passive rules: `R_SCK` 100 Ω between `P0.03` and the bus, no button pull-ups, BZ1+ and D1 cathode on `5V` (not `3V3`), SW5 on `VBAT`→`5V`, C1/C2/C3 fitted, R2/R3 DNP
+- [x] 1.5 Run `kicad-cli sch erc` → `hardware/kicad/erc-dk-perfboard-shield.rpt` with 0 errors; list each remaining warning with its reason in `hardware/kicad/README.md` (or the sheet notes)
+- [x] 1.6 Export the OrcadPCB2 `.net` and the PDF with `kicad-cli` into `hardware/kicad/`; commit the schematic, exports and ERC report as one `hardware:` commit
 
 ## 2. Fix stale hardware docs
 
-- [ ] 2.1 Update `hardware/docs/perfboard-shield.md`: Amigo PIM611 replaces TP4056, slide switch on BAT→`5V` (not peripheral `3V3`), no fitted button pull-ups, link to the new schematic
-- [ ] 2.2 Update `hardware/bom/proto-bom.md`: Amigo PIM611, Akyga cell, MSS-2245, `R_SCK`; TP4056 marked as an unused spare; 10k resistors marked as spares; commit the docs separately from the schematic
+- [x] 2.1 Update `hardware/docs/perfboard-shield.md`: Amigo PIM611 replaces TP4056, slide switch on BAT→`5V` (not peripheral `3V3`), no fitted button pull-ups, link to the new schematic
+- [x] 2.2 Update `hardware/bom/proto-bom.md`: Amigo PIM611, Akyga cell, MSS-2245, `R_SCK`; TP4056 marked as an unused spare; 10k resistors marked as spares; commit the docs separately from the schematic
 
 ## 3. Header test-fit
 
@@ -51,5 +51,5 @@
 
 ## 9. Thesis schematic blocks
 
-- [ ] 9.1 Export the schematic as black-and-white SVG/PDF and crop the power path, SPI + e-paper, buzzer stage and sensors + DCF blocks into `notes/media/YYYY-MM-DD_perfboard_sch-<block>.svg`
-- [ ] 9.2 Print or preview each block in grayscale at thesis width; confirm refs, net names and pin numbers are readable; commit
+- [x] 9.1 Export the schematic as black-and-white SVG/PDF and crop the power path, SPI + e-paper, buzzer stage and sensors + DCF blocks into `notes/media/YYYY-MM-DD_perfboard_sch-<block>.svg`
+- [x] 9.2 Print or preview each block in grayscale at thesis width; confirm refs, net names and pin numbers are readable; commit
