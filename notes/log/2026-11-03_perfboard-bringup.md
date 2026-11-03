@@ -15,10 +15,9 @@ Modifications the author made, as reported:
 | --- | --- | --- |
 | Shield P4 (long-pin female) | Tails bent to the DK grid | Stagger fix |
 | Shield P2 | Cut down from an 8-pin long-pin header | P2 is 1x6 |
-| Second cut-down header (reported as "P6", 10-pin source) | Cut down from a 10-pin long-pin header | Header size to confirm; DK `P3` is 1x8, DK `P6` is the 1x9 AREF socket |
 | DK `P20` pins | Shortened | Stop touching the perfboard; still reachable with a modified Dupont jumper |
 | DK `P5` pins (2x3) | Shortened | Same reason |
 
-Result: the author reports that the headers now fit. **Open:** photo not yet in `notes/media/`; the unconfirmed header above.
+Result: the author reports that the headers now fit. **Open:** photo not yet in `notes/media/`.
 
 DK pins were cut, so `P20` and `P5` are only reachable with the modified Dupont jumper from now on. Layout keeps both zones free of parts and solder joints (design risk list, task 4.3).
