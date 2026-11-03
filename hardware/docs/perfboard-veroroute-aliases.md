@@ -16,13 +16,13 @@ VeroRoute import strings, so no manual alias is needed.
 
 | Ref | VeroRoute type | Pins used | Note |
 |---|---|---|---|
-| P1 | `PADS8` | 4 `+3V3`, 5 `5V`, 6 `GND` | J1 split into 4 DK header strips |
-| P2 | `PADS6` | 1–6 | |
-| P3 | `PADS8` | 3–8 | |
-| P4 | `PADS10` | 3–8 | |
-| J2 (e-paper), J3 (LIS3DH), J4 (DCF), J5 (Amigo VBAT) | `PADSn` | per netlist | socket / header strips; J3 pins 2, 9 unused |
-| BZ1 | `PADS4` | 1 `5V`, 4 `BZ1-` | pins 2, 3 unused; 8.21 mm pitch fits the holes |
-| SW5 | `PADS3` | 2 `5V`, 3 `VBAT` | single pole as 3-pin block |
+| P1 | `SIP8` | 4 `+3V3`, 5 `5V`, 6 `GND` | J1 split into 4 DK header strips |
+| P2 | `SIP6` | 1–6 | |
+| P3 | `SIP8` | 3–8 | |
+| P4 | `SIP10` | 3–8 | |
+| J2 (e-paper), J3 (LIS3DH), J4 (DCF), J5 (Amigo VBAT) | `SIPn` | per netlist | socket / header strips; J3 pins 2, 9 unused |
+| BZ1 | `SIP4` | 1 `5V`, 4 `BZ1-` | pins 2, 3 unused; 8.21 mm pitch fits the holes |
+| SW5 | `SIP3` | 2 `5V`, 3 `VBAT` | single pole as 3-pin block |
 | SW1–SW4 | `SWITCH_BUTTON_4PIN` | 1, 2 | |
 | Q1 | `TO92` | 1 `GND`, 2 base, 3 `BZ1-` | |
 | D1 | `DIODE` | 1 `5V`, 2 `BZ1-` | |
@@ -33,7 +33,7 @@ VeroRoute import strings, so no manual alias is needed.
 ## Fallbacks used
 
 - `SWITCH_ST` and `SWITCH_DT` fail import ("Part has no pins") → SW5 is a
-  3-pin `PADS3`; its unused second row (one hole, 2.54 mm away) is
+  3-pin `SIP3`; its unused second row (one hole, 2.54 mm away) is
   reserved in layout (task 4.3), no net.
 - KiCad netlist unusable → derived layout netlist (see above).
 
@@ -53,3 +53,7 @@ VeroRoute import strings, so no manual alias is needed.
 blocks 3 rows (seen in the VeroRoute screenshot). Connectors and sockets now use
 `PADSx` (plain pads, 1 hole each; string found in the 2.40 binary). Not yet
 re-imported; if `PADSx` is rejected, try `SIP` or fall back to `BLOCK_100MILx`.
+
+`PADSx` imported as individual loose pads (no block to move). The binary has
+`AddSIP` and `BreakSIPSintoPADS`, so PADS are broken-up SIPs: connectors are now
+`SIPx`. Not yet re-imported.

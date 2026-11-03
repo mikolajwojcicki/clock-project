@@ -1,10 +1,10 @@
 ( { EESchema Netlist Version 1.1 derived by make-layout-netlist.py from dk-perfboard-shield.net }
- ( /P1 PADS8 P1 DK_P1
+ ( /P1 SIP8 P1 DK_P1
   (    4 /+3V3 )
   (    5 /5V )
   (    6 /GND )
  )
- ( /P2 PADS6 P2 DK_P2
+ ( /P2 SIP6 P2 DK_P2
   (    1 Net-J1-P0.03_SPI_SCK )
   (    2 /SPI_MOSI )
   (    3 /EPD_RST )
@@ -12,7 +12,7 @@
   (    5 /SENSOR_CS )
   (    6 /BUZZER_EN )
  )
- ( /P3 PADS8 P3 DK_P3
+ ( /P3 SIP8 P3 DK_P3
   (    3 Net-J1-P0.16_SW4 )
   (    4 Net-J1-P0.15_SW3 )
   (    5 Net-J1-P0.14_SW2 )
@@ -20,7 +20,7 @@
   (    7 /EPD_DC )
   (    8 /EPD_CS )
  )
- ( /P4 PADS10 P4 DK_P4
+ ( /P4 SIP10 P4 DK_P4
   (    3 /SPI_MISO )
   (    4 /GND )
   (    5 /DCF_OUT )
@@ -28,7 +28,7 @@
   (    7 /SENSOR_INT1 )
   (    8 /CLOCK_SEC_MARK )
  )
- ( /J4 PADS4 J4 DCF-1060N-800
+ ( /J4 SIP4 J4 DCF-1060N-800
   (    1 /DCF_PON )
   (    2 /DCF_OUT )
   (    3 /GND )
@@ -46,7 +46,7 @@
   (    1 /+3V3 )
   (    2 /GND )
  )
- ( /J3 PADS9 J3 Adafruit_LIS3DH_(#2809)
+ ( /J3 SIP9 J3 Adafruit_LIS3DH_(#2809)
   (    1 /+3V3 )
   (    3 /GND )
   (    4 /SPI_SCK )
@@ -55,7 +55,7 @@
   (    7 /SENSOR_CS )
   (    8 /SENSOR_INT1 )
  )
- ( /BZ1 PADS4 BZ1 AP-1205V-P1
+ ( /BZ1 SIP4 BZ1 AP-1205V-P1
   (    1 /5V )
   (    4 Net-BZ1-- )
  )
@@ -64,7 +64,7 @@
   (    2 Net-Q1-B )
   (    3 Net-BZ1-- )
  )
- ( /J2 PADS8 J2 Waveshare_2.13in_HAT_Rev2.1
+ ( /J2 SIP8 J2 Waveshare_2.13in_HAT_Rev2.1
   (    1 /+3V3 )
   (    2 /GND )
   (    3 /SPI_MOSI )
@@ -86,11 +86,11 @@
   (    1 /+3V3 )
   (    2 /GND )
  )
- ( /SW5 PADS3 SW5 MSS-2245
+ ( /SW5 SIP3 SW5 MSS-2245
   (    2 /5V )
   (    3 /VBAT )
  )
- ( /J5 PADS2 J5 Amigo_VBAT
+ ( /J5 SIP2 J5 Amigo_VBAT
   (    1 /VBAT )
   (    2 /GND )
  )
