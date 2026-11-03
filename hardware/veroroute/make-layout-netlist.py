@@ -35,9 +35,17 @@ HEADERS = {
 # SIPx = single-row block of x pins, one hole each (BLOCK_100MILx draws a 3-hole-tall pill per pin; PADSx imports as loose pads).
 HEADER_TYPE = {"P1": "SIP8", "P2": "SIP6", "P3": "SIP8", "P4": "SIP10"}
 
+# Adafruit LIS3DH #2809 has two 6-pin rows, 6 holes (15.24 mm) apart, read with the
+# silkscreen upright: socket row -> J3 schematic pin per position (1 VIN 2 3Vo 3 GND
+# 4 SCL 5 SDA 6 SDO 7 CS 8 INT1 9 INT2). None = A1..A3, no shield net.
+J3_ROWS = {
+    "J3A": [1, 2, 3, 4, 5, 8],  # VIN 3Vo GND SCL SDA INT
+    "J3B": [9, None, None, None, 6, 7],  # I2 A3 A2 A1 SDO CS
+}
+
 # ref -> Type for every other part kept in the layout.
 TYPES = {
-    "J2": "SIP8", "J3": "SIP9", "J4": "SIP4", "J5": "SIP2",
+    "J2": "SIP8", "J4": "SIP4", "J5": "SIP2",
     "R_SCK": "RESISTOR4", "R1": "RESISTOR4",
     "C1": "CAP_CERAMIC", "C3": "CAP_CERAMIC", "C2": "CAP_ELECTRO_200",
     "Q1": "TO92", "D1": "DIODE",
@@ -67,14 +75,21 @@ def clean(net):
     return net.replace("(", "").replace(")", "")
 
 
+def split(pins_of, layout):
+    """Net per block pin for a connector cut into strips: layout[i] is the schematic pin at block pin i+1."""
+    nets = {i + 1: clean(pins_of[j]) for i, j in enumerate(layout) if j is not None}
+    return {n: net for n, net in nets.items() if not net.startswith("unconnected-")}
+
+
 def build(parts):
     out = []
     j1 = parts["J1"][1]
     for hdr, pins in HEADERS.items():
-        nets = {i + 1: clean(j1[j]) for i, j in enumerate(pins) if j is not None}
-        out.append((hdr, HEADER_TYPE[hdr], f"DK_{hdr}", nets))
+        out.append((hdr, HEADER_TYPE[hdr], f"DK_{hdr}", split(j1, pins)))
+    for sub, pins in J3_ROWS.items():
+        out.append((sub, f"SIP{len(pins)}", f"LIS3DH_{sub}", split(parts["J3"][1], pins)))
     for ref, (value, pins) in parts.items():
-        if ref == "J1" or ref in DROP:
+        if ref in ("J1", "J3") or ref in DROP:
             continue
         remap = PIN_REMAP.get(ref, {})
         nets = {remap.get(n, n): clean(net) for n, net in pins.items() if not net.startswith("unconnected-")}
@@ -86,7 +101,9 @@ def check(parts, built):
     j1 = parts["J1"][1]
     used = [j for pins in HEADERS.values() for j in pins if j is not None]
     assert sorted(used) == sorted(j1), f"J1 pins not covered exactly once: {sorted(set(j1) ^ set(used))}"
-    assert set(parts) - {"J1"} - DROP == set(TYPES), "TYPES does not match parts in the netlist"
+    j3 = [j for pins in J3_ROWS.values() for j in pins if j is not None]
+    assert sorted(j3) == sorted(parts["J3"][1]), "J3 pins not covered exactly once"
+    assert set(parts) - {"J1", "J3"} - DROP == set(TYPES), "TYPES does not match parts in the netlist"
     for ref, _t, _v, nets in built:
         for n, net in nets.items():
             assert net.startswith(("/", "Net-")) and "(" not in net, (ref, n, net)

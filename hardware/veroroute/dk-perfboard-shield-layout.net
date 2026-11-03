@@ -28,6 +28,17 @@
   (    7 /SENSOR_INT1 )
   (    8 /CLOCK_SEC_MARK )
  )
+ ( /J3A SIP6 J3A LIS3DH_J3A
+  (    1 /+3V3 )
+  (    3 /GND )
+  (    4 /SPI_SCK )
+  (    5 /SPI_MOSI )
+  (    6 /SENSOR_INT1 )
+ )
+ ( /J3B SIP6 J3B LIS3DH_J3B
+  (    5 /SPI_MISO )
+  (    6 /SENSOR_CS )
+ )
  ( /J4 SIP4 J4 DCF-1060N-800
   (    1 /DCF_PON )
   (    2 /DCF_OUT )
@@ -45,15 +56,6 @@
  ( /C2 CAP_ELECTRO_200 C2 10uF
   (    1 /+3V3 )
   (    2 /GND )
- )
- ( /J3 SIP9 J3 Adafruit_LIS3DH_(#2809)
-  (    1 /+3V3 )
-  (    3 /GND )
-  (    4 /SPI_SCK )
-  (    5 /SPI_MOSI )
-  (    6 /SPI_MISO )
-  (    7 /SENSOR_CS )
-  (    8 /SENSOR_INT1 )
  )
  ( /BZ1 SIP4 BZ1 AP-1205V-P1
   (    1 /5V )

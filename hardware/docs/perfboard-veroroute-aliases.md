@@ -20,7 +20,9 @@ VeroRoute import strings, so no manual alias is needed.
 | P2 | `SIP6` | 1–6 | |
 | P3 | `SIP8` | 3–8 | |
 | P4 | `SIP10` | 3–8 | |
-| J2 (e-paper), J3 (LIS3DH), J4 (DCF), J5 (Amigo VBAT) | `SIPn` | per netlist | socket / header strips; J3 pins 2, 9 unused |
+| J2 (e-paper), J4 (DCF), J5 (Amigo VBAT) | `SIPn` | per netlist | socket strips |
+| J3A (LIS3DH bottom row) | `SIP6` | 1 `+3V3` (VIN), 3 `GND`, 4 `SPI_SCK`, 5 `SPI_MOSI`, 6 `SENSOR_INT1` | row VIN 3Vo GND SCL SDA INT; 3Vo open |
+| J3B (LIS3DH top row) | `SIP6` | 5 `SPI_MISO` (SDO), 6 `SENSOR_CS` | row I2 A3 A2 A1 SDO CS; place 6 holes (15.24 mm) from J3A, same columns, silkscreen upright |
 | BZ1 | `SIP4` | 1 `5V`, 4 `BZ1-` | pins 2, 3 unused; 8.21 mm pitch fits the holes |
 | SW5 | `SIP3` | 2 `5V`, 3 `VBAT` | single pole as 3-pin block |
 | SW1–SW4 | `SWITCH_BUTTON_4PIN` | 1, 2 | |
