@@ -13,7 +13,7 @@ After code changes there, re-check the fact tables below and redraw.
 | File (`.puml` → `.svg`, `.pdf`) | Level | Type | Shows |
 |---|---|---|---|
 | `l1-overview` | L1 | state | CPU states (start, praca, sen WFE, odświeżanie wyświetlacza e-Paper), the DCF / alarm / BLE modes that power extra parts, every wake interrupt |
-| `l2-modules-a`, `-b` | L2 | component | **a** ISRs (flags only), the six `app_poll` steps in `main.c` and the modules each calls; **b** all 14 `firmware/src` modules, calls between them, hardware and SoftDevice |
+| `l2-modules-a` … `l2-modules-e` | L2 | component | one figure in five single-concern parts, no crossing connectors: **a** ISRs (flags only) and the six `app_poll` steps in call order, then `draw`/`board_sleep` and `board`; **b** `poll_alarm` → `alarm`, `motion_count`, `lis3dh`, `buzzer`, `spi_bus`, LIS3DH, buzzer; **c** `poll_clock`, `poll_dcf` → `clock`, `alarm`, `dcf77_sync`, `dcf77_classify`, DCF-77 receiver; **d** `poll_ble` → `ble_sched`, `sched_store`, `sched_codec`, `alarm`, SoftDevice; **e** `draw` → `clock_face`, `epd`, `spi_bus`, e-Paper. All 14 `firmware/src` modules appear |
 | `l3-detail-a` … `l3-detail-f` | L3 | activity / state | one figure in six parts: **A** boot, main loop, RTC1 deadline, sleep entry/exit; **B** `poll_uart`, `poll_clock`, `poll_ble`; **C** `poll_alarm` with motion dismiss and buzzer; **D** `poll_dcf`; **E** DCF-77 decoder state machine and `on_edge`; **F** `draw` / e-Paper refresh with nested sleep |
 | `ble-overview-a`, `-b` | BLE | activity, swimlanes | web page, browser and OS BLE, SoftDevice, `ble_sched.c`, schedule store; **a** advertising, connect, discovery, read; **b** write, flash save, read-back, disconnect. The SoftDevice role is described in [`softdevice.md`](softdevice.md), not in the figure |
 | `ble-sequence-a`, `-b` | BLE | sequence | numbered messages (continuous across parts): **a** advertising, connect, discovery, schedule read; **b** schedule write (single and long), flash save, read-back, disconnect |
@@ -31,11 +31,13 @@ abbreviation and term used in the figures).
 The display is named "e-Paper" everywhere (Waveshare product name), not "e-papier".
 
 Printed text size when a figure is scaled to the A4 text block (16 × 24.7 cm),
-from the SVG `font-size` (2026-11-02, portrait): `l3-detail-d` 8.7 pt,
-`l2-modules-a` 8.0, `ble-overview-a` 8.3, `l2-modules-b` 7.8, `ble-overview-b` 7.6,
-`l3-detail-e` 7.3, `ble-sequence-a` 7.2, `l3-detail-f` 7.2, `ble-sequence-b` 7.0,
+from the SVG `font-size` (2026-11-03, portrait; L2 parts a–e re-laid out, `l3-detail-e` spacing widened, `ble-overview-b` branch order swapped; the rest 2026-11-02): `l2-modules-e` 24.9 pt,
+`l2-modules-a` 15.7, `l2-modules-d` 13.5, `l2-modules-b` 10.3, `l3-detail-d` 8.7, `l2-modules-c` 8.4,
+`ble-overview-a` 8.3, `ble-overview-b` 7.0, `l3-detail-e` 6.4, `ble-sequence-a` 7.2, `l3-detail-f` 7.2, `ble-sequence-b` 7.0,
 `l3-detail-a`/`-c` 5.9, `l1-overview` and `l3-detail-b` 5.6 pt. The PDFs are
-vector, so they stay sharp when zoomed.
+vector, so they stay sharp when zoomed. Layout audited 2026-11-03 by viewing every render:
+L2, L3 and BLE activity diagrams have no crossing connectors (BLE write: the "błąd ATT" branch
+now sits left of "odpowiedź OK"); L1 has two labels close to arrows, accepted.
 
 ## Render
 
@@ -194,7 +196,7 @@ Sources: `firmware/src/ble_sched.c`, `sched_codec.[ch]`, `sched_store.c`,
 
 Checked 2026-11-02 that the levels use the same names and states.
 
-| Step | L1 `l1-overview` | L2 `l2-modules-a`/`-b` | L3 |
+| Step | L1 `l1-overview` | L2 `l2-modules-a` … `-e` | L3 |
 |---|---|---|---|
 | **Alarm cycle** | | | |
 | Minute matches a slot | Cisza → Alarm, "minuta zgodna z rozkładem" | `2. poll_clock` → `alarm` | B: `alarm_on_minute()` |

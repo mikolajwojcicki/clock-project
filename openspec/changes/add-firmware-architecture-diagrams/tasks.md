@@ -29,3 +29,10 @@
 - [x] 5.1 Move the SoftDevice description out of `ble-overview-a` into `softdevice.md` next to the diagrams; verify no SoftDevice legend remains in any SVG.
 - [x] 5.2 Name the display "e-Paper" (not "e-papier") in all diagrams, captions and the README; verify no "e-papier" remains in the sources or exports.
 - [x] 5.3 Add `glossary.md` next to the diagrams; verify every abbreviation in the `.puml` files appears in it.
+
+## 6. Layout fix (2026-11-03)
+
+- [x] 6.1 Re-layout `l2-modules-a.puml` and `l2-modules-b.puml` per design (fewer edges, layered, split by concern if needed); regenerate SVG and PDF; view the render and verify no connector crosses another or runs through a node.
+- [x] 6.2 Audit `l1-overview`, `l3-detail-*`, `ble-overview-*`, `ble-sequence-*` for the same defect; fix any with crossings; verify by viewing the renders.
+- [x] 6.3 Update `README.md` index, `captions.md` and `glossary.md` if parts or node names changed; verify one caption per exported diagram.
+- [x] 6.4 Commit separately (L2 layout, other diagrams, docs) with thesis-readable bodies.

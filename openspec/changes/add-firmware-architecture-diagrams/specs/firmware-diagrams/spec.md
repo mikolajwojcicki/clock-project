@@ -59,3 +59,10 @@ A glossary file next to the diagrams SHALL explain every abbreviation and techni
 #### Scenario: Unknown term
 - **WHEN** a reader meets an abbreviation in any diagram
 - **THEN** the glossary explains it
+
+### Requirement: Readable layout
+In the level 2 diagrams no connector SHALL cross another connector or pass through a node, and connector labels SHALL NOT overlap nodes or each other. If one dense graph cannot meet this, it SHALL be split into labelled parts, each with a single concern. Other diagrams SHOULD meet the same rule.
+
+#### Scenario: No crossings
+- **WHEN** the exported SVG of any level 2 part is inspected
+- **THEN** no connector crosses another connector or runs through a node, and every label is legible

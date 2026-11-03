@@ -30,3 +30,13 @@ Firmware: bare-metal nRF52832, nRF5 SDK 17.1.0, SoftDevice for BLE. `firmware/ap
 - L3 detail makes the chart huge → allow split, keep node text short.
 - Code changes after drawing make diagrams stale → README states the commit the diagrams were derived from.
 - Spec/code drift found during reading → listed, not fixed here (separate change).
+
+## Layout fix (2026-11-03)
+
+Author feedback: L2 module diagrams look ugly, lines cross over themselves. Cause: `main` fans out to seven handlers and handlers fan into eleven modules; dashed ISR edges overlap solid edges; both parts are `left to right`, so Graphviz routes edges around each other.
+
+- **Fewer edges:** remove the `main -> each handler` fan-out; show loop order once as an ordered node chain or note (`poll_uart`, `poll_clock`, `poll_alarm`, `poll_dcf`, `poll_ble`, `arm_wake`, `draw`). Each module node appears once per part.
+- **Layered columns:** ISR | handler | module | hardware, `top to bottom` with hidden links to pin ranks; `skinparam linetype ortho` for straight segments.
+- **Split by concern if crossings remain:** loop and ISR flags; alarm, motion, buzzer; DCF and clock; BLE and store; display. Each part labelled, one index entry per part.
+- **Check:** render, then view the SVG/PNG and count crossings; no sign-off from source reading alone.
+- **Risk:** `ortho` with edge labels is unreliable in Graphviz; fall back to `polyline` and move labels into node text.

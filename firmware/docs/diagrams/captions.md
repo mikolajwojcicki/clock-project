@@ -9,8 +9,11 @@ przed jego wstawieniem (np. „na rys. 3.2”). Numer rysunku nadaje LaTeX.
 | Plik | Podpis (szkic agenta) | Źródło |
 |---|---|---|
 | `l1-overview` | Stany pracy mikrokontrolera i tryby zasilania układów zegara wraz z przerwaniami budzącymi procesor | Źródło: opracowanie własne |
-| `l2-modules-a` | Struktura oprogramowania zegara: źródła przerwań i kroki pętli głównej wraz z wywoływanymi modułami (część A) | Źródło: opracowanie własne |
-| `l2-modules-b` | Struktura oprogramowania zegara: zależności między modułami oraz sterowane przez nie układy i SoftDevice (część B) | Źródło: opracowanie własne |
+| `l2-modules-a` | Struktura oprogramowania zegara: źródła przerwań i kolejność kroków pętli głównej (część A) | Źródło: opracowanie własne |
+| `l2-modules-b` | Struktura oprogramowania zegara: obsługa alarmu, wykrywanie ruchu i brzęczyk (część B) | Źródło: opracowanie własne |
+| `l2-modules-c` | Struktura oprogramowania zegara: odmierzanie czasu i synchronizacja sygnałem DCF-77 (część C) | Źródło: opracowanie własne |
+| `l2-modules-d` | Struktura oprogramowania zegara: usługa Bluetooth i zapis harmonogramu w pamięci flash (część D) | Źródło: opracowanie własne |
+| `l2-modules-e` | Struktura oprogramowania zegara: odświeżanie wyświetlacza e-Paper (część E) | Źródło: opracowanie własne |
 | `l3-detail-a` | Uruchomienie, pętla główna, ustawienie terminu RTC1 i wejście w stan uśpienia (część A) | Źródło: opracowanie własne |
 | `l3-detail-b` | Obsługa konsoli UART, upływu czasu i okna Bluetooth w pętli głównej (część B) | Źródło: opracowanie własne |
 | `l3-detail-c` | Obsługa alarmu: faza brzęczyka, zliczanie ruchu z akcelerometru LIS3DH i wyłączenie alarmu (część C) | Źródło: opracowanie własne |
