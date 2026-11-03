@@ -16,7 +16,7 @@
 
 ## 3. Header test-fit
 
-- [ ] 3.1 Push unsoldered long-pin headers through the perfboard onto DK `P1`–`P4`. P1/P2/P3 share the perfboard grid; P4 pins are 1.016 mm off it, so bend the P4 tails 1.016 mm (upper pins on the DK grid, tails in perfboard holes) and confirm all four mate; if the bend fails, use a separate P4 strip or two boards. Also check that the DK `P20` 1×8 pin list (under P4, 4 holes below it) touches the perfboard underside: if it blocks seating, use taller male headers (about 11 mm pin) or cut a notch over the keep-out. Record the result and a photo in the dated bring-up log
+- [ ] 3.1 Push unsoldered long-pin female (stacking) headers through the perfboard so their tails go into DK `P1`–`P4`. P1/P2/P3 share the perfboard grid; P4 pins are 1.016 mm off it, so pre-bend only the P4 tails 1.016 mm sideways just below the board underside (toward P3) and confirm all four mate; if the bend fails, use a separate P4 strip or two boards. Also check whether the DK `P20` 1×8 pin list (4 holes below P4) touches the perfboard underside: if it blocks seating, leave the tails a few mm short of full insertion or cut a notch over the keep-out. Record the result and a photo in the dated bring-up log
 
 ## 4. VeroRoute layout
 
