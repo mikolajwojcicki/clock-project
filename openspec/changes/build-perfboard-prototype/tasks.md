@@ -16,13 +16,13 @@
 
 ## 3. Header test-fit
 
-- [ ] 3.1 Push unsoldered long-pin headers through the perfboard onto DK `P1`–`P4`. P1/P2/P3 share the perfboard grid; P4 pins are 1.016 mm off it, so bend the P4 tails 1.016 mm (upper pins on the DK grid, tails in perfboard holes) and confirm all four mate; if the bend fails, use a separate P4 strip or two boards. Record the result and a photo in the dated bring-up log
+- [ ] 3.1 Push unsoldered long-pin headers through the perfboard onto DK `P1`–`P4`. P1/P2/P3 share the perfboard grid; P4 pins are 1.016 mm off it, so bend the P4 tails 1.016 mm (upper pins on the DK grid, tails in perfboard holes) and confirm all four mate; if the bend fails, use a separate P4 strip or two boards. Also check that the DK `P20` 1×8 pin list (under P4, 4 holes below it) touches the perfboard underside: if it blocks seating, use taller male headers (about 11 mm pin) or cut a notch over the keep-out. Record the result and a photo in the dated bring-up log
 
 ## 4. VeroRoute layout
 
 - [ ] 4.1 In `nix-shell -p veroroute`, create a pad-per-hole board of about 28×36 holes and import `hardware/kicad/dk-perfboard-shield.net` (OrcadPCB2)
 - [ ] 4.2 Map Part Aliases (J1 split into P1–P4 PADSn, sockets, TO-92, diode polarity, SW5 single pole); record every mapping, the VeroRoute version and any fallback in `hardware/docs/perfboard-veroroute-aliases.md`
-- [ ] 4.3 Place parts in the design D5 order (headers at the DK geometry from 3.1, module sockets, `R_SCK` next to `P0.03`, buzzer cluster at the edge, then passives and switches)
+- [ ] 4.3 Place parts in the design D5 order (headers at the DK geometry from 3.1, module sockets, `R_SCK` next to `P0.03`, buzzer cluster at the edge, then passives and switches); leave the DK `P20` keep-out empty (holes cols 7–15, rows 14–16, numbering as in design.md, no parts, no joints, no links)
 - [ ] 4.4 Autoroute, then fix by hand using solder traces plus short insulated links; keep SPI away from `EPD_RST`/`EPD_BUSY`, the Q1 collector and the `5V` loop
 - [ ] 4.5 Run the VeroRoute connectivity check until it shows 0 opens and 0 shorts; save `hardware/veroroute/dk-perfboard-shield.vrt` and commit
 
