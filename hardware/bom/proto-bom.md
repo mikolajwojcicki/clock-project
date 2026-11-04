@@ -24,7 +24,7 @@ Detailed tool and ownership record:
 | 12 | SCK series resistor | Approximately 100 Ohm (47 to 220 Ohm), 1/4 W | Damps ringing on `SPI_SCK` at `P0.03`; without it the display hangs | To buy | `notes/log/2026-10-22_epd-sck-ringing.md` |
 | 13 | Perfboard | Approx. 7x9 cm, double-sided, 2.54 mm pitch, plated holes | Shield for the nRF52 DK; carries all peripherals | To buy | Decision 2026-10-24: perfboard is a DK shield |
 | 14 | Female header, long pin | 1x10 and 1x8, 2.54 mm, for DK connectors | Plugs the shield onto the DK GPIO and power headers | To buy | Shield decision |
-| 15 | Male pin header 2x20 | 2.54 mm, RPi GPIO layout | Waveshare HAT plugs onto the shield (decision 2026-11-03, replaces the 1x8 socket) | To buy | `hardware/docs/waveshare-hat-40pin.md` |
+| 15 | Male pin header 2x20 | 2.54 mm, RPi GPIO layout; built from two 1x20 halves of a 1x40 strip in adjacent perfboard rows | Waveshare HAT plugs onto the shield (decision 2026-11-03, replaces the 1x8 socket) | Owned (1x40 strips) | `hardware/docs/waveshare-hat-40pin.md` |
 | 16 | Female headers | 2.54 mm, sized to LIS3DH and DCF-1060N-800 pin rows | Keeps the breakouts removable | To buy | Shield decision |
 | 17 | Male pin header strip | 1x40, 2.54 mm | Breakout pins and test points | To buy | Shield decision |
 | 18 | Pull-up resistors | 10 kOhm, 1/4 W | Spares only: the shield fits no button pull-ups (DK internal pull-ups) | To buy | `hardware/docs/perfboard-shield.md` |

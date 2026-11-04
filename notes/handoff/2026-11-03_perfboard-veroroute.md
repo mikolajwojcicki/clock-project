@@ -34,13 +34,13 @@ Repo `/home/wenigz/clock-project`, OpenSpec change
 ## Open / to check
 
 - The netlist changed since the last import (J2 split). **Re-import before placing.**
+- 2×20 header: owned, as two 1×20 halves snapped from a 1×40 strip and placed in adjacent rows (BOM item 15).
 - VeroRoute pin numbering: `SWITCH_BUTTON_4PIN` (pins 1,2 must not be the
   shorted pair), `DIODE` (D1 cathode on `5V`), `TO92` (pin 1 = E lead).
 - Measure the HAT: position of header pin 1 relative to the board edges. The
   HAT outline is 65 × 30.2 mm; only low parts may sit under it (no LIS3DH/DCF
   sockets, buzzer or C2). Put the header near P2/`R_SCK` to keep SCK short.
 - HAT LDO (RT9193) dropout at 3.3 V in is unmeasured. Watch the rail on the first refresh.
-- Buy: 2×20 male header (BOM item 15).
 - DK silkscreen check before soldering: `P0.03` is the P2 pin at the USB end.
 - Uncommitted user changes left alone: deleted old handoffs, `konnect.toml`,
   `temp-resources/lis3dh.pdf`, `shit-to-buy.md` edits, `1.png`/`2.png`.
