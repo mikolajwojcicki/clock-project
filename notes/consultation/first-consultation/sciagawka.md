@@ -3,6 +3,12 @@
 Zmiana OpenSpec `prepare-first-consultation`. Wszystko do pokazania jest w jednym pliku:
 [`pakiet.pdf`](pakiet.pdf) (20 stron, wektorowo, można powiększać). Po zmianie diagramów albo
 wykresów: `nix-shell -p poppler-utils img2pdf --run notes/consultation/first-consultation/build-pakiet.sh`.
+Noty katalogowe są w folderze [`noty/`](noty/) (18 PDF, numerowane; poza gitem). Brakujące pobiera
+`notes/consultation/first-consultation/fetch-noty.sh`.
+
+Godziny promotora (Teams, ogłoszenie „Konsultacje”): poniedziałek i wtorek 7:00–9:00, okienka w grafiku,
+przerwy przed zajęciami. Na Teams tylko „jeśli w tym momencie jest dostępny”. Wpisz w mailu (`tmp.md`)
+terminy z tych godzin; lista terminów w mailu jest jeszcze pusta.
 
 W mailu obiecałeś cztery rzeczy. Każda ma swoje miejsce:
 
@@ -12,6 +18,17 @@ W mailu obiecałeś cztery rzeczy. Każda ma swoje miejsce:
 | Schemat blokowy sprzętu | `pakiet.pdf` s. 1–2 |
 | Diagramy oprogramowania: przegląd, moduły, szczegóły, BLE | `pakiet.pdf` s. 3–16 (rezerwa s. 19–20) |
 | Pomiary prądu w uśpieniu i przy odświeżaniu | `pakiet.pdf` s. 17–18 |
+
+Promotor sam wymienia, co przygotować („Jak przygotować się do konsultacji”, `teams-dump.md`):
+
+| Wymaganie promotora | Gdzie |
+| --- | --- |
+| Prototyp, działający lub nie; zdalnie na kamerce | demo, część C krok 2 |
+| Noty techniczne (pdf) do stosowanych elementów | `noty/`, tabela w części C krok 3 |
+| Schemat blokowy algorytmu | `pakiet.pdf` s. 3–16 |
+| Konkretne pytania lub problemy | część C krok 8 |
+| Notatki, zrzuty ekranu, wyniki pomiarów | `notes/log/`, `notes/media/`, `pakiet.pdf` s. 17–18 |
+| Kod źródłowy i schematy pokazywane przez udostępnienie pulpitu | część C krok 4a, `pakiet.pdf` s. 2 |
 
 ## A. Co przeczytać przed konsultacją (ok. 1 h)
 
@@ -29,6 +46,8 @@ Czytaj w tej kolejności. Cel: umieć powiedzieć każdą liczbę i każdy brak 
    i [`hardware/docs/perfboard-shield.md`](../../../hardware/docs/perfboard-shield.md), 5 min. To jest plan „co dalej”.
 6. **Pytania** [`notes/promotor-questions.md`](../../promotor-questions.md) i [`notes/deadlines.md`](../../deadlines.md), 5 min.
    Odpowiedzi tam zapisane nie pochodzą od promotora; trzeba je u niego potwierdzić (część C, krok 8).
+7. **Noty z `noty/`**, 10 min. Tylko pierwsze strony (opis, parametry, wyprowadzenia) i to, co jest
+   w tabeli w części C krok 3. Promotor może zapytać, dlaczego dany element.
 
 ## B. Dzień przed i godzinę przed
 
@@ -44,7 +63,8 @@ Godzinę przed:
 1. DK na USB J-Link, konsola UART 115200 Bd otwarta, strona `web/` na `localhost:8000` w Chromium.
 2. **Kamera na płytkę** (telefon jako druga kamera albo kamera laptopa). Przez Teams promotor nie zobaczy
    ekranu e-paper ani potrząsania bez kamery. Sprawdź, czy słychać buzzer w mikrofonie.
-3. Otwarte okna: `pakiet.pdf`, konsola UART, Chromium, ta ściągawka (nie udostępniana).
+3. Otwarte okna: `pakiet.pdf`, konsola UART, Chromium, folder `noty/`, edytor z plikami z części C krok 4a
+   (jasny motyw), ta ściągawka (nie udostępniana).
 4. Udostępniaj okno, nie cały ekran.
 
 ## C. Kolejność pokazywania (ok. 30 min)
@@ -75,6 +95,20 @@ Jeśli coś nie zadziała: powiedz to i pokaż wynik próby z notatki. Nie udawa
   zasilanie z USB DK; zamiast modułu jest DK z tym samym układem nRF52832; przyciski i SWD z DK.
   E-paper, LIS3DH, DCF-1060N i buzzer zgodne ze schematem.
 
+Noty z `noty/`, gdy zapyta o element:
+
+| Element | Plik |
+| --- | --- |
+| nRF52832, DK | `01` specyfikacja, `02` instrukcja DK, `03` schemat DK |
+| Wyświetlacz | `04` panel, `05` schemat HAT, `06` sterownik SSD1680 |
+| LIS3DH | `07` układ, `08` płytka Adafruit, `09` BSS138 (konwersja poziomów na płytce) |
+| DCF-77 | `10` instrukcja DCF-1060N-800, `11` MAS6180B (odbiornik w module) |
+| Buzzer i sterownik | `12` 2N3904, `13` 1N4148, `14` HCM12 |
+| Docelowe urządzenie | `15` MDBT42Q, `16` MCP73831, `17` AP2112, `18` schemat LiPo Amigo (MCP73831) |
+
+Noty buzzera AP-1205V-P1 nie ma w sieci (szukane 2026-11-04). `14` HCM12 to brzęczyk 5 V,
+na którym opiera się instrukcja prototypu. Powiedz to, jeśli zapyta.
+
 ### 4. Oprogramowanie: `pakiet.pdf` s. 3–16 (10 min)
 
 | Strona | Diagram | Co powiedzieć |
@@ -85,6 +119,19 @@ Jeśli coś nie zadziała: powiedz to i pokaż wynik próby z notatki. Nie udawa
 | 15–16 | BLE przegląd a–b | strona WWW → przeglądarka → SoftDevice → `ble_sched.c` → zapis do flash; a: połączenie i odczyt, b: zapis i rozłączenie |
 
 Jeśli brakuje czasu: s. 3, potem s. 11 (alarm), s. 12–13 (DCF), s. 15. Resztę pomiń.
+
+### 4a. Kod źródłowy (gdy poprosi; udostępnij okno edytora)
+
+Otwórz wcześniej w tej kolejności, każdy plik pasuje do diagramu:
+
+| Plik | Diagram | Co tam jest |
+| --- | --- | --- |
+| `firmware/apps/clock/src/main.c` | L1, L2 a, L3 A–D | `main`, pętla `app_poll`, `poll_alarm`, `poll_dcf`, `arm_wake` |
+| `firmware/src/board.c` | L3 A | sen (`board_sleep`), wybudzenie RTC1 (`board_wake_at`) |
+| `firmware/src/alarm.c`, `motion_count.c`, `lis3dh.c` | L2 b, L3 C | alarm i wyłączanie ruchem |
+| `firmware/src/dcf77_sync.c`, `dcf77_classify.c` | L2 c, L3 E | dekoder DCF-77 |
+| `firmware/src/epd.c`, `clock_face.c` | L2 e, L3 F | odświeżanie e-paper |
+| `firmware/src/ble_sched.c`, `web/schedule.js` | L2 d, BLE | usługa BLE i strona WWW |
 
 ### 5. Pomiary: `pakiet.pdf` s. 17–18 (5 min)
 
@@ -135,7 +182,16 @@ Powiedz sam, zanim zapyta. Pełna lista (19 pozycji) w notatce przygotowawczej. 
 2. Czy potrzebne są testy z udziałem innych osób? (Jeśli tak: wniosek do komisji etyki.)
 3. Terminy: czy obowiązują daty jak w zeszłym roku (całość do 03.12, ostateczna wersja do 07.12, antyplagiat do 10.12)?
 4. Które poziomy diagramów (L1 / L2 / L3) mają wejść do pracy, a które do załącznika?
-5. Jak często konsultacje i w jakiej formie przesyłać fragmenty pracy?
+5. W jakiej formie przesyłać fragmenty pracy (PDF z repozytorium LaTeX, Overleaf)?
+
+Problemy, z którymi utknąłem (promotor prosi o konkretne):
+
+1. DCF-77 w pomieszczeniu: brak zdekodowanej ramki (impulsy odrzucane). Pytanie: czy w pracy wystarczy
+   test z generatorem na Nucleo plus próba odbioru przy oknie / w nocy?
+2. Sonda PPK2 na `EPD_BUSY` psuje odświeżanie panelu (dodatkowe obciążenie linii). Jak mierzyć tę linię bez wpływu?
+3. Zakłócenia (dzwonienie) na `SPI_SCK` zawieszały wyświetlacz; rozwiązanie: rezystor szeregowy ok. 100 Ω
+   (`notes/log/2026-10-22_epd-sck-ringing.md`). Czy to wystarczy do opisu w pracy?
+4. Brak noty buzzera AP-1205V-P1. Czy wystarczy pomiar prądu i dźwięku zamiast noty?
 
 Zapisuj odpowiedzi od razu, słowami promotora.
 
