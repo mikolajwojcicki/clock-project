@@ -11,6 +11,7 @@ Loose notes for the thesis. Promotor rule: write them while the prototype is bui
 | `media/` | Screenshots, photos, analyzer captures |
 | `measurements/` | CSV plus the conditions of the run |
 | `ai-use.md` | Every kept AI output |
+| `consultation/` | Per-meeting bundle for the promotor: merged PDF, build script, Polish crib sheet |
 | `sources.md` | Pointer to the bibliography |
 | `TEMPLATE.md` | Copy this for a new note |
 

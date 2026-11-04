@@ -4,13 +4,13 @@ Change `prepare-first-consultation`. Date is the preparation date; rename with `
 
 ## Pack
 
-Files by path, no bundle. Datasheets are cited from `clock-project-latex/bibliography.bib`.
+Shown as one merged PDF, [`notes/consultation/first-consultation/pakiet.pdf`](../consultation/first-consultation/pakiet.pdf), with the Polish crib sheet `sciagawka.md` next to it (reading and show order, page numbers). The table lists the sources. Datasheets are cited from `clock-project-latex/bibliography.bib`.
 
 | Item | Path | Check |
 | --- | --- | --- |
 | Hardware block diagram | `hardware/docs/hardware-block-diagram.pdf` | `pdfinfo`: 1 page |
 | L1 overview | `firmware/docs/diagrams/l1-overview.pdf` | 1 page |
-| L2 modules | `firmware/docs/diagrams/l2-modules-{a,b}.pdf` | 1 page each |
+| L2 modules | `firmware/docs/diagrams/l2-modules-{a..e}.pdf` | 1 page each |
 | L3 detail | `firmware/docs/diagrams/l3-detail-{a..f}.pdf` | 1 page each |
 | BLE overview | `firmware/docs/diagrams/ble-overview-{a,b}.pdf` | 1 page each |
 | BLE sequence | `firmware/docs/diagrams/ble-sequence-{a,b}.pdf` | 1 page each |
