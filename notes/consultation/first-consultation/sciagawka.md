@@ -70,7 +70,7 @@ Jeśli coś nie zadziała: powiedz to i pokaż wynik próby z notatki. Nie udawa
 ### 3. Sprzęt: `pakiet.pdf` s. 1–2 (3 min)
 
 - **s. 1 schemat blokowy**: to docelowe urządzenie (moduł MDBT42Q, MCP73831, AP2112K, Li-Ion, USB-C).
-- **s. 2 schemat płytki stykowej**: to, co jest na biurku.
+- **s. 2 schemat płytki stykowej** (wersja uproszczona dla promotora, `hardware/kicad/breadboard-prototype-for-promotor.kicad_sch`): to, co jest na biurku. Pięć bloków: DK, e-paper, LIS3DH, DCF-77, buzzer.
 - Różnice do powiedzenia: na biurku nie ma całego toru zasilania (USB-C → MCP73831 → Li-Ion → AP2112K),
   zasilanie z USB DK; zamiast modułu jest DK z tym samym układem nRF52832; przyciski i SWD z DK.
   E-paper, LIS3DH, DCF-1060N i buzzer zgodne ze schematem.

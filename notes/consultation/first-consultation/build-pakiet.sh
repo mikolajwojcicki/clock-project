@@ -15,7 +15,7 @@ img2pdf "$m-refresh-436s.png" -o "$tmp/ppk-refresh.pdf"
 
 pdfunite \
   hardware/docs/hardware-block-diagram.pdf \
-  hardware/docs/breadboard-schematic.pdf \
+  hardware/kicad/breadboard-prototype-for-promotor.pdf \
   $d/l1-overview.pdf \
   $d/l2-modules-{a,b,c,d,e}.pdf \
   $d/l3-detail-{a,b,c,d,e,f}.pdf \
