@@ -2187,7 +2187,7 @@
 	)
 	(text "PON = 0V: Enabled (~68 uA) | PON = 3.3V: Disabled (0.0 uA)"
 		(exclude_from_sim no)
-		(at 100.33 142.24 0)
+		(at 101.6 148.59 0)
 		(effects
 			(font
 				(size 1.1 1.1)
@@ -2195,17 +2195,6 @@
 			(justify left bottom)
 		)
 		(uuid "09bf1399-4ae3-433c-b95b-cb5f0d934dfe")
-	)
-	(text "Verify buzzer polarity & rating (<100mA)"
-		(exclude_from_sim no)
-		(at 187.96 147.32 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left bottom)
-		)
-		(uuid "9c17db10-9d9c-406f-a653-b1ca0f36f23c")
 	)
 	(text "BLOCK 3: MOTION SENSOR (Adafruit LIS3DH #2809)"
 		(exclude_from_sim no)
@@ -2230,17 +2219,6 @@
 			(justify left bottom)
 		)
 		(uuid "c0e9dd22-18a1-4cf1-82e4-1b2e6b385346")
-	)
-	(text "Verify BS1 = 0 (4-wire SPI) on HAT rear switch"
-		(exclude_from_sim no)
-		(at 101.6 88.9 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left bottom)
-		)
-		(uuid "d16ecf70-d5ef-4072-bee5-f24d1a31899b")
 	)
 	(text "BLOCK 1: HOST CONTROLLER INTERFACE \n(nRF52 DK / PCA10040)"
 		(exclude_from_sim no)
@@ -2278,19 +2256,25 @@
 		(uuid "f200c43f-2659-49c0-93e4-823514e671b7")
 	)
 	(junction
-		(at 236.22 119.38)
+		(at 252.73 121.92)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "226b0804-0bb3-49a4-8631-355101664198")
 	)
 	(junction
-		(at 116.84 124.46)
+		(at 265.43 109.22)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "48cf4dcc-6dc5-47bf-a7ad-50851b50879d")
+	)
+	(junction
+		(at 118.11 130.81)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5fefa16e-8d28-4da0-84c6-2cfc98838e8c")
 	)
 	(junction
-		(at 208.28 127)
+		(at 224.79 129.54)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "f23074e6-b807-44d5-a041-d6b395c09c7a")
@@ -2305,7 +2289,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 101.6) (xy 73.66 101.6)
+			(xy 69.85 104.14) (xy 74.93 104.14)
 		)
 		(stroke
 			(width 0)
@@ -2315,7 +2299,7 @@
 	)
 	(wire
 		(pts
-			(xy 27.94 76.2) (xy 22.86 76.2)
+			(xy 29.21 78.74) (xy 24.13 78.74)
 		)
 		(stroke
 			(width 0)
@@ -2335,7 +2319,7 @@
 	)
 	(wire
 		(pts
-			(xy 27.94 71.12) (xy 22.86 71.12)
+			(xy 29.21 73.66) (xy 24.13 73.66)
 		)
 		(stroke
 			(width 0)
@@ -2345,7 +2329,7 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 124.46) (xy 109.22 124.46)
+			(xy 125.73 130.81) (xy 110.49 130.81)
 		)
 		(stroke
 			(width 0)
@@ -2365,7 +2349,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 111.76) (xy 73.66 111.76)
+			(xy 69.85 114.3) (xy 74.93 114.3)
 		)
 		(stroke
 			(width 0)
@@ -2385,7 +2369,7 @@
 	)
 	(wire
 		(pts
-			(xy 248.92 110.49) (xy 248.92 106.68)
+			(xy 265.43 113.03) (xy 265.43 109.22)
 		)
 		(stroke
 			(width 0)
@@ -2425,7 +2409,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 132.08) (xy 220.98 137.16)
+			(xy 237.49 134.62) (xy 237.49 139.7)
 		)
 		(stroke
 			(width 0)
@@ -2445,7 +2429,7 @@
 	)
 	(wire
 		(pts
-			(xy 236.22 109.22) (xy 236.22 106.68)
+			(xy 252.73 111.76) (xy 252.73 109.22)
 		)
 		(stroke
 			(width 0)
@@ -2455,7 +2439,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 71.12) (xy 73.66 71.12)
+			(xy 69.85 73.66) (xy 74.93 73.66)
 		)
 		(stroke
 			(width 0)
@@ -2465,7 +2449,7 @@
 	)
 	(wire
 		(pts
-			(xy 236.22 106.68) (xy 248.92 106.68)
+			(xy 252.73 109.22) (xy 265.43 109.22)
 		)
 		(stroke
 			(width 0)
@@ -2475,7 +2459,7 @@
 	)
 	(wire
 		(pts
-			(xy 124.46 129.54) (xy 109.22 129.54)
+			(xy 125.73 135.89) (xy 110.49 135.89)
 		)
 		(stroke
 			(width 0)
@@ -2495,7 +2479,7 @@
 	)
 	(wire
 		(pts
-			(xy 248.92 106.68) (xy 254 106.68)
+			(xy 265.43 109.22) (xy 270.51 109.22)
 		)
 		(stroke
 			(width 0)
@@ -2505,7 +2489,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 106.68) (xy 73.66 106.68)
+			(xy 69.85 109.22) (xy 74.93 109.22)
 		)
 		(stroke
 			(width 0)
@@ -2515,7 +2499,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 76.2) (xy 73.66 76.2)
+			(xy 69.85 78.74) (xy 74.93 78.74)
 		)
 		(stroke
 			(width 0)
@@ -2555,7 +2539,7 @@
 	)
 	(wire
 		(pts
-			(xy 248.92 115.57) (xy 248.92 119.38)
+			(xy 265.43 118.11) (xy 265.43 121.92)
 		)
 		(stroke
 			(width 0)
@@ -2565,7 +2549,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 86.36) (xy 73.66 86.36)
+			(xy 69.85 88.9) (xy 74.93 88.9)
 		)
 		(stroke
 			(width 0)
@@ -2575,7 +2559,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 96.52) (xy 73.66 96.52)
+			(xy 69.85 99.06) (xy 74.93 99.06)
 		)
 		(stroke
 			(width 0)
@@ -2585,7 +2569,7 @@
 	)
 	(wire
 		(pts
-			(xy 27.94 88.9) (xy 22.86 88.9)
+			(xy 29.21 91.44) (xy 24.13 91.44)
 		)
 		(stroke
 			(width 0)
@@ -2595,7 +2579,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 81.28) (xy 73.66 81.28)
+			(xy 69.85 83.82) (xy 74.93 83.82)
 		)
 		(stroke
 			(width 0)
@@ -2605,7 +2589,7 @@
 	)
 	(wire
 		(pts
-			(xy 27.94 83.82) (xy 22.86 83.82)
+			(xy 29.21 86.36) (xy 24.13 86.36)
 		)
 		(stroke
 			(width 0)
@@ -2615,7 +2599,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 119.38) (xy 248.92 119.38)
+			(xy 237.49 121.92) (xy 265.43 121.92)
 		)
 		(stroke
 			(width 0)
@@ -2625,7 +2609,7 @@
 	)
 	(wire
 		(pts
-			(xy 116.84 110.49) (xy 116.84 107.95)
+			(xy 118.11 116.84) (xy 118.11 114.3)
 		)
 		(stroke
 			(width 0)
@@ -2635,7 +2619,7 @@
 	)
 	(wire
 		(pts
-			(xy 236.22 116.84) (xy 236.22 119.38)
+			(xy 252.73 119.38) (xy 252.73 121.92)
 		)
 		(stroke
 			(width 0)
@@ -2645,7 +2629,7 @@
 	)
 	(wire
 		(pts
-			(xy 203.2 127) (xy 213.36 127)
+			(xy 219.71 129.54) (xy 229.87 129.54)
 		)
 		(stroke
 			(width 0)
@@ -2675,7 +2659,7 @@
 	)
 	(wire
 		(pts
-			(xy 68.58 91.44) (xy 73.66 91.44)
+			(xy 69.85 93.98) (xy 74.93 93.98)
 		)
 		(stroke
 			(width 0)
@@ -2685,7 +2669,7 @@
 	)
 	(wire
 		(pts
-			(xy 160.02 124.46) (xy 165.1 124.46)
+			(xy 161.29 130.81) (xy 166.37 130.81)
 		)
 		(stroke
 			(width 0)
@@ -2725,7 +2709,7 @@
 	)
 	(wire
 		(pts
-			(xy 220.98 121.92) (xy 220.98 119.38)
+			(xy 237.49 124.46) (xy 237.49 121.92)
 		)
 		(stroke
 			(width 0)
@@ -2735,7 +2719,7 @@
 	)
 	(wire
 		(pts
-			(xy 160.02 129.54) (xy 165.1 129.54)
+			(xy 161.29 135.89) (xy 166.37 135.89)
 		)
 		(stroke
 			(width 0)
@@ -2745,7 +2729,7 @@
 	)
 	(wire
 		(pts
-			(xy 116.84 118.11) (xy 116.84 124.46)
+			(xy 118.11 124.46) (xy 118.11 130.81)
 		)
 		(stroke
 			(width 0)
@@ -2785,7 +2769,7 @@
 	)
 	(wire
 		(pts
-			(xy 208.28 127) (xy 208.28 133.35)
+			(xy 224.79 129.54) (xy 224.79 135.89)
 		)
 		(stroke
 			(width 0)
@@ -2795,7 +2779,7 @@
 	)
 	(wire
 		(pts
-			(xy 27.94 93.98) (xy 22.86 93.98)
+			(xy 29.21 96.52) (xy 24.13 96.52)
 		)
 		(stroke
 			(width 0)
@@ -2805,7 +2789,7 @@
 	)
 	(wire
 		(pts
-			(xy 27.94 99.06) (xy 22.86 99.06)
+			(xy 29.21 101.6) (xy 24.13 101.6)
 		)
 		(stroke
 			(width 0)
@@ -2815,7 +2799,7 @@
 	)
 	(wire
 		(pts
-			(xy 187.96 127) (xy 195.58 127)
+			(xy 204.47 129.54) (xy 212.09 129.54)
 		)
 		(stroke
 			(width 0)
@@ -2825,7 +2809,7 @@
 	)
 	(wire
 		(pts
-			(xy 208.28 140.97) (xy 208.28 143.51)
+			(xy 224.79 143.51) (xy 224.79 146.05)
 		)
 		(stroke
 			(width 0)
@@ -2834,7 +2818,7 @@
 		(uuid "f50b923a-a38f-4a83-b098-75e6a124a527")
 	)
 	(label "DCF_PON"
-		(at 73.66 101.6 0)
+		(at 74.93 104.14 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2864,7 +2848,7 @@
 		(uuid "227186a7-f464-4bf1-823a-9f53e76bb3f5")
 	)
 	(label "GND"
-		(at 22.86 76.2 180)
+		(at 24.13 78.74 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2904,7 +2888,7 @@
 		(uuid "3d2efb45-d37e-48ef-9ced-144b5c514776")
 	)
 	(label "+3V3"
-		(at 22.86 71.12 180)
+		(at 24.13 73.66 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2914,7 +2898,7 @@
 		(uuid "46d3a89c-36ab-4f77-85f8-f0e2ba7a0653")
 	)
 	(label "BUZZER_EN"
-		(at 187.96 127 180)
+		(at 204.47 129.54 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2924,7 +2908,7 @@
 		(uuid "4f02330e-371d-4de6-93e1-1856c05f6387")
 	)
 	(label "GND"
-		(at 165.1 129.54 0)
+		(at 166.37 135.89 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2954,7 +2938,7 @@
 		(uuid "6596a6b6-9b3f-4425-8934-12a5ee7a8838")
 	)
 	(label "SPI_MOSI"
-		(at 22.86 88.9 180)
+		(at 24.13 91.44 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2974,7 +2958,7 @@
 		(uuid "734d2636-18ab-476b-98f2-e5b339b27c8c")
 	)
 	(label "DCF_OUT"
-		(at 109.22 129.54 180)
+		(at 110.49 135.89 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2994,7 +2978,7 @@
 		(uuid "7c1b22ac-68a4-4d48-aa35-00c7efa6d482")
 	)
 	(label "+3V3"
-		(at 116.84 107.95 90)
+		(at 118.11 114.3 90)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3024,7 +3008,7 @@
 		(uuid "8f131ae0-2c70-4fef-8742-797d79afaaf4")
 	)
 	(label "DCF_PON"
-		(at 109.22 124.46 180)
+		(at 110.49 130.81 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3034,7 +3018,7 @@
 		(uuid "91580c23-ee4e-43d7-9593-e0e95c70e2bc")
 	)
 	(label "SPI_MISO"
-		(at 22.86 93.98 180)
+		(at 24.13 96.52 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3044,7 +3028,7 @@
 		(uuid "98a94a3b-6d34-449e-8005-b770a46ed1e6")
 	)
 	(label "DCF_OUT"
-		(at 73.66 106.68 0)
+		(at 74.93 109.22 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3054,7 +3038,7 @@
 		(uuid "9d9705a9-9680-4f4a-90ec-a8b6c5eef5f5")
 	)
 	(label "+3V3"
-		(at 254 106.68 0)
+		(at 270.51 109.22 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3074,7 +3058,7 @@
 		(uuid "a46f67e4-15ed-4f59-bdc5-88e24975f3f5")
 	)
 	(label "BUZZER_EN"
-		(at 73.66 111.76 0)
+		(at 74.93 114.3 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3084,7 +3068,7 @@
 		(uuid "a7ba0bc0-2869-4e7d-850e-bd362743f84a")
 	)
 	(label "SPI_SCK"
-		(at 22.86 83.82 180)
+		(at 24.13 86.36 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3104,7 +3088,7 @@
 		(uuid "b161fb8a-4998-445a-b8c0-f324cb1fba41")
 	)
 	(label "GND"
-		(at 208.28 143.51 270)
+		(at 224.79 146.05 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3134,7 +3118,7 @@
 		(uuid "bd83f09b-7b93-4351-a5f3-d7d7e9c75a5f")
 	)
 	(label "EPD_DC"
-		(at 73.66 76.2 0)
+		(at 74.93 78.74 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3144,7 +3128,7 @@
 		(uuid "c8b6ef73-6b6e-4936-b9fd-590656bd9ed5")
 	)
 	(label "EPD_RST"
-		(at 73.66 81.28 0)
+		(at 74.93 83.82 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3154,7 +3138,7 @@
 		(uuid "c8df0f96-1f62-4051-9da6-c19f304a83ae")
 	)
 	(label "SENSOR_INT1"
-		(at 73.66 96.52 0)
+		(at 74.93 99.06 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3164,7 +3148,7 @@
 		(uuid "ccfd4fce-cdb9-430f-b9b4-7dc42e71a9b9")
 	)
 	(label "GND"
-		(at 22.86 99.06 180)
+		(at 24.13 101.6 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3174,7 +3158,7 @@
 		(uuid "cd0e0b89-6d79-4a4d-b3b8-1f87bf6f23c2")
 	)
 	(label "GND"
-		(at 220.98 137.16 270)
+		(at 237.49 139.7 270)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3184,7 +3168,7 @@
 		(uuid "d13f093e-18fd-4b5e-a0f7-39251ed04eb8")
 	)
 	(label "SENSOR_CS"
-		(at 73.66 91.44 0)
+		(at 74.93 93.98 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3194,7 +3178,7 @@
 		(uuid "d555e530-42c6-49d0-a101-22bbcd554540")
 	)
 	(label "+3V3"
-		(at 165.1 124.46 0)
+		(at 166.37 130.81 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3224,7 +3208,7 @@
 		(uuid "f00fae4f-e04e-4cd6-a342-e335f23676d1")
 	)
 	(label "EPD_BUSY"
-		(at 73.66 86.36 0)
+		(at 74.93 88.9 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3244,7 +3228,7 @@
 		(uuid "f5476571-0385-4a79-bcda-cfc0cd5475c9")
 	)
 	(label "EPD_CS"
-		(at 73.66 71.12 0)
+		(at 74.93 73.66 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3265,7 +3249,7 @@
 	)
 	(symbol
 		(lib_id "BreadboardPrototype:DCF_Receiver")
-		(at 142.24 127 0)
+		(at 143.51 133.35 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3275,7 +3259,7 @@
 		(dnp no)
 		(uuid "1e87bed5-67ac-4bd4-b8ca-61cd83ce3244")
 		(property "Reference" "J4"
-			(at 142.24 118.11 0)
+			(at 143.51 124.46 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3285,7 +3269,7 @@
 			)
 		)
 		(property "Value" "DCF-1060N-800"
-			(at 142.24 135.89 0)
+			(at 143.51 142.24 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3295,7 +3279,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 142.24 127 0)
+			(at 143.51 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3306,7 +3290,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 142.24 127 0)
+			(at 143.51 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3317,7 +3301,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 142.24 127 0)
+			(at 143.51 133.35 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3340,7 +3324,7 @@
 			(uuid "487b6a64-cb06-4919-a4bd-71dbf0abdd83")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "J4")
 					(unit 1)
@@ -3350,7 +3334,7 @@
 	)
 	(symbol
 		(lib_id "BreadboardPrototype:DK_PCA10040")
-		(at 48.26 91.44 0)
+		(at 49.53 93.98 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3360,7 +3344,7 @@
 		(dnp no)
 		(uuid "4213a53e-de71-4bc6-969a-d0228d3ecf7f")
 		(property "Reference" "J1"
-			(at 48.26 63.5 0)
+			(at 49.53 66.04 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3370,7 +3354,7 @@
 			)
 		)
 		(property "Value" "nRF52 DK (PCA10040)"
-			(at 48.26 119.38 0)
+			(at 49.53 121.92 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3380,7 +3364,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 48.26 91.44 0)
+			(at 49.53 93.98 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3391,7 +3375,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 48.26 91.44 0)
+			(at 49.53 93.98 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3402,7 +3386,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 48.26 91.44 0)
+			(at 49.53 93.98 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3458,7 +3442,7 @@
 			(uuid "f049ead9-5f4b-4cbf-8830-97eaff514c31")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "J1")
 					(unit 1)
@@ -3478,7 +3462,7 @@
 		(dnp no)
 		(uuid "53099b73-a1a6-4900-9bba-228c969e9f96")
 		(property "Reference" "C2"
-			(at 274.32 59.69 0)
+			(at 276.098 58.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3488,7 +3472,7 @@
 			)
 		)
 		(property "Value" "10uF"
-			(at 274.32 62.23 0)
+			(at 276.098 64.262 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3537,7 +3521,7 @@
 			(uuid "f01f589d-859e-450b-a6bb-3f4f256748d8")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "C2")
 					(unit 1)
@@ -3637,7 +3621,7 @@
 			(uuid "b3c46ec6-4e72-4778-b7be-cac9f41ff874")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "J3")
 					(unit 1)
@@ -3647,7 +3631,7 @@
 	)
 	(symbol
 		(lib_id "Device:Buzzer")
-		(at 251.46 113.03 0)
+		(at 267.97 115.57 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3657,7 +3641,7 @@
 		(dnp no)
 		(uuid "74dd5160-f4a2-4703-b8ed-6c490f15eae6")
 		(property "Reference" "BZ1"
-			(at 252.73 110.49 0)
+			(at 272.796 112.522 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3667,7 +3651,7 @@
 			)
 		)
 		(property "Value" "AP-1205V-P1"
-			(at 252.73 115.57 0)
+			(at 273.558 121.666 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3677,7 +3661,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 246.38 113.03 0)
+			(at 262.89 115.57 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3688,7 +3672,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 246.38 113.03 0)
+			(at 262.89 115.57 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3699,7 +3683,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 246.38 113.03 0)
+			(at 262.89 115.57 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3716,7 +3700,7 @@
 			(uuid "7177693e-05cf-4042-ab9e-80f710441c21")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "BZ1")
 					(unit 1)
@@ -3726,7 +3710,7 @@
 	)
 	(symbol
 		(lib_id "Transistor_BJT:2N3904")
-		(at 218.44 127 0)
+		(at 234.95 129.54 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3736,7 +3720,7 @@
 		(dnp no)
 		(uuid "81fb7e2c-1d2e-41f0-a4fb-7016aa116b0e")
 		(property "Reference" "Q1"
-			(at 223.52 124.46 0)
+			(at 240.03 127 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3746,7 +3730,7 @@
 			)
 		)
 		(property "Value" "2N3904"
-			(at 223.52 129.54 0)
+			(at 242.316 133.858 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3756,7 +3740,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 218.44 127 0)
+			(at 234.95 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3767,7 +3751,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 218.44 127 0)
+			(at 234.95 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3778,7 +3762,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 218.44 127 0)
+			(at 234.95 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3798,7 +3782,7 @@
 			(uuid "fd9e3ccd-5310-4965-9114-9000cf7ab01c")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "Q1")
 					(unit 1)
@@ -3895,7 +3879,7 @@
 			(uuid "9912f8de-d3e5-4b48-95f9-5f8372d82c3e")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "J2")
 					(unit 1)
@@ -3905,7 +3889,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 116.84 114.3 0)
+		(at 118.11 120.65 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3915,7 +3899,7 @@
 		(dnp no)
 		(uuid "b5d99d73-6b79-457e-b0d0-9ad4cadb2345")
 		(property "Reference" "R2"
-			(at 119.38 113.03 0)
+			(at 120.65 119.38 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3925,7 +3909,7 @@
 			)
 		)
 		(property "Value" "10k (OPT)"
-			(at 119.38 115.57 0)
+			(at 120.65 121.92 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -3935,7 +3919,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 116.84 114.3 0)
+			(at 118.11 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3946,7 +3930,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 116.84 114.3 0)
+			(at 118.11 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3957,7 +3941,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 116.84 114.3 0)
+			(at 118.11 120.65 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -3974,7 +3958,7 @@
 			(uuid "7f6d6970-3199-4d75-b4e7-6543b44883fb")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "R2")
 					(unit 1)
@@ -3984,7 +3968,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 199.39 127 90)
+		(at 215.9 129.54 90)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -3994,7 +3978,7 @@
 		(dnp no)
 		(uuid "c3b8c875-d937-4834-b5ff-dc2ab083d57d")
 		(property "Reference" "R1"
-			(at 199.39 124.46 90)
+			(at 215.9 127 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4004,7 +3988,7 @@
 			)
 		)
 		(property "Value" "1k"
-			(at 199.39 129.54 90)
+			(at 215.9 132.08 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4014,7 +3998,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 199.39 127 0)
+			(at 215.9 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4025,7 +4009,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 199.39 127 0)
+			(at 215.9 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4036,7 +4020,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 199.39 127 0)
+			(at 215.9 129.54 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4053,7 +4037,7 @@
 			(uuid "76ff9490-e485-42e1-948e-4127a4e8c664")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "R1")
 					(unit 1)
@@ -4063,7 +4047,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 208.28 137.16 0)
+		(at 224.79 139.7 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4073,7 +4057,7 @@
 		(dnp no)
 		(uuid "cdcec589-2e30-4faf-a671-e064a980ba78")
 		(property "Reference" "R3"
-			(at 210.82 135.89 0)
+			(at 227.33 138.43 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4083,7 +4067,7 @@
 			)
 		)
 		(property "Value" "100k (OPT)"
-			(at 210.82 138.43 0)
+			(at 217.424 139.7 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4093,7 +4077,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 208.28 137.16 0)
+			(at 224.79 139.7 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4104,7 +4088,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 208.28 137.16 0)
+			(at 224.79 139.7 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4115,7 +4099,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 208.28 137.16 0)
+			(at 224.79 139.7 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4132,7 +4116,7 @@
 			(uuid "4f856da9-cf75-412d-b6d5-c8018b9d77d7")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "R3")
 					(unit 1)
@@ -4142,7 +4126,7 @@
 	)
 	(symbol
 		(lib_id "Device:D")
-		(at 236.22 113.03 270)
+		(at 252.73 115.57 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4152,7 +4136,7 @@
 		(dnp no)
 		(uuid "db6f640a-ea2a-439b-8f53-9b9957181f27")
 		(property "Reference" "D1"
-			(at 232.41 113.03 90)
+			(at 248.92 115.57 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4162,7 +4146,7 @@
 			)
 		)
 		(property "Value" "1N4148"
-			(at 240.03 113.03 90)
+			(at 259.588 115.57 90)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4172,7 +4156,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 236.22 113.03 0)
+			(at 252.73 115.57 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4183,7 +4167,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 236.22 113.03 0)
+			(at 252.73 115.57 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4194,7 +4178,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 236.22 113.03 0)
+			(at 252.73 115.57 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4211,7 +4195,7 @@
 			(uuid "fb67da6b-5a66-4b97-a6ca-518bcfdc1f52")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "D1")
 					(unit 1)
@@ -4231,7 +4215,7 @@
 		(dnp no)
 		(uuid "e09cb5b8-e1dc-45dc-b67b-b1605e453198")
 		(property "Reference" "C1"
-			(at 261.62 59.69 0)
+			(at 263.144 58.42 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4241,7 +4225,7 @@
 			)
 		)
 		(property "Value" "100nF"
-			(at 261.62 62.23 0)
+			(at 263.398 64.262 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4290,7 +4274,7 @@
 			(uuid "6df64f0a-bfc0-4f3e-8cef-14be21f6a10b")
 		)
 		(instances
-			(project "breadboard-prototype"
+			(project "breadboard-prototype-for-promotor"
 				(path "/c15b4e62-0855-4531-8330-d3d10ea28d59"
 					(reference "C1")
 					(unit 1)
